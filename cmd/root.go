@@ -19,9 +19,15 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
+
+	// Subcommands and other internal dependencies.
+	"github.com/lentidas/hledger-price-tracker/cmd/currency"
+	"github.com/lentidas/hledger-price-tracker/cmd/stock"
+	"github.com/lentidas/hledger-price-tracker/internal"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -30,14 +36,20 @@ var rootCmd = &cobra.Command{
 	Short: "A CLI tool to get market prices for commodities",
 	Long: `hledger-price-tracker
 
-hledger-price-tracker is a CLI program to generate market price 
-records for hledger, using the Alpha Vantage API and written in Go.`,
+hledger-price-tracker is a CLI program written in Go used to generate
+market price records for hledger using the Alpha Vantage API.`,
 
-	// Print the help message by default on the root command / bare application.
 	Run: func(cmd *cobra.Command, args []string) {
-		if error(cmd.Help()) != nil {
-			os.Exit(1)
-		}
+		fmt.Println("root called") // TODO Remove these debug lines
+		fmt.Println()
+
+		// TODO Consider if we print the help message or not. It already seems to be the case when there is an error.
+		// Print the help message by default on the root command / bare application.
+		// err := cmd.Help()
+		// if err != nil {
+		// 	fmt.Println(err)
+		// 	os.Exit(1)
+		// }
 	},
 }
 
@@ -46,11 +58,34 @@ records for hledger, using the Alpha Vantage API and written in Go.`,
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
+		fmt.Println(err)
 		os.Exit(1)
 	}
 }
 
+// addSubcommandPalettes adds all subcommand palettes to the root command.
+// Although this could be done entirely inside the init() function of the root command, it separated for clarity.
+func addSubcommandPalettes() {
+	rootCmd.AddCommand(stock.PaletteCmd)
+	rootCmd.AddCommand(currency.PaletteCmd)
+}
+
 func init() {
+	// TODO Validate the timezone flag against a list of valid timezones.
+	rootCmd.PersistentFlags().StringVarP(&internal.Timezone, "timezone", "z", "UTC", "Timezone to use for the generated records")
+	// TODO Validate the currency flag against a list of valid currencies accepted by the Alpha Vantage API
+	//  https://www.alphavantage.co/physical_currency_list/
+	//  https://www.alphavantage.co/digital_currency_list/
+	rootCmd.PersistentFlags().StringVarP(&internal.DefaultCurrency, "default-currency", "c", "EUR", "Default currency to use for the generated records")
+
+	rootCmd.PersistentFlags().StringVarP(&internal.ApiKey, "api-key", "a", "", "API key for the Alpha Vantage API (required)")
+
+	if err := rootCmd.MarkPersistentFlagRequired("api-key"); err != nil {
+		os.Exit(1)
+	}
+
+	addSubcommandPalettes()
+
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
@@ -59,5 +94,6 @@ func init() {
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
-	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+
+	// rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }

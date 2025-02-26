@@ -23,12 +23,15 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	// Subcommands and other internal dependencies.
 	"github.com/lentidas/hledger-price-tracker/cmd/currency"
 	"github.com/lentidas/hledger-price-tracker/cmd/stock"
 	"github.com/lentidas/hledger-price-tracker/internal"
 )
+
+var cfgFile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -58,19 +61,17 @@ market price records for hledger using the Alpha Vantage API.`,
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(err) // FIXME Is there a better way to show error messages?
 		os.Exit(1)
 	}
 }
 
-// addSubcommandPalettes adds all subcommand palettes to the root command.
-// Although this could be done entirely inside the init() function of the root command, it separated for clarity.
-func addSubcommandPalettes() {
-	rootCmd.AddCommand(stock.PaletteCmd)
-	rootCmd.AddCommand(currency.PaletteCmd)
-}
-
 func init() {
+	// Initialize configuration with Viper.
+	cobra.OnInitialize(initConfig)
+
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.hledger-price-tracker.yaml)")
+
 	// TODO Validate the timezone flag against a list of valid timezones.
 	rootCmd.PersistentFlags().StringVarP(&internal.Timezone, "timezone", "z", "UTC", "Timezone to use for the generated records")
 	// TODO Validate the currency flag against a list of valid currencies accepted by the Alpha Vantage API
@@ -84,16 +85,31 @@ func init() {
 		os.Exit(1)
 	}
 
-	addSubcommandPalettes()
+	// Add all subcommand palettes to the root command.
+	rootCmd.AddCommand(stock.PaletteCmd)
+	rootCmd.AddCommand(currency.PaletteCmd)
+}
 
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
+// initConfig reads in config file and ENV variables if set.
+func initConfig() {
+	if cfgFile != "" {
+		// Use config file from the flag.
+		viper.SetConfigFile(cfgFile)
+	} else {
+		// Find home directory.
+		home, err := os.UserHomeDir()
+		cobra.CheckErr(err)
 
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.hledger-price-tracker.yaml)")
+		// Search config in home directory with name ".hledger-price-tracker" (without extension).
+		viper.AddConfigPath(home)
+		viper.SetConfigType("yaml")
+		viper.SetConfigName(".hledger-price-tracker")
+	}
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
+	viper.AutomaticEnv() // read in environment variables that match
 
-	// rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// If a config file is found, read it in.
+	if err := viper.ReadInConfig(); err == nil {
+		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+	}
 }

@@ -16,33 +16,15 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package internal
+package stock
 
-import (
-	"io"
-	"net/http"
-	"strings"
-)
+const apiFunctionTimeSeriesDaily = "TIME_SERIES_DAILY"
+const apiFunctionTimeSeriesDailyAdjusted = "TIME_SERIES_DAILY_ADJUSTED" // Requires premium API key.
+const apiFunctionTimeSeriesWeekly = "TIME_SERIES_WEEKLY"
+const apiFunctionTimeSeriesWeeklyAdjusted = "TIME_SERIES_WEEKLY_ADJUSTED"
+const apiFunctionTimeSeriesMonthly = "TIME_SERIES_MONTHLY"
+const apiFunctionTimeSeriesMonthlyAdjusted = "TIME_SERIES_MONTHLY_ADJUSTED"
 
-func StockSearch(keyword string) string {
-	// Create the request URL.
-	url := strings.Builder{}
-	url.WriteString(apiBaseUrl)
-	url.WriteString("function=SYMBOL_SEARCH&keywords=")
-	url.WriteString(keyword)
-	url.WriteString("&apikey=")
-	url.WriteString(ApiKey)
-
-	// Perform the HTTP request.
-	resp, err := http.Get(url.String())
-	if err != nil {
-		// TODO: Handle the error. Quit the program? Log the error?
-	}
-	defer resp.Body.Close()
-
-	// Read the response body.
-	body, err := io.ReadAll(resp.Body)
-
-	// Return the response body as a string.
-	return string(body)
+func GetPrice(symbol string) (string, error) {
+	return "", nil
 }

@@ -20,12 +20,15 @@ package stock
 
 import (
 	"fmt"
-	"github.com/lentidas/hledger-price-tracker/internal"
 
 	"github.com/spf13/cobra"
+
+	// Internal dependencies.
+	"github.com/lentidas/hledger-price-tracker/internal/stock"
+	"github.com/lentidas/hledger-price-tracker/internal/stock/flags"
 )
 
-var keyword string
+var output = flags.OutputSearchJson
 
 // searchCmd represents the search command
 var searchCmd = &cobra.Command{
@@ -33,20 +36,29 @@ var searchCmd = &cobra.Command{
 	Short: "search command", // TODO
 	Long:  `TODO`,
 
+	// Require the user to provide at least one argument, which is the query for the stock search.
+	Args: cobra.MinimumNArgs(1),
+
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println(internal.StockSearch(keyword))
+		output, err := stock.Search(args[0], output)
+		if err != nil {
+			fmt.Println("Error:", err)
+			return
+		} else {
+			fmt.Println(output)
+		}
 	},
 }
 
 func init() {
-	// Add this subcommand to the stock.go command palette.
+	// Add this subcommand to the `stock` command palette.
 	PaletteCmd.AddCommand(searchCmd)
 
-	// Add flags to the search command.
-	searchCmd.Flags().StringVarP(&keyword, "keyword", "k", "", "Search keyword used to find a stock")
+	// Add flags to the `search` subcommand.
+	searchCmd.Flags().VarP(&output, "output", "o", "format of the output (possible values are \"json\", \"table\", \"table-short\", \"csv\", default is \"json\")")
+	// searchCmd.Flags().StringVarP(&query, "query", "q", "", "Search query used to find a stock")
 
-	// Mark the flag as required.
-	if err := searchCmd.MarkFlagRequired("keyword"); err != nil {
-		// TODO Decide how to handle this error.
-	}
+	// Mark which flags are required for this subcommand.
+	// NOTE: No need to manage errors, because Cobra only returns an error if the flag is not previously created.
+	// searchCmd.MarkFlagRequired("query")
 }

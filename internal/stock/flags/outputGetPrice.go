@@ -16,10 +16,4 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package internal
-
-const ApiBaseUrl string = "https://www.alphavantage.co/query?"
-
-var ApiKey string
-var DefaultCurrency string
-var Timezone string
+package flags

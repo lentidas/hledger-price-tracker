@@ -70,20 +70,14 @@ func init() {
 	// Initialize configuration with Viper.
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.hledger-price-tracker.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "path to config file (default is $HOME/.hledger-price-tracker.yaml)")
 
-	// TODO Validate the timezone flag against a list of valid timezones.
-	rootCmd.PersistentFlags().StringVarP(&internal.Timezone, "timezone", "z", "UTC", "Timezone to use for the generated records")
 	// TODO Validate the currency flag against a list of valid currencies accepted by the Alpha Vantage API
 	//  https://www.alphavantage.co/physical_currency_list/
 	//  https://www.alphavantage.co/digital_currency_list/
-	rootCmd.PersistentFlags().StringVarP(&internal.DefaultCurrency, "default-currency", "c", "EUR", "Default currency to use for the generated records")
+	rootCmd.PersistentFlags().StringVarP(&internal.DefaultCurrency, "default-currency", "c", "EUR", "default currency to use for the generated records")
 
-	rootCmd.PersistentFlags().StringVarP(&internal.ApiKey, "api-key", "a", "", "API key for the Alpha Vantage API (required)")
-
-	if err := rootCmd.MarkPersistentFlagRequired("api-key"); err != nil {
-		os.Exit(1)
-	}
+	rootCmd.PersistentFlags().StringVarP(&internal.ApiKey, "api-key", "a", "", "API key for the Alpha Vantage API")
 
 	// Add all subcommand palettes to the root command.
 	rootCmd.AddCommand(stock.PaletteCmd)

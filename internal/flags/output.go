@@ -20,30 +20,31 @@ package flags
 
 import (
 	"errors"
+
 	"github.com/spf13/cobra"
 )
 
-type OutputSearch string
+type OutputFormat string
 
 const (
-	OutputSearchJson       OutputSearch = "json"
-	OutputSearchTableLong  OutputSearch = "table"
-	OutputSearchTableShort OutputSearch = "table-short"
-	OutputSearchCsv        OutputSearch = "csv"
+	OutputFormatJson       OutputFormat = "json"
+	OutputFormatTable      OutputFormat = "table"
+	OutputFormatTableShort OutputFormat = "table-short"
+	OutputFormatCsv        OutputFormat = "csv"
 )
 
-// String returns the string representation of the OutputSearch type.
+// String returns the string representation of the OutputFormat type.
 // Used by fmt.Print and Cobra in the help message.
-func (o *OutputSearch) String() string {
+func (o *OutputFormat) String() string {
 	return string(*o)
 }
 
-// Set sets the value of the OutputSearch type.
+// Set sets the value of the OutputFormat type.
 // Must have a pointer receiver so it doesn't actually change the value of a copy and not the value itself.
-func (o *OutputSearch) Set(value string) error {
+func (o *OutputFormat) Set(value string) error {
 	switch value {
 	case "json", "table", "table-short", "csv":
-		*o = OutputSearch(value)
+		*o = OutputFormat(value)
 		return nil
 	default:
 		return errors.New("possible values are \"json\", \"table\", \"table-short\", \"csv\"")
@@ -51,7 +52,7 @@ func (o *OutputSearch) Set(value string) error {
 }
 
 // Type is used to describe the expected type for the flag.
-func (o *OutputSearch) Type() string {
+func (o *OutputFormat) Type() string {
 	return "string"
 }
 

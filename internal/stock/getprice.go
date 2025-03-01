@@ -26,5 +26,6 @@ const apiFunctionTimeSeriesMonthly = "TIME_SERIES_MONTHLY"
 const apiFunctionTimeSeriesMonthlyAdjusted = "TIME_SERIES_MONTHLY_ADJUSTED"
 
 func GetPrice(symbol string) (string, error) {
+	// TODO
 	return "", nil
 }

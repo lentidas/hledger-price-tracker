@@ -23,12 +23,13 @@ import (
 
 	"github.com/spf13/cobra"
 
-	// Internal dependencies.
+	// Import internal dependencies.
+	"github.com/lentidas/hledger-price-tracker/internal/flags"
 	"github.com/lentidas/hledger-price-tracker/internal/stock"
-	"github.com/lentidas/hledger-price-tracker/internal/stock/flags"
 )
 
-var output = flags.OutputSearchJson
+// Define the output flag and set it to the default value.
+var output = flags.OutputFormatJson
 
 // searchCmd represents the search command
 var searchCmd = &cobra.Command{
@@ -39,6 +40,7 @@ var searchCmd = &cobra.Command{
 	// Require the user to provide at least one argument, which is the query for the stock search.
 	Args: cobra.MinimumNArgs(1),
 
+	// TODO Show example with the argument.
 	Run: func(cmd *cobra.Command, args []string) {
 		output, err := stock.Search(args[0], output)
 		if err != nil {

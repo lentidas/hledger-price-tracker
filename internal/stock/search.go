@@ -24,14 +24,14 @@ import (
 	"net/http"
 	"strings"
 
-	// Internal dependencies.
+	// Import internal dependencies.
 	"github.com/lentidas/hledger-price-tracker/internal"
-	"github.com/lentidas/hledger-price-tracker/internal/stock/flags"
+	"github.com/lentidas/hledger-price-tracker/internal/flags"
 )
 
 const apiFunctionSearch = "SYMBOL_SEARCH"
 
-func Search(query string, output flags.OutputSearch) (string, error) {
+func Search(query string, output flags.OutputFormat) (string, error) {
 	// Verify function parameters and variables.
 	if internal.ApiKey == "" {
 		return "", errors.New("[stock.Search] api key is required")
@@ -65,13 +65,13 @@ func Search(query string, output flags.OutputSearch) (string, error) {
 
 	// Return the output in the desired format.
 	switch output {
-	case "json":
+	case flags.OutputFormatJson:
 		return string(body), nil
-	case "table":
+	case flags.OutputFormatTable:
 		return "table", nil
-	case "table-short":
+	case flags.OutputFormatTableShort:
 		return "table-short", nil
-	case "csv":
+	case flags.OutputFormatCsv:
 		return "csv", nil
 	default:
 		return "", errors.New("[stock.Search] invalid output format")

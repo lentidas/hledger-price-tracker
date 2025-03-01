@@ -29,9 +29,9 @@ import (
 )
 
 // Define the output flag and set it to the default value.
-var output = flags.OutputFormatJson
+var format = flags.OutputFormatJson
 
-// searchCmd represents the search command
+// searchCmd represents the search command.
 var searchCmd = &cobra.Command{
 	Use:   "search",
 	Short: "search command", // TODO
@@ -42,7 +42,7 @@ var searchCmd = &cobra.Command{
 
 	// TODO Show example with the argument.
 	Run: func(cmd *cobra.Command, args []string) {
-		output, err := stock.Search(args[0], output)
+		output, err := stock.Search(args[0], format)
 		cobra.CheckErr(err)
 		fmt.Println(output)
 	},
@@ -53,10 +53,5 @@ func init() {
 	PaletteCmd.AddCommand(searchCmd)
 
 	// Add flags to the `search` subcommand.
-	searchCmd.Flags().VarP(&output, "output", "o", "format of the output (possible values are \"json\", \"table\", \"table-short\", \"csv\", default is \"json\")")
-	// searchCmd.Flags().StringVarP(&query, "query", "q", "", "Search query used to find a stock")
-
-	// Mark which flags are required for this subcommand.
-	// NOTE: No need to manage errors, because Cobra only returns an error if the flag is not previously created.
-	// searchCmd.MarkFlagRequired("query")
+	searchCmd.Flags().VarP(&format, "format", "f", "format of the output (possible values are \"json\", \"table\", \"table-short\", \"csv\", default is \"json\")")
 }

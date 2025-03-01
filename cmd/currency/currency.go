@@ -25,7 +25,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// PaletteCmd represents the currency command palette
+// PaletteCmd represents the currency command palette.
 var PaletteCmd = &cobra.Command{
 	Use:   "currency",
 	Short: "Palette command that groups all subcommands related to currencies",

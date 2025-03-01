@@ -16,6 +16,9 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
+// NOTE: The code in this file is based on the following Stack Overflow answer:
+// https://stackoverflow.com/a/70541824
+
 package flags
 
 import (

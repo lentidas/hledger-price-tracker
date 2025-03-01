@@ -43,12 +43,8 @@ var searchCmd = &cobra.Command{
 	// TODO Show example with the argument.
 	Run: func(cmd *cobra.Command, args []string) {
 		output, err := stock.Search(args[0], output)
-		if err != nil {
-			fmt.Println("Error:", err)
-			return
-		} else {
-			fmt.Println(output)
-		}
+		cobra.CheckErr(err)
+		fmt.Println(output)
 	},
 }
 

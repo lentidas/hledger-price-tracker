@@ -41,19 +41,6 @@ var rootCmd = &cobra.Command{
 
 hledger-price-tracker is a CLI program written in Go used to generate
 market price records for hledger using the Alpha Vantage API.`,
-
-	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("root called") // TODO Remove these debug lines
-		fmt.Println()
-
-		// TODO Consider if we print the help message or not. It already seems to be the case when there is an error.
-		// Print the help message by default on the root command / bare application.
-		// err := cmd.Help()
-		// if err != nil {
-		// 	fmt.Println(err)
-		// 	os.Exit(1)
-		// }
-	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -100,8 +87,10 @@ func initConfig() {
 		viper.SetConfigName(".hledger-price-tracker")
 	}
 
-	viper.AutomaticEnv() // read in environment variables that match
+	// Read in environment variables that match.
+	viper.AutomaticEnv()
 
+	// TODO Remove this, because we do not want to be showing the config file used on every command that is called.
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())

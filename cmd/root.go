@@ -21,8 +21,10 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 
 	// Subcommands and other internal dependencies.
@@ -63,8 +65,15 @@ func init() {
 	//  https://www.alphavantage.co/physical_currency_list/
 	//  https://www.alphavantage.co/digital_currency_list/
 	rootCmd.PersistentFlags().StringVarP(&internal.DefaultCurrency, "default-currency", "c", "EUR", "default currency to use for the generated records")
-
 	rootCmd.PersistentFlags().StringVarP(&internal.ApiKey, "api-key", "a", "", "API key for the Alpha Vantage API")
+
+	// Mark which flags are required for this subcommand.
+	requiredPersistentFlags := []string{"api-key"}
+	for _, flag := range requiredPersistentFlags {
+		if err := rootCmd.MarkPersistentFlagRequired(flag); err != nil {
+			// Ignore the error, because Cobra only returns an error if the flag is not previously created.
+		}
+	}
 
 	// Add all subcommand palettes to the root command.
 	rootCmd.AddCommand(stock.PaletteCmd)
@@ -82,17 +91,40 @@ func initConfig() {
 		cobra.CheckErr(err)
 
 		// Search config in home directory with name ".hledger-price-tracker" (without extension).
-		viper.AddConfigPath(home)
+		viper.AddConfigPath(home + "/.config/hledger-price-tracker")
 		viper.SetConfigType("yaml")
-		viper.SetConfigName(".hledger-price-tracker")
+		viper.SetConfigName("config")
 	}
 
-	// Read in environment variables that match.
-	viper.AutomaticEnv()
-
-	// TODO Remove this, because we do not want to be showing the config file used on every command that is called.
 	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+	if err := viper.ReadInConfig(); err != nil {
+		// Do nothing if the config file is not found.
 	}
+
+	// Set a prefix for environment variables, to avoid conflicts with other programs.
+	viper.SetEnvPrefix("HPT") // HPT for hledger-price-tracker
+
+	// Environment variables can't have dashes in them, so bind them to their equivalent keys with underscores,
+	// e.g. --api-key to HPT_API_KEY.
+	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
+
+	// Bind certain flags to environment variables.
+	envFlags := []string{"api-key"}
+	for _, flag := range envFlags {
+		if err := viper.BindEnv(flag); err != nil {
+			// Ignore the error, because Cobra only returns an error if the flag is not previously created.
+		}
+	}
+
+	// Bind each cobra flag to its associated viper configuration (config file and environment variable).
+	// The precedence order is: command line flags -> environment variables -> config file.
+	// IMPORTANT: This will only associate the flags from the root command, not the subcommands.
+	// NOTE: This os based on the following repository: https://github.com/carolynvs/stingoftheviper/
+	rootCmd.Flags().VisitAll(func(f *pflag.Flag) {
+		// Apply the viper config value to the flag when the flag is not set and viper has a value.
+		if !f.Changed && viper.IsSet(f.Name) {
+			val := viper.Get(f.Name)
+			rootCmd.Flags().Set(f.Name, fmt.Sprintf("%v", val))
+		}
+	})
 }

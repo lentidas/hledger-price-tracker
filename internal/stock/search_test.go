@@ -25,12 +25,6 @@ import (
 	"github.com/lentidas/hledger-price-tracker/internal/flags"
 )
 
-func TestStockSearchDemo(t *testing.T) {
-	internal.ApiKey = "demo"
-
-	// TODO Implement test code here
-}
-
 func TestStockSearchExceptionNoApiKey(t *testing.T) {
 	internal.ApiKey = ""
 

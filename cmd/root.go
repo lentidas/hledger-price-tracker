@@ -117,7 +117,7 @@ func initConfig() {
 	}
 
 	// Bind each cobra flag to its associated viper configuration (config file and environment variable).
-	// The precedence order is: command line flags -> environment variables -> config file.
+	// The precedence order is: command-line flags -> environment variables -> config file.
 	// IMPORTANT: This will only associate the flags from the root command, not the subcommands.
 	// NOTE: This os based on the following repository: https://github.com/carolynvs/stingoftheviper/
 	rootCmd.Flags().VisitAll(func(f *pflag.Flag) {

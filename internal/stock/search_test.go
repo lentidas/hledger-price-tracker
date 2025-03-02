@@ -21,7 +21,6 @@ package stock
 import (
 	"testing"
 
-	// Import internal dependencies.
 	"github.com/lentidas/hledger-price-tracker/internal"
 	"github.com/lentidas/hledger-price-tracker/internal/flags"
 )

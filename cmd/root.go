@@ -27,7 +27,6 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 
-	// Subcommands and other internal dependencies.
 	"github.com/lentidas/hledger-price-tracker/cmd/currency"
 	"github.com/lentidas/hledger-price-tracker/cmd/stock"
 	"github.com/lentidas/hledger-price-tracker/internal"

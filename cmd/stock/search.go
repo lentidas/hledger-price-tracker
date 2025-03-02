@@ -23,7 +23,6 @@ import (
 
 	"github.com/spf13/cobra"
 
-	// Import internal dependencies.
 	"github.com/lentidas/hledger-price-tracker/internal/flags"
 	"github.com/lentidas/hledger-price-tracker/internal/stock"
 )

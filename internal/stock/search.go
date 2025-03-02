@@ -24,7 +24,6 @@ import (
 	"net/http"
 	"strings"
 
-	// Import internal dependencies.
 	"github.com/lentidas/hledger-price-tracker/internal"
 	"github.com/lentidas/hledger-price-tracker/internal/flags"
 )

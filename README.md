@@ -21,7 +21,7 @@ default-currency: EUR
 ```
 
 > [!IMPORTANT]
-> **Only the global flags have corresponding settings available in the configuration file. **For any subcommand flag you will need to specify it in the command-line.
+> **Only the global flags have corresponding settings available in the configuration file.** For any subcommand flag you will need to specify it in the command-line.
 
 > [!WARNING]
 > Consider setting the configuration file permissions to read-only for your user (`600`) to avoid leaking your API key. An alternative is to use the environment variable `HPT_API_KEY` to set the API key.

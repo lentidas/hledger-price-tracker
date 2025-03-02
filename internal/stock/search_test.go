@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -24,12 +24,6 @@ import (
 	"github.com/lentidas/hledger-price-tracker/internal"
 	"github.com/lentidas/hledger-price-tracker/internal/flags"
 )
-
-func TestStockSearchDemo(t *testing.T) {
-	internal.ApiKey = "demo"
-
-	// TODO Implement test code here
-}
 
 func TestStockSearchExceptionNoApiKey(t *testing.T) {
 	internal.ApiKey = ""

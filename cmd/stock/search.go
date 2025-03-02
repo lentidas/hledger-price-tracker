@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -28,13 +28,18 @@ import (
 )
 
 // Define the output flag and set it to the default value.
-var format = flags.OutputFormatJson
+var format = flags.OutputFormatTable
 
 // searchCmd represents the search command.
 var searchCmd = &cobra.Command{
 	Use:   "search",
-	Short: "search command", // TODO
-	Long:  `TODO`,
+	Short: "Search for information about a stock (e.g. ticker, region, market)",
+	Long: `
+hledger-price-tracker
+
+Command to search for information about a stock (e.g. ticker, region, market). 
+It returns the best-matching symbols and market information based on keywords of your choice.
+API documentation: https://www.alphavantage.co/documentation/#symbolsearch`,
 
 	// Require the user to provide at least one argument, which is the query for the stock search.
 	Args: cobra.MinimumNArgs(1),
@@ -52,5 +57,5 @@ func init() {
 	PaletteCmd.AddCommand(searchCmd)
 
 	// Add flags to the `search` subcommand.
-	searchCmd.Flags().VarP(&format, "format", "f", "format of the output (possible values are \"json\", \"table\", \"table-short\", \"csv\", default is \"json\")")
+	searchCmd.Flags().VarP(&format, "format", "f", "format of the output (possible values are \"json\", \"csv\", \"table\", \"table-long\", default is \"json\")")
 }

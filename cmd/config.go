@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -28,10 +28,11 @@ import (
 // configCmd represents the config command.
 var configCmd = &cobra.Command{
 	Use:   "config",
-	Short: "Show information about the application's configuration file",
-	Long: `hledger-price-tracker config
+	Short: "Show details about the application's configuration file",
+	Long: `
+hledger-price-tracker
 
-This command shows information about the application's configuration file.`,
+Command to get details about the application's configuration file.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Printf("Using config file: %s\n", viper.ConfigFileUsed())
 	},

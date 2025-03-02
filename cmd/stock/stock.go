@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -29,7 +29,8 @@ import (
 var PaletteCmd = &cobra.Command{
 	Use:   "stock",
 	Short: "Palette command that groups all subcommands related to stocks",
-	Long:  `TODO`, // TODO
+	Long: `
+TODO`, // TODO
 
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("stock called") // TODO Remove these debug lines

@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -30,10 +30,10 @@ import (
 type OutputFormat string
 
 const (
-	OutputFormatJson       OutputFormat = "json"
-	OutputFormatTable      OutputFormat = "table"
-	OutputFormatTableShort OutputFormat = "table-short"
-	OutputFormatCsv        OutputFormat = "csv"
+	OutputFormatJson      OutputFormat = "json"
+	OutputFormatCsv       OutputFormat = "csv"
+	OutputFormatTable     OutputFormat = "table"
+	OutputFormatTableLong OutputFormat = "table-long"
 )
 
 // String returns the string representation of the OutputFormat type.
@@ -46,11 +46,11 @@ func (o *OutputFormat) String() string {
 // Must have a pointer receiver so it doesn't actually change the value of a copy and not the value itself.
 func (o *OutputFormat) Set(value string) error {
 	switch value {
-	case "json", "table", "table-short", "csv":
+	case "json", "csv", "table", "table-long":
 		*o = OutputFormat(value)
 		return nil
 	default:
-		return errors.New("possible values are \"json\", \"table\", \"table-short\", \"csv\"")
+		return errors.New("possible values are \"json\", \"csv\", \"table\", \"table-long\"")
 	}
 }
 
@@ -62,8 +62,8 @@ func (o *OutputFormat) Type() string {
 func OutputSearchCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	return []string{
 		"json\toutput the search results in JSON format",
-		"table\toutput the search results in a table format",
-		"table-short\toutput the search results in a table format (short version)",
 		"csv\toutput the search results in CSV format",
+		"table\toutput the search results in a table format",
+		"table-long\toutput the search results in a table format (long version)",
 	}, cobra.ShellCompDirectiveDefault
 }

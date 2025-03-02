@@ -20,8 +20,6 @@ package stock
 
 import (
 	"errors"
-	"io"
-	"net/http"
 	"strings"
 
 	"github.com/lentidas/hledger-price-tracker/internal"
@@ -64,16 +62,9 @@ func Search(query string, format flags.OutputFormat) (string, error) {
 	url.WriteString(internal.ApiKey)
 
 	// Perform the HTTP request.
-	resp, err := http.Get(url.String())
+	body, err := internal.HttpRequest(url.String())
 	if err != nil {
-		// TODO: Handle the error. Quit the program? Log the error?
-	}
-	defer resp.Body.Close()
-
-	// Read the response body.
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
+		return "", err // TODO Maybe wrap the error message.
 	}
 
 	// Return the output in the desired format.
@@ -87,6 +78,6 @@ func Search(query string, format flags.OutputFormat) (string, error) {
 	case flags.OutputFormatCsv:
 		return "csv", nil
 	default:
-		return "", errors.New("[stock.Search] invalid output format")
+		return "", errors.New("[internal.stock.Search] invalid output format")
 	}
 }

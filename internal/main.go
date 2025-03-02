@@ -18,7 +18,29 @@
 
 package internal
 
+import (
+	"fmt"
+	"io"
+	"net/http"
+)
+
 const ApiBaseUrl string = "https://www.alphavantage.co/query?"
 
 var ApiKey string
 var DefaultCurrency string
+
+// HttpRequest is a helper function to make HTTP requests and return the body as a string.
+func HttpRequest(url string) (string, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return "", fmt.Errorf("[internal.HttpRequest] HTTP request failed: %v", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("[internal.HttpRequest] failure to read HTTP body: %v", err)
+	}
+
+	return string(body), nil
+}

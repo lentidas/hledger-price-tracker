@@ -16,31 +16,26 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package stock
+package cmd
 
 import (
 	"fmt"
-	"os"
-
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
-// PaletteCmd represents the stock command palette.
-var PaletteCmd = &cobra.Command{
-	Use:   "stock",
-	Short: "Palette command that groups all subcommands related to stocks",
-	Long:  `TODO`, // TODO
+// configCmd represents the config command.
+var configCmd = &cobra.Command{
+	Use:   "config",
+	Short: "Show information about the application's configuration file",
+	Long: `hledger-price-tracker config
 
+This command shows information about the application's configuration file.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("stock called") // TODO Remove these debug lines
-		fmt.Println()
-
-		// Print the help message for this command palette.
-		err := cmd.Help()
-		if err != nil {
-			os.Exit(1)
-		}
+		fmt.Printf("Using config file: %s\n", viper.ConfigFileUsed())
 	},
 }
 
-func init() {}
+func init() {
+	rootCmd.AddCommand(configCmd)
+}

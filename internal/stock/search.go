@@ -31,7 +31,7 @@ import (
 
 const apiFunctionSearch = "SYMBOL_SEARCH"
 
-func Search(query string, output flags.OutputFormat) (string, error) {
+func Search(query string, format flags.OutputFormat) (string, error) {
 	// Verify function parameters and variables.
 	if internal.ApiKey == "" {
 		return "", errors.New("[stock.Search] api key is required")
@@ -64,7 +64,7 @@ func Search(query string, output flags.OutputFormat) (string, error) {
 	}
 
 	// Return the output in the desired format.
-	switch output {
+	switch format {
 	case flags.OutputFormatJson:
 		return string(body), nil
 	case flags.OutputFormatTable:

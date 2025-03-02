@@ -9,7 +9,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -52,5 +52,5 @@ func init() {
 	PaletteCmd.AddCommand(searchCmd)
 
 	// Add flags to the `search` subcommand.
-	searchCmd.Flags().VarP(&format, "format", "f", "format of the output (possible values are \"json\", \"table\", \"table-long\", \"csv\", default is \"json\")")
+	searchCmd.Flags().VarP(&format, "format", "f", "format of the output (possible values are \"json\", \"csv\", \"table\", \"table-long\", default is \"json\")")
 }

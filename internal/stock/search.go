@@ -19,16 +19,19 @@
 package stock
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
 	"strings"
 
+	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/lentidas/hledger-price-tracker/internal"
 	"github.com/lentidas/hledger-price-tracker/internal/flags"
 )
 
 const apiFunctionSearch = "SYMBOL_SEARCH"
 
-type SearchJSON struct {
+type SearchBody struct {
 	BestMatches []struct {
 		Symbol      string `json:"1. symbol"`
 		Name        string `json:"2. name"`
@@ -40,6 +43,15 @@ type SearchJSON struct {
 		Currency    string `json:"8. currency"`
 		MatchScore  string `json:"9. matchScore"`
 	} `json:"bestMatches"`
+}
+
+func parseBody(body []byte) (SearchBody, error) {
+	var parsedBody SearchBody
+	err := json.Unmarshal(body, &parsedBody)
+	if err != nil {
+		return SearchBody{}, fmt.Errorf("[internal.stock.parseBody] failure to unmarshal JSON body: %v", err)
+	}
+	return parsedBody, nil
 }
 
 func Search(query string, format flags.OutputFormat) (string, error) {
@@ -60,23 +72,41 @@ func Search(query string, format flags.OutputFormat) (string, error) {
 	url.WriteString(query)
 	url.WriteString("&apikey=")
 	url.WriteString(internal.ApiKey)
+	if format == flags.OutputFormatCsv {
+		url.WriteString("&datatype=csv")
+	}
 
 	// Perform the HTTP request.
 	body, err := internal.HttpRequest(url.String())
 	if err != nil {
-		return "", err // TODO Maybe wrap the error message.
+		return "", err
 	}
 
 	// Return the output in the desired format.
 	switch format {
-	case flags.OutputFormatJson:
+	case flags.OutputFormatJson, flags.OutputFormatCsv:
 		return string(body), nil
-	case flags.OutputFormatTable:
-		return "table", nil
-	case flags.OutputFormatTableShort:
-		return "table-short", nil
-	case flags.OutputFormatCsv:
-		return "csv", nil
+	case flags.OutputFormatTable, flags.OutputFormatTableLong:
+		// Parse the JSON body.
+		parsedBody, err := parseBody(body)
+		if err != nil {
+			return "", err
+		}
+
+		t := table.NewWriter()
+		if format == flags.OutputFormatTableLong {
+			t.AppendHeader(table.Row{"#", "Symbol", "Name", "Type", "Region", "Market Open", "Market Close", "Timezone", "Currency", "Match Score"})
+			for i, result := range parsedBody.BestMatches {
+				t.AppendRow([]interface{}{i + 1, result.Symbol, result.Name, result.Type, result.Region, result.MarketOpen, result.MarketClose, result.Timezone, result.Currency, result.MatchScore})
+			}
+		} else {
+			t.AppendHeader(table.Row{"#", "Symbol", "Name", "Type", "Region", "Currency", "Match Score"})
+			for i, result := range parsedBody.BestMatches {
+				t.AppendRow([]interface{}{i + 1, result.Symbol, result.Name, result.Type, result.Region, result.Currency, result.MatchScore})
+			}
+		}
+
+		return t.Render(), nil
 	default:
 		return "", errors.New("[internal.stock.Search] invalid output format")
 	}

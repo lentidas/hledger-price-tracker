@@ -29,7 +29,8 @@ import (
 var PaletteCmd = &cobra.Command{
 	Use:   "stock",
 	Short: "Palette command that groups all subcommands related to stocks",
-	Long:  `TODO`, // TODO
+	Long: `
+TODO`, // TODO
 
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("stock called") // TODO Remove these debug lines

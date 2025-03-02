@@ -38,7 +38,8 @@ var cfgFile string
 var rootCmd = &cobra.Command{
 	Use:   "hledger-price-tracker",
 	Short: "A CLI tool to get market prices for commodities",
-	Long: `hledger-price-tracker
+	Long: `
+hledger-price-tracker
 
 hledger-price-tracker is a CLI program written in Go used to generate
 market price records for hledger using the Alpha Vantage API.`,

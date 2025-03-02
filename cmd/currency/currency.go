@@ -29,7 +29,8 @@ import (
 var PaletteCmd = &cobra.Command{
 	Use:   "currency",
 	Short: "Palette command that groups all subcommands related to currencies",
-	Long:  `TODO`, // TODO
+	Long: `
+TODO`, // TODO
 
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("currency called") // TODO Remove these debug lines

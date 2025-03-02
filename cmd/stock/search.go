@@ -28,13 +28,18 @@ import (
 )
 
 // Define the output flag and set it to the default value.
-var format = flags.OutputFormatJson
+var format = flags.OutputFormatTable
 
 // searchCmd represents the search command.
 var searchCmd = &cobra.Command{
 	Use:   "search",
-	Short: "search command", // TODO
-	Long:  `TODO`,
+	Short: "Search for information about a stock (e.g. ticker, region, market)",
+	Long: `
+hledger-price-tracker
+
+Command to search for information about a stock (e.g. ticker, region, market). 
+It returns the best-matching symbols and market information based on keywords of your choice.
+API documentation: https://www.alphavantage.co/documentation/#symbolsearch`,
 
 	// Require the user to provide at least one argument, which is the query for the stock search.
 	Args: cobra.MinimumNArgs(1),

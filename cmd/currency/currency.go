@@ -27,8 +27,9 @@ import (
 
 // PaletteCmd represents the currency command palette.
 var PaletteCmd = &cobra.Command{
-	Use:   "currency",
-	Short: "Palette command that groups all subcommands related to currencies",
+	Use:     "currency",
+	GroupID: "palette",
+	Short:   "Palette command that groups all subcommands related to currencies",
 	Long: `
 TODO`, // TODO
 

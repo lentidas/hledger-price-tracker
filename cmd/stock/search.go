@@ -39,6 +39,7 @@ hledger-price-tracker
 
 Command to search for information about a stock (e.g. ticker, region, market). 
 It returns the best-matching symbols and market information based on keywords of your choice.
+
 API documentation: https://www.alphavantage.co/documentation/#symbolsearch`,
 
 	// Require the user to provide at least one argument, which is the query for the stock search.

@@ -27,8 +27,9 @@ import (
 
 // PaletteCmd represents the stock command palette.
 var PaletteCmd = &cobra.Command{
-	Use:   "stock",
-	Short: "Palette command that groups all subcommands related to stocks",
+	Use:     "stock",
+	GroupID: "palette",
+	Short:   "Palette command that groups all subcommands related to stocks",
 	Long: `
 TODO`, // TODO
 

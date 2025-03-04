@@ -34,6 +34,7 @@ type JSONResponse interface {
 	DecodeBody([]byte) error
 }
 
+// TODO Create unitary test for this function.
 func DecodeBody(body []byte, response any) error {
 	err := json.Unmarshal(body, response)
 	if err != nil {

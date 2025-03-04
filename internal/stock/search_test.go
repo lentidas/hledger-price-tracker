@@ -48,3 +48,30 @@ func TestStockSearchExceptionInvalidOutputFlag(t *testing.T) {
 		t.Error("expected error, got nil")
 	}
 }
+
+func TestStockSearchURLBuilder(t *testing.T) {
+	internal.ApiKey = "demo"
+
+	expected := "https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=tesco&apikey=demo"
+	url, err := buildSearchURL("tesco", flags.OutputFormatJSON)
+	if err != nil {
+		t.Errorf("expected nil, got %v", err)
+	}
+
+	if url != expected {
+		t.Errorf("expected %s, got %s", expected, url)
+	}
+}
+
+func TestStockSearchURLBuilderCSV(t *testing.T) {
+	internal.ApiKey = "demo"
+
+	expected := "https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=tesco&apikey=demo&datatype=csv"
+	url, err := buildSearchURL("tesco", flags.OutputFormatCSV)
+	if err != nil {
+		t.Errorf("expected nil, got %v", err)
+	}
+	if url != expected {
+		t.Errorf("expected %s, got %s", expected, url)
+	}
+}

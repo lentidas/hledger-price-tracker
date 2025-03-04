@@ -119,9 +119,21 @@ func (responseTyped *SearchResponseTyped) TypeBody(response SearchResponse) erro
 	return nil
 }
 
-// buildURL creates the URL for the search function of the Alpha Vantage API.
-// TODO Create unitary tests for this function.
-func buildURL(query string, format flags.OutputFormat) string {
+// buildSearchURL creates the URL to make the HTTP request to the Alpha Vantage API.
+func buildSearchURL(query string, format flags.OutputFormat) (string, error) {
+	if internal.ApiKey == "" {
+		return "", errors.New("[stock.buildSearchURL] api key is required")
+	}
+	if query == "" {
+		return "", errors.New("[stock.buildSearchURL] no search query provided")
+	}
+	switch format {
+	case flags.OutputFormatHledger, flags.OutputFormatTable, flags.OutputFormatTableLong, flags.OutputFormatJSON, flags.OutputFormatCSV:
+		// Do nothing.
+	default:
+		return "", errors.New("[stock.buildSearchURL] invalid output format")
+	}
+
 	url := strings.Builder{}
 	url.WriteString(internal.ApiBaseUrl)
 	url.WriteString("function=")
@@ -134,7 +146,7 @@ func buildURL(query string, format flags.OutputFormat) string {
 		url.WriteString("&datatype=csv")
 	}
 
-	return url.String()
+	return url.String(), nil
 }
 
 // generateOutput generates the output in the desired format by either outputting the raw string of the body or by
@@ -196,7 +208,12 @@ func Search(query string, format flags.OutputFormat) (string, error) {
 		return "", errors.New("[stock.Search] no search query provided")
 	}
 
-	body, err := internal.HTTPRequest(buildURL(query, format))
+	url, err := buildSearchURL(query, format)
+	if err != nil {
+		return "", err
+	}
+
+	body, err := internal.HTTPRequest(url)
 	if err != nil {
 		return "", err
 	}

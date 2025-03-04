@@ -58,5 +58,5 @@ func init() {
 	PaletteCmd.AddCommand(searchCmd)
 
 	// Add flags to the `search` subcommand.
-	searchCmd.Flags().VarP(&formatSearch, "format", "f", "format of the output (possible values are \"json\", \"csv\", \"table\", \"table-long\", default is \"json\")")
+	searchCmd.Flags().VarP(&formatSearch, "format", "f", "format of the output (possible values are \"json\", \"csv\", \"table\", \"table-long\")")
 }

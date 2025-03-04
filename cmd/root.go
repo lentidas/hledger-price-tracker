@@ -65,7 +65,7 @@ func init() {
 	//  https://www.alphavantage.co/physical_currency_list/
 	//  https://www.alphavantage.co/digital_currency_list/
 	rootCmd.PersistentFlags().StringVarP(&internal.DefaultCurrency, "default-currency", "c", "EUR", "default currency to use for the generated ledger records")
-	rootCmd.PersistentFlags().StringVarP(&internal.ApiKey, "api-key", "a", "", "API key to access the Alpha Vantage API")
+	rootCmd.PersistentFlags().StringVarP(&internal.ApiKey, "api-key", "k", "", "API key to access the Alpha Vantage API")
 
 	// Mark which flags are required for this subcommand.
 	requiredPersistentFlags := []string{"api-key"}

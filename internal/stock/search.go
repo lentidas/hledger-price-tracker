@@ -65,6 +65,8 @@ type SearchResponseTyped struct {
 	}
 }
 
+// TypeBody casts the attributes of the response struct into another similar struct but with properly typed attributes.
+// TODO Create unitary tests for this function.
 func (responseTyped *SearchResponseTyped) TypeBody(response SearchResponse) error {
 	for _, result := range response.BestMatches {
 		score, err := strconv.ParseFloat(result.MatchScore, 32)
@@ -117,16 +119,9 @@ func (responseTyped *SearchResponseTyped) TypeBody(response SearchResponse) erro
 	return nil
 }
 
-func Search(query string, format flags.OutputFormat) (string, error) {
-	// Verify function parameters and variables.
-	if internal.ApiKey == "" {
-		return "", errors.New("[stock.Search] api key is required")
-	}
-	if query == "" {
-		return "", errors.New("[stock.Search] no search query provided")
-	}
-
-	// Create the request URL.
+// buildURL creates the URL for the search function of the Alpha Vantage API.
+// TODO Create unitary tests for this function.
+func buildURL(query string, format flags.OutputFormat) string {
 	url := strings.Builder{}
 	url.WriteString(internal.ApiBaseUrl)
 	url.WriteString("function=")
@@ -139,13 +134,13 @@ func Search(query string, format flags.OutputFormat) (string, error) {
 		url.WriteString("&datatype=csv")
 	}
 
-	// Perform the HTTP request.
-	body, err := internal.HTTPRequest(url.String())
-	if err != nil {
-		return "", err
-	}
+	return url.String()
+}
 
-	// Return the output in the desired format.
+// generateOutput generates the output in the desired format by either outputting the raw string of the body or by
+// parsing its JSON content then creating a proper table.
+// TODO Create unitary tests for this function.
+func generateOutput(body []byte, format flags.OutputFormat) (string, error) {
 	switch format {
 	case flags.OutputFormatHledger:
 		return "", errors.New("[internal.stock.Search] hledger output format not supported")
@@ -191,4 +186,20 @@ func Search(query string, format flags.OutputFormat) (string, error) {
 	default:
 		return "", errors.New("[internal.stock.Search] invalid output format")
 	}
+}
+
+func Search(query string, format flags.OutputFormat) (string, error) {
+	if internal.ApiKey == "" {
+		return "", errors.New("[stock.Search] api key is required")
+	}
+	if query == "" {
+		return "", errors.New("[stock.Search] no search query provided")
+	}
+
+	body, err := internal.HTTPRequest(buildURL(query, format))
+	if err != nil {
+		return "", err
+	}
+
+	return generateOutput(body, format)
 }

@@ -19,6 +19,7 @@
 package internal
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -29,17 +30,34 @@ const ApiBaseUrl string = "https://www.alphavantage.co/query?"
 var ApiKey string
 var DefaultCurrency string
 
-// HttpRequest is a helper function to make HTTP requests and return the body as a string.
-func HttpRequest(url string) ([]byte, error) {
+type JSONResponse interface {
+	DecodeBody([]byte) error
+}
+
+func DecodeBody(body []byte, response any) error {
+	err := json.Unmarshal(body, response)
+	if err != nil {
+		return fmt.Errorf("[internal.DecodeBody] failure to unmarshal JSON body: %v", err)
+	} else {
+		return nil
+	}
+}
+
+type JSONResponseTyped interface {
+	TypeBody(response JSONResponse) error
+}
+
+// HTTPRequest is a helper function to make HTTP requests and return the body as an array of bytes.
+func HTTPRequest(url string) ([]byte, error) {
 	resp, err := http.Get(url)
 	if err != nil {
-		return []byte{}, fmt.Errorf("[internal.HttpRequest] HTTP request failed: %v", err)
+		return []byte{}, fmt.Errorf("[internal.HTTPRequest] HTTP request failed: %v", err)
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return []byte{}, fmt.Errorf("[internal.HttpRequest] failure to read HTTP body: %v", err)
+		return []byte{}, fmt.Errorf("[internal.HTTPRequest] failure to read HTTP body: %v", err)
 	}
 
 	return body, nil

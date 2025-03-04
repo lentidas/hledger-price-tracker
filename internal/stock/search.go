@@ -19,10 +19,12 @@
 package stock
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/jedib0t/go-pretty/v6/text"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/lentidas/hledger-price-tracker/internal"
@@ -31,7 +33,7 @@ import (
 
 const apiFunctionSearch = "SYMBOL_SEARCH"
 
-type SearchBody struct {
+type SearchResponse struct {
 	BestMatches []struct {
 		Symbol      string `json:"1. symbol"`
 		Name        string `json:"2. name"`
@@ -45,13 +47,74 @@ type SearchBody struct {
 	} `json:"bestMatches"`
 }
 
-func parseBody(body []byte) (SearchBody, error) {
-	var parsedBody SearchBody
-	err := json.Unmarshal(body, &parsedBody)
-	if err != nil {
-		return SearchBody{}, fmt.Errorf("[internal.stock.parseBody] failure to unmarshal JSON body: %v", err)
+func (response *SearchResponse) DecodeBody(body []byte) error {
+	return internal.DecodeBody(body, response)
+}
+
+type SearchResponseTyped struct {
+	BestMatches []struct {
+		Symbol      string
+		Name        string
+		Type        string
+		Region      string
+		MarketOpen  time.Time
+		MarketClose time.Time
+		Timezone    string
+		Currency    string
+		MatchScore  float32
 	}
-	return parsedBody, nil
+}
+
+func (responseTyped *SearchResponseTyped) TypeBody(response SearchResponse) error {
+	for _, result := range response.BestMatches {
+		score, err := strconv.ParseFloat(result.MatchScore, 32)
+		if err != nil {
+			return fmt.Errorf("[stock.TypeBody] failure to parse match score: %v", err)
+		}
+
+		// Parse the timezone offset
+		offset, err := strconv.Atoi(result.Timezone[3:])
+		if err != nil {
+			return fmt.Errorf("[stock.TypeBody] failure to parse timezone offset: %v", err)
+		}
+
+		// Create a fixed timezone
+		tz := time.FixedZone(result.Timezone, offset*3600)
+
+		openTime, err := time.ParseInLocation("15:04", result.MarketOpen, tz)
+		if err != nil {
+			return fmt.Errorf("[stock.TypeBody] failure to parse market open time: %v", err)
+		}
+
+		closeTime, err := time.ParseInLocation("15:04", result.MarketClose, tz)
+		if err != nil {
+			return fmt.Errorf("[stock.TypeBody] failure to parse market close time: %v", err)
+		}
+
+		responseTyped.BestMatches = append(responseTyped.BestMatches, struct {
+			Symbol      string
+			Name        string
+			Type        string
+			Region      string
+			MarketOpen  time.Time
+			MarketClose time.Time
+			Timezone    string
+			Currency    string
+			MatchScore  float32
+		}{
+			Symbol:      result.Symbol,
+			Name:        result.Name,
+			Type:        result.Type,
+			Region:      result.Region,
+			MarketOpen:  openTime,
+			MarketClose: closeTime,
+			Timezone:    result.Timezone,
+			Currency:    result.Currency,
+			MatchScore:  float32(score),
+		})
+	}
+
+	return nil
 }
 
 func Search(query string, format flags.OutputFormat) (string, error) {
@@ -77,7 +140,7 @@ func Search(query string, format flags.OutputFormat) (string, error) {
 	}
 
 	// Perform the HTTP request.
-	body, err := internal.HttpRequest(url.String())
+	body, err := internal.HTTPRequest(url.String())
 	if err != nil {
 		return "", err
 	}
@@ -88,7 +151,15 @@ func Search(query string, format flags.OutputFormat) (string, error) {
 		return string(body), nil
 	case flags.OutputFormatTable, flags.OutputFormatTableLong:
 		// Parse the JSON body.
-		parsedBody, err := parseBody(body)
+		var parsedBody SearchResponse
+		err := parsedBody.DecodeBody(body)
+		if err != nil {
+			return "", err
+		}
+
+		// Cast the attributes into proper types.
+		var typedBody SearchResponseTyped
+		err = typedBody.TypeBody(parsedBody)
 		if err != nil {
 			return "", err
 		}
@@ -96,14 +167,22 @@ func Search(query string, format flags.OutputFormat) (string, error) {
 		t := table.NewWriter()
 		if format == flags.OutputFormatTableLong {
 			t.AppendHeader(table.Row{"#", "Symbol", "Name", "Type", "Region", "Market Open", "Market Close", "Timezone", "Currency", "Match Score"})
-			for i, result := range parsedBody.BestMatches {
-				t.AppendRow([]interface{}{i + 1, result.Symbol, result.Name, result.Type, result.Region, result.MarketOpen, result.MarketClose, result.Timezone, result.Currency, result.MatchScore})
+			for i, result := range typedBody.BestMatches {
+				t.AppendRow([]interface{}{i + 1, result.Symbol, result.Name, result.Type, result.Region, result.MarketOpen.Format("15:04"), result.MarketClose.Format("15:04"), result.Timezone, result.Currency, fmt.Sprintf("%.2f%%", result.MatchScore*100)})
 			}
+			t.SetColumnConfigs([]table.ColumnConfig{
+				{Number: 6, Align: text.AlignRight},
+				{Number: 7, Align: text.AlignRight},
+				{Number: 10, Align: text.AlignRight},
+			})
 		} else {
 			t.AppendHeader(table.Row{"#", "Symbol", "Name", "Type", "Region", "Currency", "Match Score"})
-			for i, result := range parsedBody.BestMatches {
-				t.AppendRow([]interface{}{i + 1, result.Symbol, result.Name, result.Type, result.Region, result.Currency, result.MatchScore})
+			for i, result := range typedBody.BestMatches {
+				t.AppendRow([]interface{}{i + 1, result.Symbol, result.Name, result.Type, result.Region, result.Currency, fmt.Sprintf("%.2f%%", result.MatchScore*100)})
 			}
+			t.SetColumnConfigs([]table.ColumnConfig{
+				{Number: 7, Align: text.AlignRight},
+			})
 		}
 
 		return t.Render(), nil

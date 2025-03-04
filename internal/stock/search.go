@@ -135,7 +135,7 @@ func Search(query string, format flags.OutputFormat) (string, error) {
 	url.WriteString(query)
 	url.WriteString("&apikey=")
 	url.WriteString(internal.ApiKey)
-	if format == flags.OutputFormatCsv {
+	if format == flags.OutputFormatCSV {
 		url.WriteString("&datatype=csv")
 	}
 
@@ -147,7 +147,9 @@ func Search(query string, format flags.OutputFormat) (string, error) {
 
 	// Return the output in the desired format.
 	switch format {
-	case flags.OutputFormatJson, flags.OutputFormatCsv:
+	case flags.OutputFormatHledger:
+		return "", errors.New("[internal.stock.Search] hledger output format not supported")
+	case flags.OutputFormatJSON, flags.OutputFormatCSV:
 		return string(body), nil
 	case flags.OutputFormatTable, flags.OutputFormatTableLong:
 		// Parse the JSON body.

@@ -28,7 +28,7 @@ import (
 func TestStockSearchExceptionNoApiKey(t *testing.T) {
 	internal.ApiKey = ""
 
-	if _, err := Search("tesco", flags.OutputFormatJson); err == nil {
+	if _, err := Search("tesco", flags.OutputFormatJSON); err == nil {
 		t.Error("expected error, got nil")
 	}
 }
@@ -36,7 +36,7 @@ func TestStockSearchExceptionNoApiKey(t *testing.T) {
 func TestStockSearchExceptionNoQuery(t *testing.T) {
 	internal.ApiKey = "demo"
 
-	if _, err := Search("", flags.OutputFormatJson); err == nil {
+	if _, err := Search("", flags.OutputFormatJSON); err == nil {
 		t.Error("expected error, got nil")
 	}
 }

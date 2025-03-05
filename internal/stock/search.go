@@ -21,19 +21,19 @@ package stock
 import (
 	"errors"
 	"fmt"
-	"github.com/jedib0t/go-pretty/v6/text"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/lentidas/hledger-price-tracker/internal"
 	"github.com/lentidas/hledger-price-tracker/internal/flags"
 )
 
 const apiFunctionSearch = "SYMBOL_SEARCH"
 
-type SearchResponse struct {
+type searchResponse struct {
 	BestMatches []struct {
 		Symbol      string `json:"1. symbol"`
 		Name        string `json:"2. name"`
@@ -47,11 +47,11 @@ type SearchResponse struct {
 	} `json:"bestMatches"`
 }
 
-func (response *SearchResponse) DecodeBody(body []byte) error {
+func (response *searchResponse) DecodeBody(body []byte) error {
 	return internal.DecodeBody(body, response)
 }
 
-type SearchResponseTyped struct {
+type searchResponseTyped struct {
 	BestMatches []struct {
 		Symbol      string
 		Name        string
@@ -67,8 +67,13 @@ type SearchResponseTyped struct {
 
 // TypeBody casts the attributes of the response struct into another similar struct but with properly typed attributes.
 // TODO Create unitary tests for this function.
-func (responseTyped *SearchResponseTyped) TypeBody(response SearchResponse) error {
-	for _, result := range response.BestMatches {
+func (responseTyped *searchResponseTyped) TypeBody(response internal.JSONResponse) error {
+	searchResponse, ok := response.(*searchResponse)
+	if !ok {
+		return fmt.Errorf("[stock.TypeBody] failed to cast response to searchResponse")
+	}
+
+	for _, result := range searchResponse.BestMatches {
 		score, err := strconv.ParseFloat(result.MatchScore, 32)
 		if err != nil {
 			return fmt.Errorf("[stock.TypeBody] failure to parse match score: %v", err)
@@ -160,15 +165,15 @@ func generateOutput(body []byte, format flags.OutputFormat) (string, error) {
 		return string(body), nil
 	case flags.OutputFormatTable, flags.OutputFormatTableLong:
 		// Parse the JSON body.
-		var parsedBody SearchResponse
+		var parsedBody searchResponse
 		err := parsedBody.DecodeBody(body)
 		if err != nil {
 			return "", err
 		}
 
 		// Cast the attributes into proper types.
-		var typedBody SearchResponseTyped
-		err = typedBody.TypeBody(parsedBody)
+		var typedBody searchResponseTyped
+		err = typedBody.TypeBody(&parsedBody)
 		if err != nil {
 			return "", err
 		}

@@ -25,53 +25,57 @@ import (
 	"github.com/lentidas/hledger-price-tracker/internal/flags"
 )
 
-func TestStockSearchExceptionNoApiKey(t *testing.T) {
+func TestSearch(t *testing.T) {
+	internal.ApiKey = "demo"
+
+	t.Run("success", func(t *testing.T) {
+		// TODO Implement expected response.
+	})
+
+	t.Run("no search query", func(t *testing.T) {
+		if _, err := Search("", flags.OutputFormatJSON); err == nil {
+			t.Error("expected error, got nil")
+		}
+	})
+
+	t.Run("invalid output format", func(t *testing.T) {
+		if _, err := Search("tesco", "invalid"); err == nil {
+			t.Error("expected error, got nil")
+		}
+	})
+
 	internal.ApiKey = ""
 
-	if _, err := Search("tesco", flags.OutputFormatJSON); err == nil {
-		t.Error("expected error, got nil")
-	}
+	t.Run("no API key", func(t *testing.T) {
+		if _, err := Search("tesco", flags.OutputFormatJSON); err == nil {
+			t.Error("expected error, got nil")
+		}
+	})
 }
 
-func TestStockSearchExceptionNoQuery(t *testing.T) {
+func TestSearchURLBuilder(t *testing.T) {
 	internal.ApiKey = "demo"
 
-	if _, err := Search("", flags.OutputFormatJSON); err == nil {
-		t.Error("expected error, got nil")
-	}
-}
+	t.Run("normal", func(t *testing.T) {
+		expected := "https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=tesco&apikey=demo"
+		url, err := buildSearchURL("tesco", flags.OutputFormatJSON)
+		if err != nil {
+			t.Errorf("expected nil, got %v", err)
+		}
 
-func TestStockSearchExceptionInvalidOutputFlag(t *testing.T) {
-	internal.ApiKey = "demo"
+		if url != expected {
+			t.Errorf("expected %s, got %s", expected, url)
+		}
+	})
 
-	if _, err := Search("tesco", "invalid"); err == nil {
-		t.Error("expected error, got nil")
-	}
-}
-
-func TestStockSearchURLBuilder(t *testing.T) {
-	internal.ApiKey = "demo"
-
-	expected := "https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=tesco&apikey=demo"
-	url, err := buildSearchURL("tesco", flags.OutputFormatJSON)
-	if err != nil {
-		t.Errorf("expected nil, got %v", err)
-	}
-
-	if url != expected {
-		t.Errorf("expected %s, got %s", expected, url)
-	}
-}
-
-func TestStockSearchURLBuilderCSV(t *testing.T) {
-	internal.ApiKey = "demo"
-
-	expected := "https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=tesco&apikey=demo&datatype=csv"
-	url, err := buildSearchURL("tesco", flags.OutputFormatCSV)
-	if err != nil {
-		t.Errorf("expected nil, got %v", err)
-	}
-	if url != expected {
-		t.Errorf("expected %s, got %s", expected, url)
-	}
+	t.Run("CSV", func(t *testing.T) {
+		expected := "https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=tesco&apikey=demo&datatype=csv"
+		url, err := buildSearchURL("tesco", flags.OutputFormatCSV)
+		if err != nil {
+			t.Errorf("expected nil, got %v", err)
+		}
+		if url != expected {
+			t.Errorf("expected %s, got %s", expected, url)
+		}
+	})
 }

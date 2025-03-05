@@ -40,7 +40,7 @@ type PriceResponseBase struct {
 		Information string `json:"1. Information"`
 		Symbol      string `json:"2. Symbol"`
 		LastRefresh string `json:"3. Last Refreshed"`
-		OutputSize  string `json:"4. Output Size"`
+		OutputSize  string `json:"-"`
 		TimeZone    string `json:"5. Time Zone"`
 	} `json:"Meta Data"`
 }
@@ -55,13 +55,50 @@ type Prices struct {
 	}
 }
 
+type PricesAdjusted struct {
+	Prices struct {
+		Open             string `json:"1. open"`
+		High             string `json:"2. high"`
+		Low              string `json:"3. low"`
+		Close            string `json:"4. close"`
+		AdjustedClose    string `json:"5. adjusted close"`
+		Volume           string `json:"6. volume"`
+		DividendAmount   string `json:"7. dividend amount"`
+		SplitCoefficient string `json:"-"`
+	}
+}
+
 type PriceBodyDaily struct {
 	PriceResponseBase
 	TimeSeriesDaily Prices `json:"Time Series (Daily)"`
 }
 
+type PriceBodyDailyAdjusted struct {
+	PriceResponseBase
+	TimeSeriesDailyAdjusted PricesAdjusted `json:"Time Series (Daily)"`
+}
+
+type PriceBodyWeekly struct {
+	PriceResponseBase
+	TimeSeriesWeekly Prices `json:"Weekly Time Series"`
+}
+
+type PriceBodyWeeklyAdjusted struct {
+	PriceResponseBase
+	TimeSeriesDailyAdjusted PricesAdjusted `json:"Weekly Adjusted Time Series"`
+}
+
+type PriceBodyMonthly struct {
+	PriceResponseBase
+	TimeSeriesWeekly Prices `json:"Monthly Time Series"`
+}
+
+type PriceBodyMonthlyAdjusted struct {
+	PriceResponseBase
+	TimeSeriesDailyAdjusted PricesAdjusted `json:"Monthly Adjusted Time Series"`
+}
+
 // buildPriceURL creates the URL to make the HTTP request to the Alpha Vantage API.
-// TODO Create unit tests for this function.
 func buildPriceURL(symbol string, format flags.OutputFormat, interval flags.Interval, adjusted bool) (string, error) {
 	if internal.ApiKey == "" {
 		return "", errors.New("[stock.buildPriceURL] api key is required")
@@ -121,16 +158,17 @@ func buildPriceURL(symbol string, format flags.OutputFormat, interval flags.Inte
 	return url.String(), nil
 }
 
+// TODO Continue implementing unitary tests for this
 func Price(symbol string, format flags.OutputFormat, interval flags.Interval, begin string, end string, adjusted bool) (string, error) {
 	// TODO Remove these debug lines
-	fmt.Println("[DEBUG]")
-	fmt.Println("symbol:", symbol)
-	fmt.Println("format:", format)
-	fmt.Println("interval:", interval)
-	fmt.Println("begin:", begin)
-	fmt.Println("end:", end)
-	fmt.Println("adjusted:", adjusted)
-	fmt.Println("[END_DEBUG]")
+	// fmt.Println("[DEBUG]")
+	// fmt.Println("symbol:", symbol)
+	// fmt.Println("format:", format)
+	// fmt.Println("interval:", interval)
+	// fmt.Println("begin:", begin)
+	// fmt.Println("end:", end)
+	// fmt.Println("adjusted:", adjusted)
+	// fmt.Println("[END_DEBUG]")
 
 	// Verify function parameters and variables.
 	if internal.ApiKey == "" {

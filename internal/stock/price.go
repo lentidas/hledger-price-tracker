@@ -22,6 +22,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/lentidas/hledger-price-tracker/internal"
 	"github.com/lentidas/hledger-price-tracker/internal/flags"
@@ -34,69 +35,100 @@ const apiFunctionTimeSeriesWeeklyAdjusted = "TIME_SERIES_WEEKLY_ADJUSTED"
 const apiFunctionTimeSeriesMonthly = "TIME_SERIES_MONTHLY"
 const apiFunctionTimeSeriesMonthlyAdjusted = "TIME_SERIES_MONTHLY_ADJUSTED"
 
-type priceResponseBase struct {
-	internal.JSONResponse
-	MetaData struct {
-		Information string `json:"1. Information"`
-		Symbol      string `json:"2. Symbol"`
-		LastRefresh string `json:"3. Last Refreshed"`
-		OutputSize  string `json:"-"`
-		TimeZone    string `json:"5. Time Zone"`
-	} `json:"Meta Data"`
+type priceResponseMetadata struct {
+	Information string `json:"1. Information"`
+	Symbol      string `json:"2. Symbol"`
+	LastRefresh string `json:"3. Last Refreshed"`
+	TimeZone    string `json:"4. Time Zone"`
 }
 
-type prices struct {
-	Prices struct {
-		Open   string `json:"1. open"`
-		High   string `json:"2. high"`
-		Low    string `json:"3. low"`
-		Close  string `json:"4. close"`
-		Volume string `json:"5. volume"`
-	}
+type priceResponseMetadataDaily struct {
+	Information string `json:"1. Information"`
+	Symbol      string `json:"2. Symbol"`
+	LastRefresh string `json:"3. Last Refreshed"`
+	OutputSize  string `json:"4. Output Size"`
+	TimeZone    string `json:"5. Time Zone"`
 }
 
-type pricesAdjusted struct {
-	Prices struct {
-		Open             string `json:"1. open"`
-		High             string `json:"2. high"`
-		Low              string `json:"3. low"`
-		Close            string `json:"4. close"`
-		AdjustedClose    string `json:"5. adjusted close"`
-		Volume           string `json:"6. volume"`
-		DividendAmount   string `json:"7. dividend amount"`
-		SplitCoefficient string `json:"-"`
-	}
+type priceResponsePrices struct {
+	Open   string `json:"1. open"`
+	High   string `json:"2. high"`
+	Low    string `json:"3. low"`
+	Close  string `json:"4. close"`
+	Volume string `json:"5. volume"`
+}
+
+type priceResponsePricesAdjusted struct {
+	Open             string `json:"1. open"`
+	High             string `json:"2. high"`
+	Low              string `json:"3. low"`
+	Close            string `json:"4. close"`
+	AdjustedClose    string `json:"5. adjusted close"`
+	Volume           string `json:"6. volume"`
+	DividendAmount   string `json:"7. dividend amount"`
+	SplitCoefficient string `json:"8. split coefficient,omitempty"`
 }
 
 type priceResponseDaily struct {
-	priceResponseBase
-	TimeSeriesDaily prices `json:"Time Series (Daily)"`
+	MetaData   priceResponseMetadataDaily     `json:"Meta Data"`
+	TimeSeries map[string]priceResponsePrices `json:"Time Series (Daily)"` // TODO Probably this attribute should have a more generic name like `TimeSeries`.
 }
 
 type priceResponseDailyAdjusted struct {
-	priceResponseBase
-	TimeSeriesDailyAdjusted pricesAdjusted `json:"Time Series (Daily)"`
+	MetaData   priceResponseMetadataDaily             `json:"Meta Data"`
+	TimeSeries map[string]priceResponsePricesAdjusted `json:"Time Series (Daily)"`
 }
 
 type priceResponseWeekly struct {
-	priceResponseBase
-	TimeSeriesWeekly prices `json:"Weekly Time Series"`
+	MetaData   priceResponseMetadata          `json:"Meta Data"`
+	TimeSeries map[string]priceResponsePrices `json:"Weekly Time Series"`
 }
 
 type priceResponseWeeklyAdjusted struct {
-	priceResponseBase
-	TimeSeriesDailyAdjusted pricesAdjusted `json:"Weekly Adjusted Time Series"`
+	MetaData   priceResponseMetadata                  `json:"Meta Data"`
+	TimeSeries map[string]priceResponsePricesAdjusted `json:"Weekly Adjusted Time Series"`
 }
 
 type priceResponseMonthly struct {
-	priceResponseBase
-	TimeSeriesWeekly prices `json:"Monthly Time Series"`
+	MetaData   priceResponseMetadata          `json:"Meta Data"`
+	TimeSeries map[string]priceResponsePrices `json:"Monthly Time Series"`
 }
 
 type priceResponseMonthlyAdjusted struct {
-	priceResponseBase
-	TimeSeriesDailyAdjusted pricesAdjusted `json:"Monthly Adjusted Time Series"`
+	MetaData   priceResponseMetadata                  `json:"Meta Data"`
+	TimeSeries map[string]priceResponsePricesAdjusted `json:"Monthly Adjusted Time Series"`
 }
+
+type priceResponseTyped struct {
+	MetaData struct {
+		Information string
+		Symbol      string
+		LastRefresh time.Time
+		TimeZone    string
+	}
+}
+
+// TypeBody casts the attributes of the response struct into another similar struct but with properly typed attributes.
+// TODO Create unitary tests for this function.
+// func (responseTyped *priceResponseTyped) TypeBody(response internal.JSONResponse) error {
+// 	priceResponse, ok := response.(*priceResponseBase)
+// 	if !ok {
+// 		return errors.New("[stock.TypeBody] failed to cast response to priceResponseBase")
+// 	}
+//
+// 	// Parse the last refresh time
+// 	lastRefresh, err := time.Parse("2006-01-02", priceResponse.MetaData.LastRefresh)
+// 	if err != nil {
+// 		return err
+// 	}
+//
+// 	responseTyped.MetaData.Information = priceResponse.MetaData.Information
+// 	responseTyped.MetaData.Symbol = priceResponse.MetaData.Symbol
+// 	responseTyped.MetaData.LastRefresh = lastRefresh
+// 	responseTyped.MetaData.TimeZone = priceResponse.MetaData.TimeZone
+//
+// 	return nil
+// }
 
 // buildPriceURL creates the URL to make the HTTP request to the Alpha Vantage API.
 func buildPriceURL(symbol string, format flags.OutputFormat, interval flags.Interval, adjusted bool) (string, error) {
@@ -158,17 +190,106 @@ func buildPriceURL(symbol string, format flags.OutputFormat, interval flags.Inte
 	return url.String(), nil
 }
 
+func createParsedBodyObject(interval flags.Interval, adjusted bool) (internal.JSONResponse, error) {
+	var parsedBody internal.JSONResponse
+
+	if adjusted {
+		switch interval {
+		case flags.IntervalDaily:
+			parsedBody.Content = &priceResponseDailyAdjusted{}
+		case flags.IntervalWeekly:
+			parsedBody.Content = &priceResponseWeeklyAdjusted{}
+		case flags.IntervalMonthly:
+			parsedBody.Content = &priceResponseMonthlyAdjusted{}
+		default:
+			return parsedBody, errors.New("[internal.stock.createParsedBodyObject] invalid interval for adjusted prices")
+		}
+	} else {
+		switch interval {
+		case flags.IntervalDaily:
+			parsedBody.Content = &priceResponseDaily{}
+		case flags.IntervalWeekly:
+			parsedBody.Content = &priceResponseWeekly{}
+		case flags.IntervalMonthly:
+			parsedBody.Content = &priceResponseMonthly{}
+		default:
+			return parsedBody, errors.New("[internal.stock.createParsedBodyObject] invalid interval")
+		}
+	}
+
+	return parsedBody, nil
+}
+
+// generatePriceOutput generates the output in the desired format by either outputting the raw string of the body or by
+// parsing its JSON content then creating a proper table.
+// TODO Create unitary tests for this function.
+func generatePriceOutput(body []byte, format flags.OutputFormat, interval flags.Interval, begin string, end string, adjusted bool) (string, error) {
+	// Convert the `begin` and `end` strings into time.Time objects.
+	var beginTime, endTime time.Time
+	var err error
+	if begin != "" {
+		beginTime, err = time.Parse("2006-01-02", begin)
+		if err != nil {
+			return "", err
+		}
+	}
+	if end != "" {
+		endTime, err = time.Parse("2006-01-02", end)
+		if err != nil {
+			return "", err
+		}
+	}
+
+	// TODO Remove debug lines
+	fmt.Println("[DEBUG generatePriceOutput()]")
+	fmt.Println("beginTime:", beginTime)
+	fmt.Println("endTime:", endTime)
+	fmt.Println("[END_DEBUG]")
+
+	switch format {
+	case flags.OutputFormatHledger:
+		return "hledger", nil
+	case flags.OutputFormatJSON, flags.OutputFormatCSV:
+		return string(body), nil
+	case flags.OutputFormatTable, flags.OutputFormatTableLong:
+		// TODO
+
+		// Parse the JSON body.
+		parsedBody, err := createParsedBodyObject(interval, adjusted)
+		if err != nil {
+			return "", fmt.Errorf("[internal.stock.generatePriceOutput] error creating parsedBody object: %w", err)
+		}
+		err = parsedBody.DecodeBody(body)
+		if err != nil {
+			return "", err
+		}
+
+		// TODO Remove these debug lines
+		fmt.Println("[DEBUG generatePriceOutput()]")
+		fmt.Println("parsedBody:", parsedBody)
+		fmt.Println("[END_DEBUG]")
+
+		// Cast the attributes into proper types.
+		// var typedBody priceResponseTyped
+		// err = typedBody.TypeBody(parsedBody)
+
+	}
+
+	// TODO
+	return "", nil
+}
+
 // TODO Continue implementing unitary tests for this
 func Price(symbol string, format flags.OutputFormat, interval flags.Interval, begin string, end string, adjusted bool) (string, error) {
 	// TODO Remove these debug lines
-	// fmt.Println("[DEBUG]")
-	// fmt.Println("symbol:", symbol)
-	// fmt.Println("format:", format)
-	// fmt.Println("interval:", interval)
-	// fmt.Println("begin:", begin)
-	// fmt.Println("end:", end)
-	// fmt.Println("adjusted:", adjusted)
-	// fmt.Println("[END_DEBUG]")
+	fmt.Println("[DEBUG Price()]")
+	fmt.Println("symbol:", symbol)
+	fmt.Println("format:", format)
+	fmt.Println("interval:", interval)
+	fmt.Println("begin:", begin)
+	fmt.Println("end:", end)
+	fmt.Println("adjusted:", adjusted)
+	fmt.Println("[END_DEBUG]")
 
 	// Verify function parameters and variables.
 	if internal.ApiKey == "" {
@@ -183,8 +304,10 @@ func Price(symbol string, format flags.OutputFormat, interval flags.Interval, be
 		return "", err
 	}
 
-	fmt.Println(url)
+	body, err := internal.HTTPRequest(url)
+	if err != nil {
+		return "", err
+	}
 
-	// TODO
-	return "", nil
+	return generatePriceOutput(body, format, interval, begin, end, adjusted)
 }

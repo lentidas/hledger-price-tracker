@@ -34,7 +34,7 @@ const apiFunctionTimeSeriesWeeklyAdjusted = "TIME_SERIES_WEEKLY_ADJUSTED"
 const apiFunctionTimeSeriesMonthly = "TIME_SERIES_MONTHLY"
 const apiFunctionTimeSeriesMonthlyAdjusted = "TIME_SERIES_MONTHLY_ADJUSTED"
 
-type PriceResponseBase struct {
+type priceResponseBase struct {
 	internal.JSONResponse
 	MetaData struct {
 		Information string `json:"1. Information"`
@@ -45,7 +45,7 @@ type PriceResponseBase struct {
 	} `json:"Meta Data"`
 }
 
-type Prices struct {
+type prices struct {
 	Prices struct {
 		Open   string `json:"1. open"`
 		High   string `json:"2. high"`
@@ -55,7 +55,7 @@ type Prices struct {
 	}
 }
 
-type PricesAdjusted struct {
+type pricesAdjusted struct {
 	Prices struct {
 		Open             string `json:"1. open"`
 		High             string `json:"2. high"`
@@ -68,34 +68,34 @@ type PricesAdjusted struct {
 	}
 }
 
-type PriceBodyDaily struct {
-	PriceResponseBase
-	TimeSeriesDaily Prices `json:"Time Series (Daily)"`
+type priceResponseDaily struct {
+	priceResponseBase
+	TimeSeriesDaily prices `json:"Time Series (Daily)"`
 }
 
-type PriceBodyDailyAdjusted struct {
-	PriceResponseBase
-	TimeSeriesDailyAdjusted PricesAdjusted `json:"Time Series (Daily)"`
+type priceResponseDailyAdjusted struct {
+	priceResponseBase
+	TimeSeriesDailyAdjusted pricesAdjusted `json:"Time Series (Daily)"`
 }
 
-type PriceBodyWeekly struct {
-	PriceResponseBase
-	TimeSeriesWeekly Prices `json:"Weekly Time Series"`
+type priceResponseWeekly struct {
+	priceResponseBase
+	TimeSeriesWeekly prices `json:"Weekly Time Series"`
 }
 
-type PriceBodyWeeklyAdjusted struct {
-	PriceResponseBase
-	TimeSeriesDailyAdjusted PricesAdjusted `json:"Weekly Adjusted Time Series"`
+type priceResponseWeeklyAdjusted struct {
+	priceResponseBase
+	TimeSeriesDailyAdjusted pricesAdjusted `json:"Weekly Adjusted Time Series"`
 }
 
-type PriceBodyMonthly struct {
-	PriceResponseBase
-	TimeSeriesWeekly Prices `json:"Monthly Time Series"`
+type priceResponseMonthly struct {
+	priceResponseBase
+	TimeSeriesWeekly prices `json:"Monthly Time Series"`
 }
 
-type PriceBodyMonthlyAdjusted struct {
-	PriceResponseBase
-	TimeSeriesDailyAdjusted PricesAdjusted `json:"Monthly Adjusted Time Series"`
+type priceResponseMonthlyAdjusted struct {
+	priceResponseBase
+	TimeSeriesDailyAdjusted pricesAdjusted `json:"Monthly Adjusted Time Series"`
 }
 
 // buildPriceURL creates the URL to make the HTTP request to the Alpha Vantage API.

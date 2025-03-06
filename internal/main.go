@@ -30,12 +30,12 @@ const ApiBaseUrl string = "https://www.alphavantage.co/query?"
 var ApiKey string
 var DefaultCurrency string
 
-type JSONResponse interface {
-	DecodeBody([]byte) error
+type JSONResponse struct {
+	Content any
 }
 
-func DecodeBody(body []byte, response any) error {
-	err := json.Unmarshal(body, response)
+func (response *JSONResponse) DecodeBody(body []byte) error {
+	err := json.Unmarshal(body, response.Content)
 	if err != nil {
 		return fmt.Errorf("[internal.DecodeBody] failure to unmarshal JSON body: %v", err)
 	} else {

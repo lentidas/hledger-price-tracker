@@ -47,9 +47,9 @@ type searchResponse struct {
 	} `json:"bestMatches"`
 }
 
-func (response *searchResponse) DecodeBody(body []byte) error {
-	return internal.DecodeBody(body, response)
-}
+// func (response *searchResponse) DecodeBody(body []byte) error {
+// 	return internal.DecodeBody(body, response)
+// }
 
 type searchResponseTyped struct {
 	BestMatches []struct {
@@ -68,7 +68,7 @@ type searchResponseTyped struct {
 // TypeBody casts the attributes of the response struct into another similar struct but with properly typed attributes.
 // TODO Create unitary tests for this function.
 func (responseTyped *searchResponseTyped) TypeBody(response internal.JSONResponse) error {
-	searchResponse, ok := response.(*searchResponse)
+	searchResponse, ok := response.Content.(*searchResponse)
 	if !ok {
 		return fmt.Errorf("[stock.TypeBody] failed to cast response to searchResponse")
 	}
@@ -154,10 +154,10 @@ func buildSearchURL(query string, format flags.OutputFormat) (string, error) {
 	return url.String(), nil
 }
 
-// generateOutput generates the output in the desired format by either outputting the raw string of the body or by
+// generateSearchOutput generates the output in the desired format by either outputting the raw string of the body or by
 // parsing its JSON content then creating a proper table.
 // TODO Create unitary tests for this function.
-func generateOutput(body []byte, format flags.OutputFormat) (string, error) {
+func generateSearchOutput(body []byte, format flags.OutputFormat) (string, error) {
 	switch format {
 	case flags.OutputFormatHledger:
 		return "", errors.New("[internal.stock.Search] hledger output format not supported")
@@ -165,7 +165,9 @@ func generateOutput(body []byte, format flags.OutputFormat) (string, error) {
 		return string(body), nil
 	case flags.OutputFormatTable, flags.OutputFormatTableLong:
 		// Parse the JSON body.
-		var parsedBody searchResponse
+		parsedBody := internal.JSONResponse{
+			Content: &searchResponse{},
+		}
 		err := parsedBody.DecodeBody(body)
 		if err != nil {
 			return "", err
@@ -173,7 +175,7 @@ func generateOutput(body []byte, format flags.OutputFormat) (string, error) {
 
 		// Cast the attributes into proper types.
 		var typedBody searchResponseTyped
-		err = typedBody.TypeBody(&parsedBody)
+		err = typedBody.TypeBody(parsedBody)
 		if err != nil {
 			return "", err
 		}
@@ -223,5 +225,5 @@ func Search(query string, format flags.OutputFormat) (string, error) {
 		return "", err
 	}
 
-	return generateOutput(body, format)
+	return generateSearchOutput(body, format)
 }

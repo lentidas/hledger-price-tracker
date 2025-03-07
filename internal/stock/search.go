@@ -19,6 +19,7 @@
 package stock
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strconv"
@@ -32,14 +33,6 @@ import (
 )
 
 const apiFunctionSearch = "SYMBOL_SEARCH"
-
-type SearchResponse struct {
-	internal.JSONResponse
-}
-
-type SearchResponseTyped struct {
-	internal.JSONResponseTyped
-}
 
 type SearchResponseContent struct {
 	BestMatches []struct {
@@ -69,19 +62,15 @@ type SearchResponseTypedContent struct {
 	}
 }
 
+type SearchResponse struct {
+	Raw   SearchResponseContent
+	Typed SearchResponseTypedContent
+}
+
 // TypeBody casts the attributes of the response struct into another similar struct but with properly typed attributes.
 // TODO Create unitary tests for this function.
-func (responseTyped *SearchResponseTyped) TypeBody(response internal.JSONResponse) error {
-	searchResponse, ok := response.Content.(*SearchResponseContent)
-	if !ok {
-		return fmt.Errorf("[stock.TypeBody] failed to cast response to SearchResponseContent")
-	}
-	searchResponseTyped, ok := responseTyped.Content.(*SearchResponseTypedContent)
-	if !ok {
-		return fmt.Errorf("[stock.TypeBody] failed to cast response to SearchResponseTypedContent")
-	}
-
-	for _, result := range searchResponse.BestMatches {
+func (obj *SearchResponse) TypeBody() error {
+	for _, result := range obj.Raw.BestMatches {
 		score, err := strconv.ParseFloat(result.MatchScore, 32)
 		if err != nil {
 			return fmt.Errorf("[stock.TypeBody] failure to parse match score: %v", err)
@@ -106,7 +95,7 @@ func (responseTyped *SearchResponseTyped) TypeBody(response internal.JSONRespons
 			return fmt.Errorf("[stock.TypeBody] failure to parse market close time: %v", err)
 		}
 
-		searchResponseTyped.BestMatches = append(searchResponseTyped.BestMatches, struct {
+		obj.Typed.BestMatches = append(obj.Typed.BestMatches, struct {
 			Symbol      string
 			Name        string
 			Type        string
@@ -172,26 +161,17 @@ func generateSearchOutput(body []byte, format flags.OutputFormat) (string, error
 	case flags.OutputFormatJSON, flags.OutputFormatCSV:
 		return string(body), nil
 	case flags.OutputFormatTable, flags.OutputFormatTableLong:
-		// Parse the JSON body.
+		// Create a struct to parse the JSON body.
 		var parsedBody SearchResponse
-		parsedBody.Content = &SearchResponseContent{}
-		/*
-			// Same as:
-			parsedBody := SearchResponse{
-				JSONResponse: internal.JSONResponse{
-					Content: &SearchResponseContent{},
-				},
-			}
-		*/
-		err := parsedBody.DecodeBody(body)
+
+		// Parse the JSON body.
+		err := json.Unmarshal(body, &parsedBody.Raw)
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("[internal.stock.Search] failure to unmarshal JSON body: %v", err)
 		}
 
 		// Cast the attributes into proper types.
-		var typedBody SearchResponseTyped
-		typedBody.Content = &SearchResponseTypedContent{}
-		err = typedBody.TypeBody(parsedBody.JSONResponse)
+		err = parsedBody.TypeBody()
 		if err != nil {
 			return "", err
 		}
@@ -199,7 +179,7 @@ func generateSearchOutput(body []byte, format flags.OutputFormat) (string, error
 		t := table.NewWriter()
 		if format == flags.OutputFormatTableLong {
 			t.AppendHeader(table.Row{"#", "Symbol", "Name", "Type", "Region", "Market Open", "Market Close", "Timezone", "Currency", "Match Score"})
-			for i, result := range typedBody.Content.(*SearchResponseTypedContent).BestMatches {
+			for i, result := range parsedBody.Typed.BestMatches {
 				t.AppendRow([]interface{}{i + 1, result.Symbol, result.Name, result.Type, result.Region, result.MarketOpen.Format("15:04"), result.MarketClose.Format("15:04"), result.Timezone, result.Currency, fmt.Sprintf("%.2f%%", result.MatchScore*100)})
 			}
 			t.SetColumnConfigs([]table.ColumnConfig{
@@ -209,7 +189,7 @@ func generateSearchOutput(body []byte, format flags.OutputFormat) (string, error
 			})
 		} else {
 			t.AppendHeader(table.Row{"#", "Symbol", "Name", "Type", "Region", "Currency", "Match Score"})
-			for i, result := range typedBody.Content.(*SearchResponseTypedContent).BestMatches {
+			for i, result := range parsedBody.Typed.BestMatches {
 				t.AppendRow([]interface{}{i + 1, result.Symbol, result.Name, result.Type, result.Region, result.Currency, fmt.Sprintf("%.2f%%", result.MatchScore*100)})
 			}
 			t.SetColumnConfigs([]table.ColumnConfig{

@@ -83,7 +83,7 @@ func TestSearchURLBuilder(t *testing.T) {
 func TestSearchResponseTypeBody(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		var response SearchResponse
-		response.Content = &SearchResponseContent{
+		response.Raw = SearchResponseContent{
 			BestMatches: []struct {
 				Symbol      string `json:"1. symbol"`
 				Name        string `json:"2. name"`
@@ -109,18 +109,16 @@ func TestSearchResponseTypeBody(t *testing.T) {
 			},
 		}
 
-		var typedResponse SearchResponseTyped
-		typedResponse.Content = &SearchResponseTypedContent{}
-		err := typedResponse.TypeBody(response.JSONResponse)
+		err := response.TypeBody()
 		if err != nil {
 			t.Fatalf("expected nil, got %v", err)
 		}
 
-		if len(typedResponse.Content.(*SearchResponseTypedContent).BestMatches) != 1 {
-			t.Fatalf("expected 1 match, got %d", len(typedResponse.Content.(*SearchResponseTypedContent).BestMatches))
+		if len(response.Typed.BestMatches) != 1 {
+			t.Fatalf("expected 1 match, got %d", len(response.Typed.BestMatches))
 		}
 
-		match := typedResponse.Content.(*SearchResponseTypedContent).BestMatches[0]
+		match := response.Typed.BestMatches[0]
 		if match.Symbol != "AAPL" {
 			t.Errorf("expected AAPL, got %s", match.Symbol)
 		}
@@ -143,7 +141,7 @@ func TestSearchResponseTypeBody(t *testing.T) {
 
 	t.Run("invalid match score", func(t *testing.T) {
 		var response SearchResponse
-		response.Content = &SearchResponseContent{
+		response.Raw = SearchResponseContent{
 			BestMatches: []struct {
 				Symbol      string `json:"1. symbol"`
 				Name        string `json:"2. name"`
@@ -169,9 +167,7 @@ func TestSearchResponseTypeBody(t *testing.T) {
 			},
 		}
 
-		var typedResponse SearchResponseTyped
-		typedResponse.Content = &SearchResponseTypedContent{}
-		err := typedResponse.TypeBody(response.JSONResponse)
+		err := response.TypeBody()
 		if err == nil {
 			t.Fatal("expected error, got nil")
 		}
@@ -179,7 +175,7 @@ func TestSearchResponseTypeBody(t *testing.T) {
 
 	t.Run("invalid timezone", func(t *testing.T) {
 		var response SearchResponse
-		response.Content = &SearchResponseContent{
+		response.Raw = SearchResponseContent{
 			BestMatches: []struct {
 				Symbol      string `json:"1. symbol"`
 				Name        string `json:"2. name"`
@@ -205,9 +201,7 @@ func TestSearchResponseTypeBody(t *testing.T) {
 			},
 		}
 
-		var typedResponse SearchResponseTyped
-		typedResponse.Content = &SearchResponseTypedContent{}
-		err := typedResponse.TypeBody(response.JSONResponse)
+		err := response.TypeBody()
 		if err == nil {
 			t.Fatal("expected error, got nil")
 		}
@@ -215,7 +209,7 @@ func TestSearchResponseTypeBody(t *testing.T) {
 
 	t.Run("invalid market open time", func(t *testing.T) {
 		var response SearchResponse
-		response.Content = &SearchResponseContent{
+		response.Raw = SearchResponseContent{
 			BestMatches: []struct {
 				Symbol      string `json:"1. symbol"`
 				Name        string `json:"2. name"`
@@ -241,9 +235,7 @@ func TestSearchResponseTypeBody(t *testing.T) {
 			},
 		}
 
-		var typedResponse SearchResponseTyped
-		typedResponse.Content = &SearchResponseTypedContent{}
-		err := typedResponse.TypeBody(response.JSONResponse)
+		err := response.TypeBody()
 		if err == nil {
 			t.Fatal("expected error, got nil")
 		}
@@ -251,7 +243,7 @@ func TestSearchResponseTypeBody(t *testing.T) {
 
 	t.Run("invalid market close time", func(t *testing.T) {
 		var response SearchResponse
-		response.Content = &SearchResponseContent{
+		response.Raw = SearchResponseContent{
 			BestMatches: []struct {
 				Symbol      string `json:"1. symbol"`
 				Name        string `json:"2. name"`
@@ -277,21 +269,7 @@ func TestSearchResponseTypeBody(t *testing.T) {
 			},
 		}
 
-		var typedResponse SearchResponseTyped
-		typedResponse.Content = &SearchResponseTypedContent{}
-		err := typedResponse.TypeBody(response.JSONResponse)
-		if err == nil {
-			t.Fatal("expected error, got nil")
-		}
-	})
-
-	t.Run("invalid content type", func(t *testing.T) {
-		var response SearchResponse
-		response.Content = &struct{}{}
-
-		var typedResponse SearchResponseTyped
-		typedResponse.Content = &SearchResponseTypedContent{}
-		err := typedResponse.TypeBody(response.JSONResponse)
+		err := response.TypeBody()
 		if err == nil {
 			t.Fatal("expected error, got nil")
 		}

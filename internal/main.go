@@ -19,7 +19,6 @@
 package internal
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -29,36 +28,6 @@ const ApiBaseUrl string = "https://www.alphavantage.co/query?"
 
 var ApiKey string
 var DefaultCurrency string
-
-type JSONResponseInterface interface {
-	DecodeBody(body []byte) error
-}
-
-type JSONResponse struct {
-	Content any
-}
-
-func (response *JSONResponse) DecodeBody(body []byte) error {
-	err := json.Unmarshal(body, response.Content)
-	if err != nil {
-		return fmt.Errorf("[internal.DecodeBody] failure to unmarshal JSON body: %v", err)
-	} else {
-		return nil
-	}
-}
-
-type JSONResponseTypedInterface interface {
-	TypeBody(response JSONResponse) error
-}
-
-type JSONResponseTyped struct {
-	Content any
-}
-
-func (responseTyped *JSONResponseTyped) TypeBody(response JSONResponse) error {
-	// TODO
-	return nil
-}
 
 // HTTPRequest is a helper function to make HTTP requests and return the body as an array of bytes.
 func HTTPRequest(url string) ([]byte, error) {

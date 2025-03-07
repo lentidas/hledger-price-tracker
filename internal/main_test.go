@@ -31,14 +31,19 @@ func TestDecodeBody(t *testing.T) {
 
 	t.Run("success", func(t *testing.T) {
 		jsonData := []byte(`{"name":"test","value":123, "boolean":true}`)
-		var result TestStruct
+		obj := JSONResponse{
+			Content: &TestStruct{},
+		}
 
-		// Call function
-		err := DecodeBody(jsonData, &result)
+		err := obj.DecodeBody(jsonData)
 
-		// Check results
+		result, ok := obj.Content.(*TestStruct)
+		if !ok {
+			t.Fatal("expected ok, got not ok")
+		}
+
 		if err != nil {
-			t.Errorf("expected no error, got %v", err)
+			t.Fatalf("expected nil, got %v", err)
 		}
 		if result.Name != "test" {
 			t.Errorf("expected name 'test', got '%s'", result.Name)
@@ -52,22 +57,12 @@ func TestDecodeBody(t *testing.T) {
 	})
 
 	t.Run("invalid JSON", func(t *testing.T) {
-		// Create test data with invalid JSON.
 		invalidJSON := []byte(`{"name":"test", invalid json}`)
-		var result TestStruct
-
-		err := DecodeBody(invalidJSON, &result)
-
-		if err == nil {
-			t.Error("expected error, got nil")
+		result := JSONResponse{
+			Content: &TestStruct{},
 		}
-	})
 
-	t.Run("non-pointer receiver", func(t *testing.T) {
-		jsonData := []byte(`{"name":"test"}`)
-		var result TestStruct
-
-		err := DecodeBody(jsonData, result) // Passing value, not pointer.
+		err := result.DecodeBody(invalidJSON)
 
 		if err == nil {
 			t.Error("expected error, got nil")

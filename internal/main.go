@@ -30,6 +30,10 @@ const ApiBaseUrl string = "https://www.alphavantage.co/query?"
 var ApiKey string
 var DefaultCurrency string
 
+type JSONResponseInterface interface {
+	DecodeBody(body []byte) error
+}
+
 type JSONResponse struct {
 	Content any
 }
@@ -43,8 +47,17 @@ func (response *JSONResponse) DecodeBody(body []byte) error {
 	}
 }
 
-type JSONResponseTyped interface {
+type JSONResponseTypedInterface interface {
 	TypeBody(response JSONResponse) error
+}
+
+type JSONResponseTyped struct {
+	Content any
+}
+
+func (responseTyped *JSONResponseTyped) TypeBody(response JSONResponse) error {
+	// TODO
+	return nil
 }
 
 // HTTPRequest is a helper function to make HTTP requests and return the body as an array of bytes.

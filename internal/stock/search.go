@@ -33,7 +33,15 @@ import (
 
 const apiFunctionSearch = "SYMBOL_SEARCH"
 
-type searchResponse struct {
+type SearchResponse struct {
+	internal.JSONResponse
+}
+
+type SearchResponseTyped struct {
+	internal.JSONResponseTyped
+}
+
+type SearchResponseContent struct {
 	BestMatches []struct {
 		Symbol      string `json:"1. symbol"`
 		Name        string `json:"2. name"`
@@ -47,11 +55,7 @@ type searchResponse struct {
 	} `json:"bestMatches"`
 }
 
-// func (response *searchResponse) DecodeBody(body []byte) error {
-// 	return internal.DecodeBody(body, response)
-// }
-
-type searchResponseTyped struct {
+type SearchResponseTypedContent struct {
 	BestMatches []struct {
 		Symbol      string
 		Name        string
@@ -67,10 +71,14 @@ type searchResponseTyped struct {
 
 // TypeBody casts the attributes of the response struct into another similar struct but with properly typed attributes.
 // TODO Create unitary tests for this function.
-func (responseTyped *searchResponseTyped) TypeBody(response internal.JSONResponse) error {
-	searchResponse, ok := response.Content.(*searchResponse)
+func (responseTyped *SearchResponseTyped) TypeBody(response internal.JSONResponse) error {
+	searchResponse, ok := response.Content.(*SearchResponseContent)
 	if !ok {
-		return fmt.Errorf("[stock.TypeBody] failed to cast response to searchResponse")
+		return fmt.Errorf("[stock.TypeBody] failed to cast response to SearchResponseContent")
+	}
+	searchResponseTyped, ok := responseTyped.Content.(*SearchResponseTypedContent)
+	if !ok {
+		return fmt.Errorf("[stock.TypeBody] failed to cast response to SearchResponseTypedContent")
 	}
 
 	for _, result := range searchResponse.BestMatches {
@@ -79,13 +87,13 @@ func (responseTyped *searchResponseTyped) TypeBody(response internal.JSONRespons
 			return fmt.Errorf("[stock.TypeBody] failure to parse match score: %v", err)
 		}
 
-		// Parse the timezone offset
+		// Parse the timezone offset.
 		offset, err := strconv.Atoi(result.Timezone[3:])
 		if err != nil {
 			return fmt.Errorf("[stock.TypeBody] failure to parse timezone offset: %v", err)
 		}
 
-		// Create a fixed timezone
+		// Create a fixed timezone.
 		tz := time.FixedZone(result.Timezone, offset*3600)
 
 		openTime, err := time.ParseInLocation("15:04", result.MarketOpen, tz)
@@ -98,7 +106,7 @@ func (responseTyped *searchResponseTyped) TypeBody(response internal.JSONRespons
 			return fmt.Errorf("[stock.TypeBody] failure to parse market close time: %v", err)
 		}
 
-		responseTyped.BestMatches = append(responseTyped.BestMatches, struct {
+		searchResponseTyped.BestMatches = append(searchResponseTyped.BestMatches, struct {
 			Symbol      string
 			Name        string
 			Type        string
@@ -165,8 +173,10 @@ func generateSearchOutput(body []byte, format flags.OutputFormat) (string, error
 		return string(body), nil
 	case flags.OutputFormatTable, flags.OutputFormatTableLong:
 		// Parse the JSON body.
-		parsedBody := internal.JSONResponse{
-			Content: &searchResponse{},
+		parsedBody := SearchResponse{
+			JSONResponse: internal.JSONResponse{
+				Content: &SearchResponseContent{},
+			},
 		}
 		err := parsedBody.DecodeBody(body)
 		if err != nil {
@@ -174,8 +184,12 @@ func generateSearchOutput(body []byte, format flags.OutputFormat) (string, error
 		}
 
 		// Cast the attributes into proper types.
-		var typedBody searchResponseTyped
-		err = typedBody.TypeBody(parsedBody)
+		typedBody := SearchResponseTyped{
+			JSONResponseTyped: internal.JSONResponseTyped{
+				Content: &SearchResponseTypedContent{},
+			},
+		}
+		err = typedBody.TypeBody(parsedBody.JSONResponse)
 		if err != nil {
 			return "", err
 		}
@@ -183,7 +197,7 @@ func generateSearchOutput(body []byte, format flags.OutputFormat) (string, error
 		t := table.NewWriter()
 		if format == flags.OutputFormatTableLong {
 			t.AppendHeader(table.Row{"#", "Symbol", "Name", "Type", "Region", "Market Open", "Market Close", "Timezone", "Currency", "Match Score"})
-			for i, result := range typedBody.BestMatches {
+			for i, result := range typedBody.Content.(*SearchResponseTypedContent).BestMatches {
 				t.AppendRow([]interface{}{i + 1, result.Symbol, result.Name, result.Type, result.Region, result.MarketOpen.Format("15:04"), result.MarketClose.Format("15:04"), result.Timezone, result.Currency, fmt.Sprintf("%.2f%%", result.MatchScore*100)})
 			}
 			t.SetColumnConfigs([]table.ColumnConfig{
@@ -193,7 +207,7 @@ func generateSearchOutput(body []byte, format flags.OutputFormat) (string, error
 			})
 		} else {
 			t.AppendHeader(table.Row{"#", "Symbol", "Name", "Type", "Region", "Currency", "Match Score"})
-			for i, result := range typedBody.BestMatches {
+			for i, result := range typedBody.Content.(*SearchResponseTypedContent).BestMatches {
 				t.AppendRow([]interface{}{i + 1, result.Symbol, result.Name, result.Type, result.Region, result.Currency, fmt.Sprintf("%.2f%%", result.MatchScore*100)})
 			}
 			t.SetColumnConfigs([]table.ColumnConfig{

@@ -60,7 +60,7 @@ func TestSearchURLBuilder(t *testing.T) {
 		expected := "https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=tesco&apikey=demo"
 		url, err := buildSearchURL("tesco", flags.OutputFormatJSON)
 		if err != nil {
-			t.Errorf("expected nil, got %v", err)
+			t.Fatalf("expected nil, got %v", err)
 		}
 
 		if url != expected {
@@ -72,10 +72,264 @@ func TestSearchURLBuilder(t *testing.T) {
 		expected := "https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=tesco&apikey=demo&datatype=csv"
 		url, err := buildSearchURL("tesco", flags.OutputFormatCSV)
 		if err != nil {
-			t.Errorf("expected nil, got %v", err)
+			t.Fatalf("expected nil, got %v", err)
 		}
 		if url != expected {
 			t.Errorf("expected %s, got %s", expected, url)
+		}
+	})
+}
+
+func TestSearchResponseTypeBody(t *testing.T) {
+	t.Run("success", func(t *testing.T) {
+		response := SearchResponse{
+			internal.JSONResponse{
+				Content: &SearchResponseContent{
+					BestMatches: []struct {
+						Symbol      string `json:"1. symbol"`
+						Name        string `json:"2. name"`
+						Type        string `json:"3. type"`
+						Region      string `json:"4. region"`
+						MarketOpen  string `json:"5. marketOpen"`
+						MarketClose string `json:"6. marketClose"`
+						Timezone    string `json:"7. timezone"`
+						Currency    string `json:"8. currency"`
+						MatchScore  string `json:"9. matchScore"`
+					}{
+						{
+							Symbol:      "AAPL",
+							Name:        "Apple Inc.",
+							Type:        "Equity",
+							Region:      "United States",
+							MarketOpen:  "09:30",
+							MarketClose: "16:00",
+							Timezone:    "UTC-05",
+							Currency:    "USD",
+							MatchScore:  "0.95",
+						},
+					},
+				},
+			},
+		}
+
+		typedResponse := SearchResponseTyped{
+			JSONResponseTyped: internal.JSONResponseTyped{
+				Content: &SearchResponseTypedContent{},
+			},
+		}
+		err := typedResponse.TypeBody(response.JSONResponse)
+		if err != nil {
+			t.Fatalf("expected nil, got %v", err)
+		}
+
+		if len(typedResponse.Content.(*SearchResponseTypedContent).BestMatches) != 1 {
+			t.Fatalf("expected 1 match, got %d", len(typedResponse.Content.(*SearchResponseTypedContent).BestMatches))
+		}
+
+		match := typedResponse.Content.(*SearchResponseTypedContent).BestMatches[0]
+		if match.Symbol != "AAPL" {
+			t.Errorf("expected AAPL, got %s", match.Symbol)
+		}
+		if match.Name != "Apple Inc." {
+			t.Errorf("expected Apple Inc., got %s", match.Name)
+		}
+		if match.Type != "Equity" {
+			t.Errorf("expected Equity, got %s", match.Type)
+		}
+		if match.Region != "United States" {
+			t.Errorf("expected United States, got %s", match.Region)
+		}
+		if match.Currency != "USD" {
+			t.Errorf("expected USD, got %s", match.Currency)
+		}
+		if match.MatchScore != 0.95 {
+			t.Errorf("expected 0.95, got %f", match.MatchScore)
+		}
+	})
+
+	t.Run("invalid match score", func(t *testing.T) {
+		response := SearchResponse{
+			JSONResponse: internal.JSONResponse{
+				Content: &SearchResponseContent{
+					BestMatches: []struct {
+						Symbol      string `json:"1. symbol"`
+						Name        string `json:"2. name"`
+						Type        string `json:"3. type"`
+						Region      string `json:"4. region"`
+						MarketOpen  string `json:"5. marketOpen"`
+						MarketClose string `json:"6. marketClose"`
+						Timezone    string `json:"7. timezone"`
+						Currency    string `json:"8. currency"`
+						MatchScore  string `json:"9. matchScore"`
+					}{
+						{
+							Symbol:      "AAPL",
+							Name:        "Apple Inc.",
+							Type:        "Equity",
+							Region:      "United States",
+							MarketOpen:  "09:30",
+							MarketClose: "16:00",
+							Timezone:    "UTC-05",
+							Currency:    "USD",
+							MatchScore:  "invalid",
+						},
+					},
+				},
+			},
+		}
+
+		typedResponse := SearchResponseTyped{
+			JSONResponseTyped: internal.JSONResponseTyped{
+				Content: &SearchResponseTypedContent{},
+			},
+		}
+		err := typedResponse.TypeBody(response.JSONResponse)
+		if err == nil {
+			t.Fatal("expected error, got nil")
+		}
+	})
+
+	t.Run("invalid timezone", func(t *testing.T) {
+		response := SearchResponse{
+			JSONResponse: internal.JSONResponse{
+				Content: &SearchResponseContent{
+					BestMatches: []struct {
+						Symbol      string `json:"1. symbol"`
+						Name        string `json:"2. name"`
+						Type        string `json:"3. type"`
+						Region      string `json:"4. region"`
+						MarketOpen  string `json:"5. marketOpen"`
+						MarketClose string `json:"6. marketClose"`
+						Timezone    string `json:"7. timezone"`
+						Currency    string `json:"8. currency"`
+						MatchScore  string `json:"9. matchScore"`
+					}{
+						{
+							Symbol:      "AAPL",
+							Name:        "Apple Inc.",
+							Type:        "Equity",
+							Region:      "United States",
+							MarketOpen:  "09:30",
+							MarketClose: "16:00",
+							Timezone:    "invalid",
+							Currency:    "USD",
+							MatchScore:  "0.95",
+						},
+					},
+				},
+			},
+		}
+
+		typedResponse := SearchResponseTyped{
+			JSONResponseTyped: internal.JSONResponseTyped{
+				Content: &SearchResponseTypedContent{},
+			},
+		}
+		err := typedResponse.TypeBody(response.JSONResponse)
+		if err == nil {
+			t.Fatal("expected error, got nil")
+		}
+	})
+
+	t.Run("invalid market open time", func(t *testing.T) {
+		response := SearchResponse{
+			JSONResponse: internal.JSONResponse{
+				Content: &SearchResponseContent{
+					BestMatches: []struct {
+						Symbol      string `json:"1. symbol"`
+						Name        string `json:"2. name"`
+						Type        string `json:"3. type"`
+						Region      string `json:"4. region"`
+						MarketOpen  string `json:"5. marketOpen"`
+						MarketClose string `json:"6. marketClose"`
+						Timezone    string `json:"7. timezone"`
+						Currency    string `json:"8. currency"`
+						MatchScore  string `json:"9. matchScore"`
+					}{
+						{
+							Symbol:      "AAPL",
+							Name:        "Apple Inc.",
+							Type:        "Equity",
+							Region:      "United States",
+							MarketOpen:  "invalid",
+							MarketClose: "16:00",
+							Timezone:    "UTC-05",
+							Currency:    "USD",
+							MatchScore:  "0.95",
+						},
+					},
+				},
+			},
+		}
+
+		typedResponse := SearchResponseTyped{
+			JSONResponseTyped: internal.JSONResponseTyped{
+				Content: &SearchResponseTypedContent{},
+			},
+		}
+		err := typedResponse.TypeBody(response.JSONResponse)
+		if err == nil {
+			t.Fatal("expected error, got nil")
+		}
+	})
+
+	t.Run("invalid market close time", func(t *testing.T) {
+		response := SearchResponse{
+			JSONResponse: internal.JSONResponse{
+				Content: &SearchResponseContent{
+					BestMatches: []struct {
+						Symbol      string `json:"1. symbol"`
+						Name        string `json:"2. name"`
+						Type        string `json:"3. type"`
+						Region      string `json:"4. region"`
+						MarketOpen  string `json:"5. marketOpen"`
+						MarketClose string `json:"6. marketClose"`
+						Timezone    string `json:"7. timezone"`
+						Currency    string `json:"8. currency"`
+						MatchScore  string `json:"9. matchScore"`
+					}{
+						{
+							Symbol:      "AAPL",
+							Name:        "Apple Inc.",
+							Type:        "Equity",
+							Region:      "United States",
+							MarketOpen:  "09:30",
+							MarketClose: "invalid",
+							Timezone:    "UTC-05",
+							Currency:    "USD",
+							MatchScore:  "0.95",
+						},
+					},
+				},
+			},
+		}
+
+		typedResponse := SearchResponseTyped{
+			JSONResponseTyped: internal.JSONResponseTyped{
+				Content: &SearchResponseTypedContent{},
+			},
+		}
+		err := typedResponse.TypeBody(response.JSONResponse)
+		if err == nil {
+			t.Fatal("expected error, got nil")
+		}
+	})
+
+	t.Run("invalid content type", func(t *testing.T) {
+		response := SearchResponse{
+			JSONResponse: internal.JSONResponse{
+				Content: &struct{}{},
+			},
+		}
+
+		typedResponse := SearchResponseTyped{
+			JSONResponseTyped: internal.JSONResponseTyped{
+				Content: &SearchResponseTypedContent{},
+			},
+		}
+		err := typedResponse.TypeBody(response.JSONResponse)
+		if err == nil {
+			t.Fatal("expected error, got nil")
 		}
 	})
 }

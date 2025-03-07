@@ -173,22 +173,24 @@ func generateSearchOutput(body []byte, format flags.OutputFormat) (string, error
 		return string(body), nil
 	case flags.OutputFormatTable, flags.OutputFormatTableLong:
 		// Parse the JSON body.
-		parsedBody := SearchResponse{
-			JSONResponse: internal.JSONResponse{
-				Content: &SearchResponseContent{},
-			},
-		}
+		var parsedBody SearchResponse
+		parsedBody.Content = &SearchResponseContent{}
+		/*
+			// Same as:
+			parsedBody := SearchResponse{
+				JSONResponse: internal.JSONResponse{
+					Content: &SearchResponseContent{},
+				},
+			}
+		*/
 		err := parsedBody.DecodeBody(body)
 		if err != nil {
 			return "", err
 		}
 
 		// Cast the attributes into proper types.
-		typedBody := SearchResponseTyped{
-			JSONResponseTyped: internal.JSONResponseTyped{
-				Content: &SearchResponseTypedContent{},
-			},
-		}
+		var typedBody SearchResponseTyped
+		typedBody.Content = &SearchResponseTypedContent{}
 		err = typedBody.TypeBody(parsedBody.JSONResponse)
 		if err != nil {
 			return "", err

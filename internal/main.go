@@ -29,6 +29,11 @@ const ApiBaseUrl string = "https://www.alphavantage.co/query?"
 var ApiKey string
 var DefaultCurrency string
 
+type JSONResponse interface {
+	UnmarshalJSON([]byte) error
+	TypeBody() error
+}
+
 // HTTPRequest is a helper function to make HTTP requests and return the body as an array of bytes.
 func HTTPRequest(url string) ([]byte, error) {
 	resp, err := http.Get(url)

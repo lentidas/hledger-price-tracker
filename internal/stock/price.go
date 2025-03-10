@@ -19,8 +19,10 @@
 package stock
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -35,14 +37,35 @@ const apiFunctionTimeSeriesWeeklyAdjusted = "TIME_SERIES_WEEKLY_ADJUSTED"
 const apiFunctionTimeSeriesMonthly = "TIME_SERIES_MONTHLY"
 const apiFunctionTimeSeriesMonthlyAdjusted = "TIME_SERIES_MONTHLY_ADJUSTED"
 
-type priceResponseMetadata struct {
+type PriceResponseMetadataRaw struct {
 	Information string `json:"1. Information"`
 	Symbol      string `json:"2. Symbol"`
 	LastRefresh string `json:"3. Last Refreshed"`
 	TimeZone    string `json:"4. Time Zone"`
 }
 
-type priceResponseMetadataDaily struct {
+type PriceResponseMetadataTyped struct {
+	Information string
+	Symbol      string
+	LastRefresh time.Time
+	TimeZone    string
+}
+
+func (typed *PriceResponseMetadataTyped) TypeBody(raw PriceResponseMetadataRaw) error {
+	lastRefresh, err := time.Parse("2006-01-02", raw.LastRefresh)
+	if err != nil {
+		return err
+	}
+
+	typed.Information = raw.Information
+	typed.Symbol = raw.Symbol
+	typed.LastRefresh = lastRefresh
+	typed.TimeZone = raw.TimeZone
+
+	return nil
+}
+
+type PriceResponseMetadataDailyRaw struct {
 	Information string `json:"1. Information"`
 	Symbol      string `json:"2. Symbol"`
 	LastRefresh string `json:"3. Last Refreshed"`
@@ -50,7 +73,29 @@ type priceResponseMetadataDaily struct {
 	TimeZone    string `json:"5. Time Zone"`
 }
 
-type priceResponsePrices struct {
+type PriceResponseMetadataDailyTyped struct {
+	Information string
+	Symbol      string
+	LastRefresh time.Time
+	OutputSize  string
+	TimeZone    string
+}
+
+func (typed *PriceResponseMetadataDailyTyped) TypeBody(raw PriceResponseMetadataDailyRaw) error {
+	lastRefresh, err := time.Parse("2006-01-02", raw.LastRefresh)
+	if err != nil {
+		return err
+	}
+
+	typed.Information = raw.Information
+	typed.Symbol = raw.Symbol
+	typed.LastRefresh = lastRefresh
+	typed.TimeZone = raw.TimeZone
+
+	return nil
+}
+
+type PriceResponsePricesRaw struct {
 	Open   string `json:"1. open"`
 	High   string `json:"2. high"`
 	Low    string `json:"3. low"`
@@ -58,7 +103,46 @@ type priceResponsePrices struct {
 	Volume string `json:"5. volume"`
 }
 
-type priceResponsePricesAdjusted struct {
+type PriceResponsePricesTyped struct {
+	Open   float64
+	High   float64
+	Low    float64
+	Close  float64
+	Volume uint32
+}
+
+func (typed *PriceResponsePricesTyped) TypeBody(raw PriceResponsePricesRaw) error {
+	openPrice, err := strconv.ParseFloat(raw.Open, 64)
+	if err != nil {
+		return err
+	}
+	highPrice, err := strconv.ParseFloat(raw.High, 64)
+	if err != nil {
+		return err
+	}
+	lowPrice, err := strconv.ParseFloat(raw.Low, 64)
+	if err != nil {
+		return err
+	}
+	closePrice, err := strconv.ParseFloat(raw.Close, 64)
+	if err != nil {
+		return err
+	}
+	volume, err := strconv.ParseUint(raw.Volume, 10, 32)
+	if err != nil {
+		return err
+	}
+
+	typed.Open = openPrice
+	typed.High = highPrice
+	typed.Low = lowPrice
+	typed.Close = closePrice
+	typed.Volume = uint32(volume)
+
+	return nil
+}
+
+type PriceResponsePricesAdjustedRaw struct {
 	Open             string `json:"1. open"`
 	High             string `json:"2. high"`
 	Low              string `json:"3. low"`
@@ -69,66 +153,360 @@ type priceResponsePricesAdjusted struct {
 	SplitCoefficient string `json:"8. split coefficient,omitempty"`
 }
 
-type priceResponseDaily struct {
-	MetaData   priceResponseMetadataDaily     `json:"Meta Data"`
-	TimeSeries map[string]priceResponsePrices `json:"Time Series (Daily)"` // TODO Probably this attribute should have a more generic name like `TimeSeries`.
+type PriceResponsePricesAdjustedTyped struct {
+	Open             float64
+	High             float64
+	Low              float64
+	Close            float64
+	AdjustedClose    float64
+	Volume           uint32
+	DividendAmount   float64
+	SplitCoefficient float64
 }
 
-type priceResponseDailyAdjusted struct {
-	MetaData   priceResponseMetadataDaily             `json:"Meta Data"`
-	TimeSeries map[string]priceResponsePricesAdjusted `json:"Time Series (Daily)"`
+func (typed *PriceResponsePricesAdjustedTyped) TypeBody(raw PriceResponsePricesAdjustedRaw) error {
+	openPrice, err := strconv.ParseFloat(raw.Open, 64)
+	if err != nil {
+		return err
+	}
+	highPrice, err := strconv.ParseFloat(raw.High, 64)
+	if err != nil {
+		return err
+	}
+	lowPrice, err := strconv.ParseFloat(raw.Low, 64)
+	if err != nil {
+		return err
+	}
+	closePrice, err := strconv.ParseFloat(raw.Close, 64)
+	if err != nil {
+		return err
+	}
+	adjustedClose, err := strconv.ParseFloat(raw.AdjustedClose, 64)
+	if err != nil {
+		return err
+	}
+	volume, err := strconv.ParseUint(raw.Volume, 10, 32)
+	if err != nil {
+		return err
+	}
+	dividendAmount, err := strconv.ParseFloat(raw.DividendAmount, 64)
+	if err != nil {
+		return err
+	}
+	splitCoefficient, err := strconv.ParseFloat(raw.SplitCoefficient, 64)
+	if err != nil {
+		return err
+	}
+
+	typed.Open = openPrice
+	typed.High = highPrice
+	typed.Low = lowPrice
+	typed.Close = closePrice
+	typed.AdjustedClose = adjustedClose
+	typed.Volume = uint32(volume)
+	typed.DividendAmount = dividendAmount
+	typed.SplitCoefficient = splitCoefficient
+
+	return nil
 }
 
-type priceResponseWeekly struct {
-	MetaData   priceResponseMetadata          `json:"Meta Data"`
-	TimeSeries map[string]priceResponsePrices `json:"Weekly Time Series"`
+type PriceResponseDailyRaw struct {
+	MetaData   PriceResponseMetadataDailyRaw     `json:"Meta Data"`
+	TimeSeries map[string]PriceResponsePricesRaw `json:"Time Series (Daily)"`
 }
 
-type priceResponseWeeklyAdjusted struct {
-	MetaData   priceResponseMetadata                  `json:"Meta Data"`
-	TimeSeries map[string]priceResponsePricesAdjusted `json:"Weekly Adjusted Time Series"`
+type PriceResponseDailyTyped struct {
+	MetaData   PriceResponseMetadataDailyTyped
+	TimeSeries map[time.Time]PriceResponsePricesTyped
 }
 
-type priceResponseMonthly struct {
-	MetaData   priceResponseMetadata          `json:"Meta Data"`
-	TimeSeries map[string]priceResponsePrices `json:"Monthly Time Series"`
+type PriceResponseDaily struct {
+	Raw   PriceResponseDailyRaw
+	Typed PriceResponseDailyTyped
 }
 
-type priceResponseMonthlyAdjusted struct {
-	MetaData   priceResponseMetadata                  `json:"Meta Data"`
-	TimeSeries map[string]priceResponsePricesAdjusted `json:"Monthly Adjusted Time Series"`
-}
-
-type priceResponseTyped struct {
-	MetaData struct {
-		Information string
-		Symbol      string
-		LastRefresh time.Time
-		TimeZone    string
+func (obj *PriceResponseDaily) UnmarshalJSON(body []byte) error {
+	err := json.Unmarshal(body, &obj.Raw)
+	if err != nil {
+		return fmt.Errorf("[internal.stock.UnmarshalJSON] error unmarshalling JSON: %v", err)
+	} else {
+		return nil
 	}
 }
 
-// TypeBody casts the attributes of the response struct into another similar struct but with properly typed attributes.
-// TODO Create unitary tests for this function.
-// func (responseTyped *priceResponseTyped) TypeBody(response internal.JSONResponse) error {
-// 	priceResponse, ok := response.(*priceResponseBase)
-// 	if !ok {
-// 		return errors.New("[stock.TypeBody] failed to cast response to priceResponseBase")
-// 	}
-//
-// 	// Parse the last refresh time
-// 	lastRefresh, err := time.Parse("2006-01-02", priceResponse.MetaData.LastRefresh)
-// 	if err != nil {
-// 		return err
-// 	}
-//
-// 	responseTyped.MetaData.Information = priceResponse.MetaData.Information
-// 	responseTyped.MetaData.Symbol = priceResponse.MetaData.Symbol
-// 	responseTyped.MetaData.LastRefresh = lastRefresh
-// 	responseTyped.MetaData.TimeZone = priceResponse.MetaData.TimeZone
-//
-// 	return nil
-// }
+func (obj *PriceResponseDaily) TypeBody() error {
+	err := obj.Typed.MetaData.TypeBody(obj.Raw.MetaData)
+	if err != nil {
+		return fmt.Errorf("[internal.stock.TypeBody] failure to cast metadata body: %v", err)
+	}
+
+	for date, prices := range obj.Raw.TimeSeries {
+		var typedPrices PriceResponsePricesTyped
+		err = typedPrices.TypeBody(prices)
+		if err != nil {
+			return fmt.Errorf("[internal.stock.TypeBody]: failure to cast price body: %v", err)
+		}
+
+		date, err := time.Parse("2006-01-02", date)
+		if err != nil {
+			return fmt.Errorf("[internal.stock.TypeBody]: failure to cast price date: %v", err)
+		}
+
+		obj.Typed.TimeSeries[date] = typedPrices
+	}
+
+	return nil
+}
+
+type PriceResponseDailyAdjustedRaw struct {
+	MetaData   PriceResponseMetadataDailyRaw             `json:"Meta Data"`
+	TimeSeries map[string]PriceResponsePricesAdjustedRaw `json:"Time Series (Daily)"`
+}
+
+type PriceResponseDailyAdjustedTyped struct {
+	MetaData   PriceResponseMetadataDailyTyped
+	TimeSeries map[time.Time]PriceResponsePricesAdjustedTyped
+}
+
+type PriceResponseDailyAdjusted struct {
+	Raw   PriceResponseDailyAdjustedRaw
+	Typed PriceResponseDailyAdjustedTyped
+}
+
+func (obj *PriceResponseDailyAdjusted) UnmarshalJSON(body []byte) error {
+	err := json.Unmarshal(body, &obj.Raw)
+	if err != nil {
+		return fmt.Errorf("[internal.stock.UnmarshalJSON] error unmarshalling JSON: %v", err)
+	} else {
+		return nil
+	}
+}
+
+func (obj *PriceResponseDailyAdjusted) TypeBody() error {
+	err := obj.Typed.MetaData.TypeBody(obj.Raw.MetaData)
+	if err != nil {
+		return fmt.Errorf("[internal.stock.TypeBody] failure to cast metadata body: %v", err)
+	}
+
+	obj.Typed.TimeSeries = make(map[time.Time]PriceResponsePricesAdjustedTyped)
+
+	for date, prices := range obj.Raw.TimeSeries {
+		var typedPrices PriceResponsePricesAdjustedTyped
+		err = typedPrices.TypeBody(prices)
+		if err != nil {
+			return fmt.Errorf("[internal.stock.TypeBody]: failure to cast price body: %v", err)
+		}
+
+		date, err := time.Parse("2006-01-02", date)
+		if err != nil {
+			return fmt.Errorf("[internal.stock.TypeBody]: failure to cast price date: %v", err)
+		}
+
+		obj.Typed.TimeSeries[date] = typedPrices
+	}
+
+	return nil
+}
+
+type PriceResponseWeeklyRaw struct {
+	MetaData   PriceResponseMetadataRaw          `json:"Meta Data"`
+	TimeSeries map[string]PriceResponsePricesRaw `json:"Weekly Time Series"`
+}
+
+type PriceResponseWeeklyTyped struct {
+	MetaData   PriceResponseMetadataTyped
+	TimeSeries map[time.Time]PriceResponsePricesTyped
+}
+
+type PriceResponseWeekly struct {
+	Raw   PriceResponseWeeklyRaw
+	Typed PriceResponseWeeklyTyped
+}
+
+func (obj *PriceResponseWeekly) UnmarshalJSON(body []byte) error {
+	err := json.Unmarshal(body, &obj.Raw)
+	if err != nil {
+		return fmt.Errorf("[internal.stock.UnmarshalJSON] error unmarshalling JSON: %v", err)
+	} else {
+		return nil
+	}
+}
+
+func (obj *PriceResponseWeekly) TypeBody() error {
+	err := obj.Typed.MetaData.TypeBody(obj.Raw.MetaData)
+	if err != nil {
+		return fmt.Errorf("[internal.stock.TypeBody] failure to cast metadata body: %v", err)
+	}
+
+	obj.Typed.TimeSeries = make(map[time.Time]PriceResponsePricesTyped)
+
+	for date, prices := range obj.Raw.TimeSeries {
+		var typedPrices PriceResponsePricesTyped
+		err = typedPrices.TypeBody(prices)
+		if err != nil {
+			return fmt.Errorf("[internal.stock.TypeBody]: failure to cast price body: %v", err)
+		}
+
+		date, err := time.Parse("2006-01-02", date)
+		if err != nil {
+			return fmt.Errorf("[internal.stock.TypeBody]: failure to cast price date: %v", err)
+		}
+
+		obj.Typed.TimeSeries[date] = typedPrices
+	}
+
+	return nil
+}
+
+type PriceResponseWeeklyAdjustedRaw struct {
+	MetaData   PriceResponseMetadataRaw                  `json:"Meta Data"`
+	TimeSeries map[string]PriceResponsePricesAdjustedRaw `json:"Weekly Adjusted Time Series"`
+}
+
+type PriceResponseWeeklyAdjustedTyped struct {
+	MetaData   PriceResponseMetadataTyped
+	TimeSeries map[time.Time]PriceResponsePricesAdjustedTyped
+}
+
+type PriceResponseWeeklyAdjusted struct {
+	Raw   PriceResponseWeeklyAdjustedRaw
+	Typed PriceResponseWeeklyAdjustedTyped
+}
+
+func (obj *PriceResponseWeeklyAdjusted) UnmarshalJSON(body []byte) error {
+	err := json.Unmarshal(body, &obj.Raw)
+	if err != nil {
+		return fmt.Errorf("[internal.stock.UnmarshalJSON] error unmarshalling JSON: %v", err)
+	} else {
+		return nil
+	}
+}
+
+func (obj *PriceResponseWeeklyAdjusted) TypeBody() error {
+	err := obj.Typed.MetaData.TypeBody(obj.Raw.MetaData)
+	if err != nil {
+		return fmt.Errorf("[internal.stock.TypeBody] failure to cast metadata body: %v", err)
+	}
+
+	obj.Typed.TimeSeries = make(map[time.Time]PriceResponsePricesAdjustedTyped)
+
+	for date, prices := range obj.Raw.TimeSeries {
+		var typedPrices PriceResponsePricesAdjustedTyped
+		err = typedPrices.TypeBody(prices)
+		if err != nil {
+			return fmt.Errorf("[internal.stock.TypeBody]: failure to cast price body: %v", err)
+		}
+
+		date, err := time.Parse("2006-01-02", date)
+		if err != nil {
+			return fmt.Errorf("[internal.stock.TypeBody]: failure to cast price date: %v", err)
+		}
+
+		obj.Typed.TimeSeries[date] = typedPrices
+	}
+
+	return nil
+}
+
+type PriceResponseMonthlyRaw struct {
+	MetaData   PriceResponseMetadataRaw          `json:"Meta Data"`
+	TimeSeries map[string]PriceResponsePricesRaw `json:"Monthly Time Series"`
+}
+
+type PriceResponseMonthlyTyped struct {
+	MetaData   PriceResponseMetadataTyped
+	TimeSeries map[time.Time]PriceResponsePricesTyped
+}
+
+type PriceResponseMonthly struct {
+	Raw   PriceResponseMonthlyRaw
+	Typed PriceResponseMonthlyTyped
+}
+
+func (obj *PriceResponseMonthly) UnmarshalJSON(body []byte) error {
+	err := json.Unmarshal(body, &obj.Raw)
+	if err != nil {
+		return fmt.Errorf("[internal.stock.UnmarshalJSON] error unmarshalling JSON: %v", err)
+	} else {
+		return nil
+	}
+}
+
+func (obj *PriceResponseMonthly) TypeBody() error {
+	err := obj.Typed.MetaData.TypeBody(obj.Raw.MetaData)
+	if err != nil {
+		return fmt.Errorf("[internal.stock.TypeBody] failure to cast metadata body: %v", err)
+	}
+
+	obj.Typed.TimeSeries = make(map[time.Time]PriceResponsePricesTyped)
+
+	for date, prices := range obj.Raw.TimeSeries {
+		var typedPrices PriceResponsePricesTyped
+		err = typedPrices.TypeBody(prices)
+		if err != nil {
+			return fmt.Errorf("[internal.stock.TypeBody]: failure to cast price body: %v", err)
+		}
+
+		date, err := time.Parse("2006-01-02", date)
+		if err != nil {
+			return fmt.Errorf("[internal.stock.TypeBody]: failure to cast price date: %v", err)
+		}
+
+		obj.Typed.TimeSeries[date] = typedPrices
+	}
+
+	return nil
+}
+
+type PriceResponseMonthlyAdjustedRaw struct {
+	MetaData   PriceResponseMetadataRaw                  `json:"Meta Data"`
+	TimeSeries map[string]PriceResponsePricesAdjustedRaw `json:"Monthly Adjusted Time Series"`
+}
+
+type PriceResponseMonthlyAdjustedTyped struct {
+	MetaData   PriceResponseMetadataTyped
+	TimeSeries map[time.Time]PriceResponsePricesAdjustedTyped
+}
+
+type PriceResponseMonthlyAdjusted struct {
+	Raw   PriceResponseMonthlyAdjustedRaw
+	Typed PriceResponseMonthlyAdjustedTyped
+}
+
+func (obj *PriceResponseMonthlyAdjusted) UnmarshalJSON(body []byte) error {
+	err := json.Unmarshal(body, &obj.Raw)
+	if err != nil {
+		return fmt.Errorf("[internal.stock.UnmarshalJSON] error unmarshalling JSON: %v", err)
+	} else {
+		return nil
+	}
+}
+
+func (obj *PriceResponseMonthlyAdjusted) TypeBody() error {
+	err := obj.Typed.MetaData.TypeBody(obj.Raw.MetaData)
+	if err != nil {
+		return fmt.Errorf("[internal.stock.TypeBody] failure to cast metadata body: %v", err)
+	}
+
+	obj.Typed.TimeSeries = make(map[time.Time]PriceResponsePricesAdjustedTyped)
+
+	for date, prices := range obj.Raw.TimeSeries {
+		var typedPrices PriceResponsePricesAdjustedTyped
+		err = typedPrices.TypeBody(prices)
+		if err != nil {
+			return fmt.Errorf("[internal.stock.TypeBody]: failure to cast price body: %v", err)
+		}
+
+		date, err := time.Parse("2006-01-02", date)
+		if err != nil {
+			return fmt.Errorf("[internal.stock.TypeBody]: failure to cast price date: %v", err)
+		}
+
+		obj.Typed.TimeSeries[date] = typedPrices
+	}
+
+	return nil
+}
 
 // buildPriceURL creates the URL to make the HTTP request to the Alpha Vantage API.
 func buildPriceURL(symbol string, format flags.OutputFormat, interval flags.Interval, adjusted bool) (string, error) {
@@ -190,34 +568,36 @@ func buildPriceURL(symbol string, format flags.OutputFormat, interval flags.Inte
 	return url.String(), nil
 }
 
-func createParsedBodyObject(interval flags.Interval, adjusted bool) (internal.JSONResponse, error) {
-	var parsedBody internal.JSONResponse
+// createResponseObject creates a internal.JSONResponse object with the proper struct that will be used to parse
+// the JSON body, depending on the interval and whether the prices are adjusted or not.
+func createResponseObject(interval flags.Interval, adjusted bool) (internal.JSONResponse, error) {
+	var obj internal.JSONResponse
 
 	if adjusted {
 		switch interval {
 		case flags.IntervalDaily:
-			parsedBody.Content = &priceResponseDailyAdjusted{}
+			obj = &PriceResponseDailyAdjusted{}
 		case flags.IntervalWeekly:
-			parsedBody.Content = &priceResponseWeeklyAdjusted{}
+			obj = &PriceResponseWeeklyAdjusted{}
 		case flags.IntervalMonthly:
-			parsedBody.Content = &priceResponseMonthlyAdjusted{}
+			obj = &PriceResponseMonthlyAdjusted{}
 		default:
-			return parsedBody, errors.New("[internal.stock.createParsedBodyObject] invalid interval for adjusted prices")
+			return obj, errors.New("[internal.stock.createResponseObject] invalid interval for adjusted prices")
 		}
 	} else {
 		switch interval {
 		case flags.IntervalDaily:
-			parsedBody.Content = &priceResponseDaily{}
+			obj = &PriceResponseDaily{}
 		case flags.IntervalWeekly:
-			parsedBody.Content = &priceResponseWeekly{}
+			obj = &PriceResponseWeekly{}
 		case flags.IntervalMonthly:
-			parsedBody.Content = &priceResponseMonthly{}
+			obj = &PriceResponseMonthly{}
 		default:
-			return parsedBody, errors.New("[internal.stock.createParsedBodyObject] invalid interval")
+			return obj, errors.New("[internal.stock.createResponseObject] invalid interval")
 		}
 	}
 
-	return parsedBody, nil
+	return obj, nil
 }
 
 // generatePriceOutput generates the output in the desired format by either outputting the raw string of the body or by
@@ -252,27 +632,25 @@ func generatePriceOutput(body []byte, format flags.OutputFormat, interval flags.
 	case flags.OutputFormatJSON, flags.OutputFormatCSV:
 		return string(body), nil
 	case flags.OutputFormatTable, flags.OutputFormatTableLong:
-		// TODO
+		// Create the object that will contain the JSON response.
+		obj, err := createResponseObject(interval, adjusted)
+		if err != nil {
+			return "", fmt.Errorf("[internal.stock.createResponseObject] failed to create response object: %v", err)
+		}
 
 		// Parse the JSON body.
-		parsedBody, err := createParsedBodyObject(interval, adjusted)
+		err = obj.UnmarshalJSON(body)
 		if err != nil {
-			return "", fmt.Errorf("[internal.stock.generatePriceOutput] error creating parsedBody object: %w", err)
+			return "", fmt.Errorf("[internal.stock.generatePriceOutput] failed to unmarshal JSON body: %v", err)
 		}
-		err = parsedBody.DecodeBody(body)
-		if err != nil {
-			return "", err
-		}
-
-		// TODO Remove these debug lines
-		fmt.Println("[DEBUG generatePriceOutput()]")
-		fmt.Println("parsedBody:", parsedBody)
-		fmt.Println("[END_DEBUG]")
 
 		// Cast the attributes into proper types.
-		// var typedBody priceResponseTyped
-		// err = typedBody.TypeBody(parsedBody)
+		err = obj.TypeBody()
+		if err != nil {
+			return "", fmt.Errorf("[internal.stock.generatePriceOutput] failed to cast body attributes: %v", err)
+		}
 
+		// TODO
 	}
 
 	// TODO

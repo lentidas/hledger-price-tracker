@@ -18,4 +18,38 @@
 
 package price
 
+import (
+	"github.com/lentidas/hledger-price-tracker/internal/flags"
+	"time"
+)
+
 const apiFunctionTimeSeriesDailyAdjusted = "TIME_SERIES_DAILY_ADJUSTED" // Requires premium API key.
+
+// TODO Comment functions and such.
+
+type RawDailyAdjusted struct {
+	MetaData   RawMetadataDaily             `json:"Meta Data"`
+	TimeSeries map[string]RawPricesAdjusted `json:"Time Series (Daily)"`
+}
+
+type TypedDailyAdjusted struct {
+	MetaData   TypedMetadataDaily
+	TimeSeries map[time.Time]TypedPricesAdjusted
+}
+
+type DailyAdjusted struct {
+	Raw   RawDailyAdjusted
+	Typed TypedDailyAdjusted
+}
+
+func (obj *DailyAdjusted) TypeBody() error {
+	// TODO
+
+	return nil
+}
+
+func (obj *DailyAdjusted) GenerateOutput(body []byte, begin time.Time, end time.Time, format flags.OutputFormat) (string, error) {
+	// TODO
+
+	return "DailyAdjusted", nil
+}

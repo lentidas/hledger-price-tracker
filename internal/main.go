@@ -30,22 +30,17 @@ var ApiKey string
 var DefaultCurrency string
 var DebugMode bool
 
-type JSONResponse interface {
-	UnmarshalJSON([]byte) error
-	TypeBody() error
-}
-
 // HTTPRequest is a helper function to make HTTP requests and return the body as an array of bytes.
 func HTTPRequest(url string) ([]byte, error) {
 	resp, err := http.Get(url)
 	if err != nil {
-		return []byte{}, fmt.Errorf("[internal.HTTPRequest] HTTP request failed: %v", err)
+		return []byte{}, fmt.Errorf("[internal.HTTPRequest] HTTP request failed: %w", err)
 	}
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return []byte{}, fmt.Errorf("[internal.HTTPRequest] failure to read HTTP body: %v", err)
+		return []byte{}, fmt.Errorf("[internal.HTTPRequest] failure to read HTTP body: %w", err)
 	}
 
 	return body, nil

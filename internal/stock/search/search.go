@@ -34,7 +34,14 @@ import (
 
 const apiFunctionSearch = "SYMBOL_SEARCH"
 
-type SearchResponseRaw struct {
+// TODO Comment functions and such.
+
+type Response interface {
+	TypeBody() error
+	GenerateOutput(body []byte, format flags.OutputFormat) (string, error)
+}
+
+type Raw struct {
 	BestMatches []struct {
 		Symbol      string `json:"1. symbol"`
 		Name        string `json:"2. name"`
@@ -48,7 +55,7 @@ type SearchResponseRaw struct {
 	} `json:"bestMatches"`
 }
 
-type SearchResponseTyped struct {
+type Typed struct {
 	BestMatches []struct {
 		Symbol      string
 		Name        string
@@ -62,19 +69,22 @@ type SearchResponseTyped struct {
 	}
 }
 
-// TypeBody casts the attributes of the response struct into another similar struct but with properly typed attributes.
-// TODO Create unitary tests for this function.
-func TypeBody(raw SearchResponseRaw, typed *SearchResponseTyped) error {
-	for _, result := range raw.BestMatches {
+type Search struct {
+	Raw   Raw
+	Typed Typed
+}
+
+func (obj *Search) TypeBody() error {
+	for _, result := range obj.Raw.BestMatches {
 		score, err := strconv.ParseFloat(result.MatchScore, 32)
 		if err != nil {
-			return fmt.Errorf("[stock.TypeBody] failure to parse match score: %v", err)
+			return fmt.Errorf("[stock.TypeBody] failure to parse match score: %w", err)
 		}
 
 		// Parse the timezone offset.
 		offset, err := strconv.Atoi(result.Timezone[3:])
 		if err != nil {
-			return fmt.Errorf("[stock.TypeBody] failure to parse timezone offset: %v", err)
+			return fmt.Errorf("[stock.TypeBody] failure to parse timezone offset: %w", err)
 		}
 
 		// Create a fixed timezone.
@@ -82,15 +92,15 @@ func TypeBody(raw SearchResponseRaw, typed *SearchResponseTyped) error {
 
 		openTime, err := time.ParseInLocation("15:04", result.MarketOpen, tz)
 		if err != nil {
-			return fmt.Errorf("[stock.TypeBody] failure to parse market open time: %v", err)
+			return fmt.Errorf("[stock.TypeBody] failure to parse market open time: %w", err)
 		}
 
 		closeTime, err := time.ParseInLocation("15:04", result.MarketClose, tz)
 		if err != nil {
-			return fmt.Errorf("[stock.TypeBody] failure to parse market close time: %v", err)
+			return fmt.Errorf("[stock.TypeBody] failure to parse market close time: %w", err)
 		}
 
-		typed.BestMatches = append(typed.BestMatches, struct {
+		obj.Typed.BestMatches = append(obj.Typed.BestMatches, struct {
 			Symbol      string
 			Name        string
 			Type        string
@@ -116,19 +126,68 @@ func TypeBody(raw SearchResponseRaw, typed *SearchResponseTyped) error {
 	return nil
 }
 
-// buildSearchURL creates the URL to make the HTTP request to the Alpha Vantage API.
-func buildSearchURL(query string, format flags.OutputFormat) (string, error) {
+func (obj *Search) GenerateOutput(body []byte, format flags.OutputFormat) (string, error) {
+	switch format {
+	case flags.OutputFormatHledger:
+		return "", errors.New("[internal.search.generateSearchOutput] hledger output format not supported")
+	case flags.OutputFormatJSON, flags.OutputFormatCSV:
+		return string(body), nil
+	case flags.OutputFormatTable, flags.OutputFormatTableLong:
+		// Create a struct to parse the JSON body.
+		var obj Search
+
+		// Parse the JSON body.
+		err := json.Unmarshal(body, &obj.Raw)
+		if err != nil {
+			return "", fmt.Errorf("[(*Search).GenerateOutput] failure to unmarshal JSON body: %w", err)
+		}
+
+		// Cast the attributes into proper types.
+		err = obj.TypeBody()
+		if err != nil {
+			return "", fmt.Errorf("[(*Search).GenerateOutput] error casting response attributes: %w", err)
+		}
+
+		t := table.NewWriter()
+		if format == flags.OutputFormatTableLong {
+			t.AppendHeader(table.Row{"#", "Symbol", "Name", "Type", "Region", "Market Open", "Market Close", "Timezone", "Currency", "Match Score"})
+			for i, result := range obj.Typed.BestMatches {
+				t.AppendRow([]interface{}{i + 1, result.Symbol, result.Name, result.Type, result.Region, result.MarketOpen.Format("15:04"), result.MarketClose.Format("15:04"), result.Timezone, result.Currency, fmt.Sprintf("%.2f%%", result.MatchScore*100)})
+			}
+			t.SetColumnConfigs([]table.ColumnConfig{
+				{Number: 6, Align: text.AlignRight},
+				{Number: 7, Align: text.AlignRight},
+				{Number: 10, Align: text.AlignRight},
+			})
+		} else {
+			t.AppendHeader(table.Row{"#", "Symbol", "Name", "Type", "Region", "Currency", "Match Score"})
+			for i, result := range obj.Typed.BestMatches {
+				t.AppendRow([]interface{}{i + 1, result.Symbol, result.Name, result.Type, result.Region, result.Currency, fmt.Sprintf("%.2f%%", result.MatchScore*100)})
+			}
+			t.SetColumnConfigs([]table.ColumnConfig{
+				{Number: 7, Align: text.AlignRight},
+			})
+		}
+
+		return t.Render(), nil
+	default:
+		return "", errors.New("[internal.search.generateSearchOutput] invalid output format")
+	}
+}
+
+// buildURL creates the URL to make the HTTP request to the Alpha Vantage API.
+func buildURL(query string, format flags.OutputFormat) (string, error) {
 	if internal.ApiKey == "" {
-		return "", errors.New("[stock.buildSearchURL] api key is required")
+		return "", errors.New("[search.buildURL] api key is required")
 	}
 	if query == "" {
-		return "", errors.New("[stock.buildSearchURL] no search query provided")
+		return "", errors.New("[search.buildURL] no search query provided")
 	}
 	switch format {
 	case flags.OutputFormatHledger, flags.OutputFormatTable, flags.OutputFormatTableLong, flags.OutputFormatJSON, flags.OutputFormatCSV:
 		// Do nothing.
 	default:
-		return "", errors.New("[stock.buildSearchURL] invalid output format")
+		return "", errors.New("[search.buildURL] invalid output format")
 	}
 
 	url := strings.Builder{}
@@ -146,68 +205,15 @@ func buildSearchURL(query string, format flags.OutputFormat) (string, error) {
 	return url.String(), nil
 }
 
-// generateSearchOutput generates the output in the desired format by either outputting the raw string of the body or by
-// parsing its JSON content then creating a proper table.
-// TODO Create unitary tests for this function.
-func generateSearchOutput(body []byte, format flags.OutputFormat) (string, error) {
-	switch format {
-	case flags.OutputFormatHledger:
-		return "", errors.New("[internal.stock.Search] hledger output format not supported")
-	case flags.OutputFormatJSON, flags.OutputFormatCSV:
-		return string(body), nil
-	case flags.OutputFormatTable, flags.OutputFormatTableLong:
-		// Create a struct to parse the JSON body.
-		var parsedBody SearchResponseRaw
-
-		// Parse the JSON body.
-		err := json.Unmarshal(body, &parsedBody)
-		if err != nil {
-			return "", fmt.Errorf("[internal.stock.Search] failure to unmarshal JSON body: %v", err)
-		}
-
-		// Cast the attributes into proper types.
-		var typedBody SearchResponseTyped
-		err = TypeBody(parsedBody, &typedBody)
-		if err != nil {
-			return "", err
-		}
-
-		t := table.NewWriter()
-		if format == flags.OutputFormatTableLong {
-			t.AppendHeader(table.Row{"#", "Symbol", "Name", "Type", "Region", "Market Open", "Market Close", "Timezone", "Currency", "Match Score"})
-			for i, result := range typedBody.BestMatches {
-				t.AppendRow([]interface{}{i + 1, result.Symbol, result.Name, result.Type, result.Region, result.MarketOpen.Format("15:04"), result.MarketClose.Format("15:04"), result.Timezone, result.Currency, fmt.Sprintf("%.2f%%", result.MatchScore*100)})
-			}
-			t.SetColumnConfigs([]table.ColumnConfig{
-				{Number: 6, Align: text.AlignRight},
-				{Number: 7, Align: text.AlignRight},
-				{Number: 10, Align: text.AlignRight},
-			})
-		} else {
-			t.AppendHeader(table.Row{"#", "Symbol", "Name", "Type", "Region", "Currency", "Match Score"})
-			for i, result := range typedBody.BestMatches {
-				t.AppendRow([]interface{}{i + 1, result.Symbol, result.Name, result.Type, result.Region, result.Currency, fmt.Sprintf("%.2f%%", result.MatchScore*100)})
-			}
-			t.SetColumnConfigs([]table.ColumnConfig{
-				{Number: 7, Align: text.AlignRight},
-			})
-		}
-
-		return t.Render(), nil
-	default:
-		return "", errors.New("[internal.stock.Search] invalid output format")
-	}
-}
-
-func Search(query string, format flags.OutputFormat) (string, error) {
+func Execute(query string, format flags.OutputFormat) (string, error) {
 	if internal.ApiKey == "" {
-		return "", errors.New("[stock.Search] api key is required")
+		return "", errors.New("[stock.search.Execute] API key is required")
 	}
 	if query == "" {
-		return "", errors.New("[stock.Search] no search query provided")
+		return "", errors.New("[stock.search.Execute] no search query provided")
 	}
 
-	url, err := buildSearchURL(query, format)
+	url, err := buildURL(query, format)
 	if err != nil {
 		return "", err
 	}
@@ -217,5 +223,7 @@ func Search(query string, format flags.OutputFormat) (string, error) {
 		return "", err
 	}
 
-	return generateSearchOutput(body, format)
+	response := Search{}
+
+	return response.GenerateOutput(body, format)
 }

@@ -47,7 +47,7 @@ API documentation: https://www.alphavantage.co/documentation/#symbolsearch`,
 
 	// TODO Show example with the argument.
 	Run: func(cmd *cobra.Command, args []string) {
-		output, err := search.Search(args[0], formatSearch)
+		output, err := search.Execute(args[0], formatSearch)
 		cobra.CheckErr(err)
 		fmt.Println(output)
 	},

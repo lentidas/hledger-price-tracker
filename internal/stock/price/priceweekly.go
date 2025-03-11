@@ -18,4 +18,38 @@
 
 package price
 
+import (
+	"github.com/lentidas/hledger-price-tracker/internal/flags"
+	"time"
+)
+
 const apiFunctionTimeSeriesWeekly = "TIME_SERIES_WEEKLY"
+
+// TODO Comment functions and such.
+
+type RawWeekly struct {
+	MetaData   RawMetadata          `json:"Meta Data"`
+	TimeSeries map[string]RawPrices `json:"Weekly Time Series"`
+}
+
+type TypedWeekly struct {
+	MetaData   TypedMetadata
+	TimeSeries map[time.Time]TypedPrices
+}
+
+type Weekly struct {
+	Raw   RawWeekly
+	Typed TypedWeekly
+}
+
+func (obj *Weekly) TypeBody() error {
+	// TODO
+
+	return nil
+}
+
+func (obj *Weekly) GenerateOutput(body []byte, begin time.Time, end time.Time, format flags.OutputFormat) (string, error) {
+	// TODO
+
+	return "Weekly", nil
+}

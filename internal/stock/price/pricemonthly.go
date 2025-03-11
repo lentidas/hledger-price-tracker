@@ -18,4 +18,38 @@
 
 package price
 
+import (
+	"github.com/lentidas/hledger-price-tracker/internal/flags"
+	"time"
+)
+
 const apiFunctionTimeSeriesMonthly = "TIME_SERIES_MONTHLY"
+
+// TODO Comment functions and such.
+
+type RawMonthly struct {
+	MetaData   RawMetadata          `json:"Meta Data"`
+	TimeSeries map[string]RawPrices `json:"Monthly Time Series"`
+}
+
+type TypedMonthly struct {
+	MetaData   TypedMetadata
+	TimeSeries map[time.Time]TypedPrices
+}
+
+type Monthly struct {
+	Raw   RawMonthly
+	Typed TypedMonthly
+}
+
+func (obj *Monthly) TypeBody() error {
+	// TODO
+
+	return nil
+}
+
+func (obj *Monthly) GenerateOutput(body []byte, begin time.Time, end time.Time, format flags.OutputFormat) (string, error) {
+	// TODO
+
+	return "Monthly", nil
+}

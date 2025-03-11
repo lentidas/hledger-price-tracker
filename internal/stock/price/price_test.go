@@ -61,7 +61,7 @@ func TestPriceURLBuilderDaily(t *testing.T) {
 	internal.ApiKey = "demo"
 
 	expected := "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&outputsize=full&apikey=demo"
-	url, err := buildPriceURL("IBM", flags.OutputFormatHledger, flags.IntervalDaily, false)
+	url, err := buildURL("IBM", flags.OutputFormatHledger, flags.IntervalDaily, false)
 	if err != nil {
 		t.Errorf("expected nil, got %v", err)
 	}
@@ -76,7 +76,7 @@ func TestPriceURLBuilder(t *testing.T) {
 	t.Run("daily", func(t *testing.T) {
 		expected := "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&outputsize=full&apikey=demo"
 
-		url, err := buildPriceURL("IBM", flags.OutputFormatHledger, flags.IntervalDaily, false)
+		url, err := buildURL("IBM", flags.OutputFormatHledger, flags.IntervalDaily, false)
 		if err != nil {
 			t.Errorf("expected nil, got %v", err)
 		}
@@ -88,7 +88,7 @@ func TestPriceURLBuilder(t *testing.T) {
 	t.Run("daily adjusted", func(t *testing.T) {
 		expected := "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=IBM&outputsize=full&apikey=demo"
 
-		url, err := buildPriceURL("IBM", flags.OutputFormatHledger, flags.IntervalDaily, true)
+		url, err := buildURL("IBM", flags.OutputFormatHledger, flags.IntervalDaily, true)
 		if err != nil {
 			t.Errorf("expected nil, got %v", err)
 		}
@@ -100,7 +100,7 @@ func TestPriceURLBuilder(t *testing.T) {
 	t.Run("weekly", func(t *testing.T) {
 		expected := "https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol=IBM&apikey=demo"
 
-		url, err := buildPriceURL("IBM", flags.OutputFormatHledger, flags.IntervalWeekly, false)
+		url, err := buildURL("IBM", flags.OutputFormatHledger, flags.IntervalWeekly, false)
 		if err != nil {
 			t.Errorf("expected nil, got %v", err)
 		}
@@ -112,7 +112,7 @@ func TestPriceURLBuilder(t *testing.T) {
 	t.Run("weekly adjusted", func(t *testing.T) {
 		expected := "https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY_ADJUSTED&symbol=IBM&apikey=demo"
 
-		url, err := buildPriceURL("IBM", flags.OutputFormatHledger, flags.IntervalWeekly, true)
+		url, err := buildURL("IBM", flags.OutputFormatHledger, flags.IntervalWeekly, true)
 		if err != nil {
 			t.Errorf("expected nil, got %v", err)
 		}
@@ -124,7 +124,7 @@ func TestPriceURLBuilder(t *testing.T) {
 	t.Run("monthly", func(t *testing.T) {
 		expected := "https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol=IBM&apikey=demo"
 
-		url, err := buildPriceURL("IBM", flags.OutputFormatHledger, flags.IntervalMonthly, false)
+		url, err := buildURL("IBM", flags.OutputFormatHledger, flags.IntervalMonthly, false)
 		if err != nil {
 			t.Errorf("expected nil, got %v", err)
 		}
@@ -136,7 +136,7 @@ func TestPriceURLBuilder(t *testing.T) {
 	t.Run("monthly adjusted", func(t *testing.T) {
 		expected := "https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY_ADJUSTED&symbol=IBM&apikey=demo"
 
-		url, err := buildPriceURL("IBM", flags.OutputFormatHledger, flags.IntervalMonthly, true)
+		url, err := buildURL("IBM", flags.OutputFormatHledger, flags.IntervalMonthly, true)
 		if err != nil {
 			t.Errorf("expected nil, got %v", err)
 		}
@@ -148,7 +148,7 @@ func TestPriceURLBuilder(t *testing.T) {
 	t.Run("CSV", func(t *testing.T) {
 		expected := "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&outputsize=full&apikey=demo&datatype=csv"
 
-		url, err := buildPriceURL("IBM", flags.OutputFormatCSV, flags.IntervalDaily, false)
+		url, err := buildURL("IBM", flags.OutputFormatCSV, flags.IntervalDaily, false)
 		if err != nil {
 			t.Errorf("expected nil, got %v", err)
 		}

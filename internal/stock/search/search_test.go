@@ -33,13 +33,13 @@ func TestSearch(t *testing.T) {
 	})
 
 	t.Run("no search query", func(t *testing.T) {
-		if _, err := Search("", flags.OutputFormatJSON); err == nil {
+		if _, err := Execute("", flags.OutputFormatJSON); err == nil {
 			t.Error("expected error, got nil")
 		}
 	})
 
 	t.Run("invalid output format", func(t *testing.T) {
-		if _, err := Search("tesco", "invalid"); err == nil {
+		if _, err := Execute("tesco", "invalid"); err == nil {
 			t.Error("expected error, got nil")
 		}
 	})
@@ -47,7 +47,7 @@ func TestSearch(t *testing.T) {
 	internal.ApiKey = ""
 
 	t.Run("no API key", func(t *testing.T) {
-		if _, err := Search("tesco", flags.OutputFormatJSON); err == nil {
+		if _, err := Execute("tesco", flags.OutputFormatJSON); err == nil {
 			t.Error("expected error, got nil")
 		}
 	})
@@ -58,7 +58,7 @@ func TestSearchURLBuilder(t *testing.T) {
 
 	t.Run("normal", func(t *testing.T) {
 		expected := "https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=tesco&apikey=demo"
-		url, err := buildSearchURL("tesco", flags.OutputFormatJSON)
+		url, err := buildURL("tesco", flags.OutputFormatJSON)
 		if err != nil {
 			t.Fatalf("expected nil, got %v", err)
 		}
@@ -70,7 +70,7 @@ func TestSearchURLBuilder(t *testing.T) {
 
 	t.Run("CSV", func(t *testing.T) {
 		expected := "https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=tesco&apikey=demo&datatype=csv"
-		url, err := buildSearchURL("tesco", flags.OutputFormatCSV)
+		url, err := buildURL("tesco", flags.OutputFormatCSV)
 		if err != nil {
 			t.Fatalf("expected nil, got %v", err)
 		}
@@ -82,8 +82,8 @@ func TestSearchURLBuilder(t *testing.T) {
 
 func TestSearchResponseTypeBody(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
-		var response SearchResponse
-		response.Raw = SearchResponseRaw{
+		var response Search
+		response.Raw = Raw{
 			BestMatches: []struct {
 				Symbol      string `json:"1. symbol"`
 				Name        string `json:"2. name"`
@@ -140,8 +140,8 @@ func TestSearchResponseTypeBody(t *testing.T) {
 	})
 
 	t.Run("invalid match score", func(t *testing.T) {
-		var response SearchResponse
-		response.Raw = SearchResponseRaw{
+		var response Search
+		response.Raw = Raw{
 			BestMatches: []struct {
 				Symbol      string `json:"1. symbol"`
 				Name        string `json:"2. name"`
@@ -174,8 +174,8 @@ func TestSearchResponseTypeBody(t *testing.T) {
 	})
 
 	t.Run("invalid timezone", func(t *testing.T) {
-		var response SearchResponse
-		response.Raw = SearchResponseRaw{
+		var response Search
+		response.Raw = Raw{
 			BestMatches: []struct {
 				Symbol      string `json:"1. symbol"`
 				Name        string `json:"2. name"`
@@ -208,8 +208,8 @@ func TestSearchResponseTypeBody(t *testing.T) {
 	})
 
 	t.Run("invalid market open time", func(t *testing.T) {
-		var response SearchResponse
-		response.Raw = SearchResponseRaw{
+		var response Search
+		response.Raw = Raw{
 			BestMatches: []struct {
 				Symbol      string `json:"1. symbol"`
 				Name        string `json:"2. name"`
@@ -242,8 +242,8 @@ func TestSearchResponseTypeBody(t *testing.T) {
 	})
 
 	t.Run("invalid market close time", func(t *testing.T) {
-		var response SearchResponse
-		response.Raw = SearchResponseRaw{
+		var response Search
+		response.Raw = Raw{
 			BestMatches: []struct {
 				Symbol      string `json:"1. symbol"`
 				Name        string `json:"2. name"`

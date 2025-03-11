@@ -28,6 +28,7 @@ const ApiBaseUrl string = "https://www.alphavantage.co/query?"
 
 var ApiKey string
 var DefaultCurrency string
+var DebugMode bool
 
 type JSONResponse interface {
 	UnmarshalJSON([]byte) error

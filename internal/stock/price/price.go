@@ -16,12 +16,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package stock
+package price
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	search2 "github.com/lentidas/hledger-price-tracker/internal/stock/search"
 	"strconv"
 	"strings"
 	"time"
@@ -29,13 +30,6 @@ import (
 	"github.com/lentidas/hledger-price-tracker/internal"
 	"github.com/lentidas/hledger-price-tracker/internal/flags"
 )
-
-const apiFunctionTimeSeriesDaily = "TIME_SERIES_DAILY"
-const apiFunctionTimeSeriesDailyAdjusted = "TIME_SERIES_DAILY_ADJUSTED" // Requires premium API key.
-const apiFunctionTimeSeriesWeekly = "TIME_SERIES_WEEKLY"
-const apiFunctionTimeSeriesWeeklyAdjusted = "TIME_SERIES_WEEKLY_ADJUSTED"
-const apiFunctionTimeSeriesMonthly = "TIME_SERIES_MONTHLY"
-const apiFunctionTimeSeriesMonthlyAdjusted = "TIME_SERIES_MONTHLY_ADJUSTED"
 
 type PriceResponseMetadataRaw struct {
 	Information string `json:"1. Information"`
@@ -588,11 +582,11 @@ func getCurrency(symbol string) (string, error) {
 		return "NIL", nil
 	}
 
-	body, err := Search(symbol, flags.OutputFormatJSON)
+	body, err := search2.Search(symbol, flags.OutputFormatJSON)
 	if err != nil {
 		return "", err
 	}
-	var search SearchResponseRaw
+	var search search2.SearchResponseRaw
 	err = json.Unmarshal([]byte(body), &search)
 	if err != nil {
 		return "", fmt.Errorf("[internal.stock.getCurrency] error unmarshalling JSON to get currency: %v", err)

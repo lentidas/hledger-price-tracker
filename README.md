@@ -137,3 +137,12 @@ BAAPV,null,Equity,United States,09:30,16:00,UTC-04,USD,0.5714
 BAAAAX,Building America Strategy Port CDA USD Ser 21/1Q MNT CASH,Mutual Fund,United States,09:30,16:00,UTC-04,USD,0.5000
 BAAAFX,Building America Strgy Portf CDA USD Ser 2022/2Q MNT CASH,Mutual Fund,United States,09:30,16:00,UTC-04,USD,0.5000
 ```
+
+
+
+
+# Difficulties
+
+I had some difficulties understanding the paradigm of OOP in Go, and how to properly structure some parts of the code, namely the `struct`'s that are used to parse the JSON responses from the Alpha Vantage API. Another difficulty was understanding what to export or not in those `struct`'s.
+
+I welcome anyone to review the code and suggest improvements :winking_face:

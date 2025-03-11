@@ -16,7 +16,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package stock
+package search
 
 import (
 	"testing"
@@ -83,7 +83,7 @@ func TestSearchURLBuilder(t *testing.T) {
 func TestSearchResponseTypeBody(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		var response SearchResponse
-		response.Raw = SearchResponseContent{
+		response.Raw = SearchResponseRaw{
 			BestMatches: []struct {
 				Symbol      string `json:"1. symbol"`
 				Name        string `json:"2. name"`
@@ -141,7 +141,7 @@ func TestSearchResponseTypeBody(t *testing.T) {
 
 	t.Run("invalid match score", func(t *testing.T) {
 		var response SearchResponse
-		response.Raw = SearchResponseContent{
+		response.Raw = SearchResponseRaw{
 			BestMatches: []struct {
 				Symbol      string `json:"1. symbol"`
 				Name        string `json:"2. name"`
@@ -175,7 +175,7 @@ func TestSearchResponseTypeBody(t *testing.T) {
 
 	t.Run("invalid timezone", func(t *testing.T) {
 		var response SearchResponse
-		response.Raw = SearchResponseContent{
+		response.Raw = SearchResponseRaw{
 			BestMatches: []struct {
 				Symbol      string `json:"1. symbol"`
 				Name        string `json:"2. name"`
@@ -209,7 +209,7 @@ func TestSearchResponseTypeBody(t *testing.T) {
 
 	t.Run("invalid market open time", func(t *testing.T) {
 		var response SearchResponse
-		response.Raw = SearchResponseContent{
+		response.Raw = SearchResponseRaw{
 			BestMatches: []struct {
 				Symbol      string `json:"1. symbol"`
 				Name        string `json:"2. name"`
@@ -243,7 +243,7 @@ func TestSearchResponseTypeBody(t *testing.T) {
 
 	t.Run("invalid market close time", func(t *testing.T) {
 		var response SearchResponse
-		response.Raw = SearchResponseContent{
+		response.Raw = SearchResponseRaw{
 			BestMatches: []struct {
 				Symbol      string `json:"1. symbol"`
 				Name        string `json:"2. name"`

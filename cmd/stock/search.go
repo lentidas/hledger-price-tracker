@@ -20,11 +20,11 @@ package stock
 
 import (
 	"fmt"
+	"github.com/lentidas/hledger-price-tracker/internal/stock/search"
 
 	"github.com/spf13/cobra"
 
 	"github.com/lentidas/hledger-price-tracker/internal/flags"
-	"github.com/lentidas/hledger-price-tracker/internal/stock"
 )
 
 // Define the output flag and set it to the default value.
@@ -47,7 +47,7 @@ API documentation: https://www.alphavantage.co/documentation/#symbolsearch`,
 
 	// TODO Show example with the argument.
 	Run: func(cmd *cobra.Command, args []string) {
-		output, err := stock.Search(args[0], formatSearch)
+		output, err := search.Search(args[0], formatSearch)
 		cobra.CheckErr(err)
 		fmt.Println(output)
 	},

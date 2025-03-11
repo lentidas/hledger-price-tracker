@@ -20,11 +20,11 @@ package stock
 
 import (
 	"fmt"
+	"github.com/lentidas/hledger-price-tracker/internal/stock/price"
 
 	"github.com/spf13/cobra"
 
 	"github.com/lentidas/hledger-price-tracker/internal/flags"
-	"github.com/lentidas/hledger-price-tracker/internal/stock"
 )
 
 var formatPrice = flags.OutputFormatHledger
@@ -57,7 +57,7 @@ API documentation:
 	Args: cobra.MinimumNArgs(1),
 
 	Run: func(cmd *cobra.Command, args []string) {
-		output, err := stock.Price(args[0], formatPrice, interval, begin, end, adjusted)
+		output, err := price.Price(args[0], formatPrice, interval, begin, end, adjusted)
 		cobra.CheckErr(err)
 		fmt.Println(output)
 	},

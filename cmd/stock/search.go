@@ -24,15 +24,15 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/lentidas/hledger-price-tracker/internal/flags"
-	"github.com/lentidas/hledger-price-tracker/internal/stock"
+	"github.com/lentidas/hledger-price-tracker/internal/stock/search"
 )
 
 // Define the output flag and set it to the default value.
-var format = flags.OutputFormatTable
+var formatSearch = flags.OutputFormatTable
 
 // searchCmd represents the search command.
 var searchCmd = &cobra.Command{
-	Use:   "search",
+	Use:   "search [flags] <query>",
 	Short: "Search for information about a stock (e.g. ticker, region, market)",
 	Long: `
 hledger-price-tracker
@@ -47,7 +47,7 @@ API documentation: https://www.alphavantage.co/documentation/#symbolsearch`,
 
 	// TODO Show example with the argument.
 	Run: func(cmd *cobra.Command, args []string) {
-		output, err := stock.Search(args[0], format)
+		output, err := search.Execute(args[0], formatSearch)
 		cobra.CheckErr(err)
 		fmt.Println(output)
 	},
@@ -58,5 +58,5 @@ func init() {
 	PaletteCmd.AddCommand(searchCmd)
 
 	// Add flags to the `search` subcommand.
-	searchCmd.Flags().VarP(&format, "format", "f", "format of the output (possible values are \"json\", \"csv\", \"table\", \"table-long\", default is \"json\")")
+	searchCmd.Flags().VarP(&formatSearch, "format", "f", "format of the output (possible values are \"json\", \"csv\", \"table\", \"table-long\")")
 }

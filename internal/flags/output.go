@@ -30,8 +30,9 @@ import (
 type OutputFormat string
 
 const (
-	OutputFormatJson      OutputFormat = "json"
-	OutputFormatCsv       OutputFormat = "csv"
+	OutputFormatHledger   OutputFormat = "hledger"
+	OutputFormatJSON      OutputFormat = "json"
+	OutputFormatCSV       OutputFormat = "csv"
 	OutputFormatTable     OutputFormat = "table"
 	OutputFormatTableLong OutputFormat = "table-long"
 )
@@ -46,11 +47,11 @@ func (o *OutputFormat) String() string {
 // Must have a pointer receiver so it doesn't actually change the value of a copy and not the value itself.
 func (o *OutputFormat) Set(value string) error {
 	switch value {
-	case "json", "csv", "table", "table-long":
+	case "hledger", "json", "csv", "table", "table-long":
 		*o = OutputFormat(value)
 		return nil
 	default:
-		return errors.New("possible values are \"json\", \"csv\", \"table\", \"table-long\"")
+		return errors.New("possible values are \"hledger\", \"json\", \"csv\", \"table\", \"table-long\"")
 	}
 }
 
@@ -61,6 +62,7 @@ func (o *OutputFormat) Type() string {
 
 func OutputSearchCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	return []string{
+		"hledger\toutput the search results as hledger records format",
 		"json\toutput the search results in JSON format",
 		"csv\toutput the search results in CSV format",
 		"table\toutput the search results in a table format",

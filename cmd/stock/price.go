@@ -20,11 +20,11 @@ package stock
 
 import (
 	"fmt"
-	"github.com/lentidas/hledger-price-tracker/internal/stock/price"
 
 	"github.com/spf13/cobra"
 
 	"github.com/lentidas/hledger-price-tracker/internal/flags"
+	"github.com/lentidas/hledger-price-tracker/internal/stock/price"
 )
 
 var formatPrice = flags.OutputFormatHledger
@@ -59,8 +59,10 @@ API documentation:
 	Run: func(cmd *cobra.Command, args []string) {
 		output, err := price.Price(args[0], formatPrice, interval, begin, end, adjusted)
 		cobra.CheckErr(err)
-		fmt.Println(output)
+		fmt.Print(output)
 	},
+
+	// TODO Implement a way to output an error when the API does not find a stock symbol.
 }
 
 func init() {
@@ -70,7 +72,7 @@ func init() {
 	// Add flags to the `price` subcommand.
 	priceCmd.Flags().VarP(&formatPrice, "format", "f", "format of the output (possible values are \"hledger\", \"json\", \"csv\", \"table\", \"table-long\")")
 	priceCmd.Flags().VarP(&interval, "interval", "i", "interval between prices (possible values are \"daily\", \"weekly\", \"monthly\")")
-	priceCmd.Flags().StringVarP(&begin, "begin", "b", "", "beginning of the time period (format YYYY-MM-DD)")
-	priceCmd.Flags().StringVarP(&end, "end", "e", "", "end of the time period (format YYYY-MM-DD)")
+	priceCmd.Flags().StringVarP(&begin, "begin", "b", "", "beginning of the time period (format YYYY-MM-DD) (does not apply to  \"json\" or \"csv\" output formats)")
+	priceCmd.Flags().StringVarP(&end, "end", "e", "", "end of the time period (format YYYY-MM-DD) (does not apply to  \"json\" or \"csv\" output formats)")
 	priceCmd.Flags().BoolVarP(&adjusted, "adjusted", "a", false, "return adjusted close prices")
 }

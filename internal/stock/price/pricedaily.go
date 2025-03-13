@@ -22,8 +22,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/lentidas/hledger-price-tracker/internal/flags"
+	"strings"
 	"time"
+
+	"github.com/lentidas/hledger-price-tracker/internal/flags"
 )
 
 const apiFunctionTimeSeriesDaily = "TIME_SERIES_DAILY"
@@ -51,7 +53,7 @@ func (obj *Daily) TypeBody() error {
 		return fmt.Errorf("[(*Daily).TypeBody] failure to cast metadata body: %w", err)
 	}
 
-	obj.Typed.TimeSeries = make(map[time.Time]TypedPrices)
+	obj.Typed.TimeSeries = make(map[time.Time]TypedPrices, len(obj.Raw.TimeSeries))
 
 	for date, prices := range obj.Raw.TimeSeries {
 		dateTyped, err := time.Parse("2006-01-02", date)
@@ -72,15 +74,17 @@ func (obj *Daily) TypeBody() error {
 }
 
 func (obj *Daily) GenerateOutput(body []byte, begin time.Time, end time.Time, format flags.OutputFormat) (string, error) {
-	err := json.Unmarshal(body, &obj.Raw)
-	if err != nil {
-		return "", fmt.Errorf("[(*Daily).GenerateOutput] failure to unmarshal JSON body: %w", err)
-	}
-
 	switch format {
 	case flags.OutputFormatJSON, flags.OutputFormatCSV:
 		return string(body), nil
 	case flags.OutputFormatHledger, flags.OutputFormatTable, flags.OutputFormatTableLong:
+		// Parse the JSON body into the Raw struct.
+		err := json.Unmarshal(body, &obj.Raw)
+		if err != nil {
+			return "", fmt.Errorf("[(*Daily).GenerateOutput] failure to unmarshal JSON body: %w", err)
+		}
+
+		// Cast the attributes into proper types.
 		err = obj.TypeBody()
 		if err != nil {
 			return "", fmt.Errorf("[(*Daily).GenerateOutput] error casting response attributes: %w", err)
@@ -88,9 +92,25 @@ func (obj *Daily) GenerateOutput(body []byte, begin time.Time, end time.Time, fo
 
 		dates := getDatesNormal(obj.Typed.TimeSeries, begin, end)
 
-		fmt.Println(dates) // TODO Remove
-
-		return string(body), nil // TODO Remove
+		if format == flags.OutputFormatHledger {
+			return generateOutputHledger(
+					obj.Typed.TimeSeries,
+					dates,
+					obj.Typed.MetaData.Symbol,
+					obj.Typed.MetaData.Currency),
+				nil
+		} else {
+			out := strings.Builder{}
+			out.WriteString(generateMetadataTable(
+				obj.Typed.MetaData.Symbol,
+				obj.Typed.MetaData.Currency,
+				obj.Typed.MetaData.LastRefreshed,
+				obj.Typed.MetaData.TimeZone))
+			out.WriteString(generateTimeSeriesTableShort(
+				obj.Typed.TimeSeries,
+				dates))
+			return out.String(), nil
+		}
 	default:
 		return "", errors.New("[(*Daily).GenerateOutput] invalid output format")
 	}

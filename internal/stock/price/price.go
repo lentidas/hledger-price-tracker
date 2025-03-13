@@ -19,13 +19,14 @@
 package price
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/jedib0t/go-pretty/v6/table"
 
 	"github.com/lentidas/hledger-price-tracker/internal"
 	"github.com/lentidas/hledger-price-tracker/internal/flags"
@@ -40,32 +41,32 @@ type Response interface {
 }
 
 type RawMetadata struct {
-	Information string `json:"1. Information"`
-	Symbol      string `json:"2. Symbol"`
-	LastRefresh string `json:"3. Last Refreshed"`
-	TimeZone    string `json:"4. Time Zone"`
+	Information   string `json:"1. Information"`
+	Symbol        string `json:"2. Symbol"`
+	LastRefreshed string `json:"3. Last Refreshed"`
+	TimeZone      string `json:"4. Time Zone"`
 }
 
 type TypedMetadata struct {
-	Information string
-	Symbol      string
-	Currency    string
-	LastRefresh time.Time
-	TimeZone    string
+	Information   string
+	Symbol        string
+	Currency      string
+	LastRefreshed time.Time
+	TimeZone      string
 }
 
 func (typed *TypedMetadata) TypeBody(raw RawMetadata) error {
-	lastRefresh, err := time.Parse("2006-01-02", raw.LastRefresh)
+	lastRefreshed, err := time.Parse("2006-01-02", raw.LastRefreshed)
 	if err != nil {
 		return err
 	}
 
 	typed.Information = raw.Information
 	typed.Symbol = raw.Symbol
-	typed.LastRefresh = lastRefresh
+	typed.LastRefreshed = lastRefreshed
 	typed.TimeZone = raw.TimeZone
 
-	typed.Currency, err = getCurrency(typed.Symbol)
+	typed.Currency, err = search.GetCurrency(typed.Symbol)
 	if err != nil {
 		return fmt.Errorf("[(*TypedMetadata).TypeBody] error getting currency: %w", err)
 	}
@@ -74,34 +75,34 @@ func (typed *TypedMetadata) TypeBody(raw RawMetadata) error {
 }
 
 type RawMetadataDaily struct {
-	Information string `json:"1. Information"`
-	Symbol      string `json:"2. Symbol"`
-	LastRefresh string `json:"3. Last Refreshed"`
-	OutputSize  string `json:"4. Output Size"`
-	TimeZone    string `json:"5. Time Zone"`
+	Information   string `json:"1. Information"`
+	Symbol        string `json:"2. Symbol"`
+	LastRefreshed string `json:"3. Last Refreshed"`
+	OutputSize    string `json:"4. Output Size"`
+	TimeZone      string `json:"5. Time Zone"`
 }
 
 type TypedMetadataDaily struct {
-	Information string
-	Symbol      string
-	Currency    string
-	LastRefresh time.Time
-	OutputSize  string
-	TimeZone    string
+	Information   string
+	Symbol        string
+	Currency      string
+	LastRefreshed time.Time
+	OutputSize    string
+	TimeZone      string
 }
 
 func (typed *TypedMetadataDaily) TypeBody(raw RawMetadataDaily) error {
-	lastRefresh, err := time.Parse("2006-01-02", raw.LastRefresh)
+	lastRefreshed, err := time.Parse("2006-01-02", raw.LastRefreshed)
 	if err != nil {
 		return err
 	}
 
 	typed.Information = raw.Information
 	typed.Symbol = raw.Symbol
-	typed.LastRefresh = lastRefresh
+	typed.LastRefreshed = lastRefreshed
 	typed.TimeZone = raw.TimeZone
 
-	typed.Currency, err = getCurrency(typed.Symbol)
+	typed.Currency, err = search.GetCurrency(typed.Symbol)
 	if err != nil {
 		return fmt.Errorf("[(*TypedMetadata).TypeBody] error getting currency: %w", err)
 	}
@@ -165,18 +166,17 @@ type RawPricesAdjusted struct {
 	AdjustedClose    string `json:"5. adjusted close"`
 	Volume           string `json:"6. volume"`
 	DividendAmount   string `json:"7. dividend amount"`
-	SplitCoefficient string `json:"8. split coefficient,omitempty"`
+	SplitCoefficient string `json:"-"`
 }
 
 type TypedPricesAdjusted struct {
-	Open             float64
-	High             float64
-	Low              float64
-	Close            float64
-	AdjustedClose    float64
-	Volume           uint32
-	DividendAmount   float64
-	SplitCoefficient float64
+	Open           float64
+	High           float64
+	Low            float64
+	Close          float64
+	AdjustedClose  float64
+	Volume         uint32
+	DividendAmount float64
 }
 
 func (typed *TypedPricesAdjusted) TypeBody(raw RawPricesAdjusted) error {
@@ -209,10 +209,6 @@ func (typed *TypedPricesAdjusted) TypeBody(raw RawPricesAdjusted) error {
 	if err != nil {
 		return err
 	}
-	splitCoefficient, err := strconv.ParseFloat(raw.SplitCoefficient, 64)
-	if err != nil {
-		return err
-	}
 
 	typed.Open = openPrice
 	typed.High = highPrice
@@ -221,7 +217,6 @@ func (typed *TypedPricesAdjusted) TypeBody(raw RawPricesAdjusted) error {
 	typed.AdjustedClose = adjustedClose
 	typed.Volume = uint32(volume)
 	typed.DividendAmount = dividendAmount
-	typed.SplitCoefficient = splitCoefficient
 
 	return nil
 }
@@ -318,27 +313,6 @@ func createResponseObject(interval flags.Interval, adjusted bool) (Response, err
 	return obj, nil
 }
 
-func getCurrency(symbol string) (string, error) {
-	// Alpha Vantage does not use the same symbol on their demo examples, so we need to return a default value.
-	if internal.DebugMode || internal.ApiKey == "demo" {
-		return "NIL", nil
-	}
-
-	body, err := search.Execute(symbol, flags.OutputFormatJSON)
-	if err != nil {
-		return "", err
-	}
-	var response search.Raw
-	err = json.Unmarshal([]byte(body), &response)
-	if err != nil {
-		return "", fmt.Errorf("[internal.stock.getCurrency] error unmarshalling JSON to get currency: %w", err)
-	} else if len(response.BestMatches) == 0 {
-		return "", fmt.Errorf("[internal.stock.getCurrency] error getting currency of symbol %s", symbol)
-	}
-
-	return response.BestMatches[0].Currency, nil
-}
-
 func getDatesNormal(timeSeries map[time.Time]TypedPrices, begin time.Time, end time.Time) []time.Time {
 	var dates []time.Time
 	for date := range timeSeries {
@@ -371,6 +345,95 @@ func getDatesAdjusted(timeSeries map[time.Time]TypedPricesAdjusted, begin time.T
 	return dates
 }
 
+func generateOutputHledger(timeSeries map[time.Time]TypedPrices, dates []time.Time, symbol string, currency string) string {
+	out := strings.Builder{}
+	for _, date := range dates {
+		out.WriteString(fmt.Sprintf("P %s \"%s\" %.2f %s\n",
+			date.Format("2006-01-02"),
+			symbol,
+			timeSeries[date].Close,
+			currency))
+	}
+	return out.String()
+}
+
+func generateOutputHledgerAdjusted(timeSeries map[time.Time]TypedPricesAdjusted, dates []time.Time, symbol string, currency string) string {
+	out := strings.Builder{}
+	for _, date := range dates {
+		out.WriteString(fmt.Sprintf("P %s \"%s\" %.2f %s\n",
+			date.Format("2006-01-02"),
+			symbol,
+			timeSeries[date].AdjustedClose, // Adjusted close price instead of close price.
+			currency))
+	}
+	return out.String()
+}
+
+func generateMetadataTable(symbol string, currency string, lastRefresh time.Time, timeZone string) string {
+	t := table.NewWriter()
+	t.SetStyle(table.StyleLight)
+	t.AppendHeader(table.Row{"Symbol", "Currency", "Last Refresh", "Timezone"})
+	t.AppendRow(table.Row{symbol, currency, lastRefresh.Format("2006-01-02"), timeZone})
+	return t.Render() + "\n"
+}
+
+func generateTimeSeriesTableShort(timeSeries map[time.Time]TypedPrices, dates []time.Time) string {
+	t := table.NewWriter()
+	t.SetStyle(table.StyleLight)
+	t.AppendHeader(table.Row{"Date", "Open", "High", "Low", "Close", "Volume"})
+	for _, date := range dates {
+		prices := timeSeries[date]
+		t.AppendRow([]interface{}{
+			date.Format("2006-01-02"),
+			fmt.Sprintf("%.2f", prices.Open),
+			fmt.Sprintf("%.2f", prices.High),
+			fmt.Sprintf("%.2f", prices.Low),
+			fmt.Sprintf("%.2f", prices.Close),
+			prices.Volume,
+		})
+	}
+	return t.Render() + "\n"
+}
+
+func generateTimeSeriesTableShortAdjusted(timeSeries map[time.Time]TypedPricesAdjusted, dates []time.Time) string {
+	t := table.NewWriter()
+	t.SetStyle(table.StyleLight)
+	t.AppendHeader(table.Row{"Date", "Open", "High", "Low", "Close", "Adj. Close", "Volume"})
+	for _, date := range dates {
+		prices := timeSeries[date]
+		t.AppendRow([]interface{}{
+			date.Format("2006-01-02"),
+			fmt.Sprintf("%.2f", prices.Open),
+			fmt.Sprintf("%.2f", prices.High),
+			fmt.Sprintf("%.2f", prices.Low),
+			fmt.Sprintf("%.2f", prices.Close),
+			fmt.Sprintf("%.2f", prices.AdjustedClose),
+			prices.Volume,
+		})
+	}
+	return t.Render() + "\n"
+}
+
+func generateTimeSeriesTableLongAdjusted(timeSeries map[time.Time]TypedPricesAdjusted, dates []time.Time) string {
+	t := table.NewWriter()
+	t.SetStyle(table.StyleLight)
+	t.AppendHeader(table.Row{"Date", "Open", "High", "Low", "Close", "Adj. Close", "Volume", "Dividend Amount"})
+	for _, date := range dates {
+		prices := timeSeries[date]
+		t.AppendRow([]interface{}{
+			date.Format("2006-01-02"),
+			fmt.Sprintf("%.2f", prices.Open),
+			fmt.Sprintf("%.2f", prices.High),
+			fmt.Sprintf("%.2f", prices.Low),
+			fmt.Sprintf("%.2f", prices.Close),
+			fmt.Sprintf("%.2f", prices.AdjustedClose),
+			prices.Volume,
+			fmt.Sprintf("%.2f", prices.DividendAmount),
+		})
+	}
+	return t.Render() + "\n"
+}
+
 // TODO Continue implementing unitary tests for this
 func Price(symbol string, format flags.OutputFormat, interval flags.Interval, begin string, end string, adjusted bool) (string, error) {
 	// Verify function parameters and variables.
@@ -379,6 +442,28 @@ func Price(symbol string, format flags.OutputFormat, interval flags.Interval, be
 	}
 	if symbol == "" {
 		return "", errors.New("[stock.price.Price] no stock symbol provided")
+	}
+
+	var err error
+	var beginTime time.Time
+	var endTime time.Time = time.Now()
+	if begin != "" {
+		beginTime, err = time.Parse("2006-01-02", begin)
+		if err != nil {
+			return "", fmt.Errorf("[stock.Price] failed to parse begin date: %w", err)
+		}
+		if beginTime.After(time.Now()) {
+			return "", errors.New("[stock.Price] begin date is in the future")
+		}
+	}
+	if end != "" {
+		endTime, err = time.Parse("2006-01-02", end)
+		if err != nil {
+			return "", fmt.Errorf("[stock.Price] failed to parse end date: %w", err)
+		}
+	}
+	if beginTime.After(endTime) {
+		return "", errors.New("[stock.Price] begin date is after end date")
 	}
 
 	url, err := buildURL(symbol, format, interval, adjusted)
@@ -394,21 +479,6 @@ func Price(symbol string, format flags.OutputFormat, interval flags.Interval, be
 	response, err := createResponseObject(interval, adjusted)
 	if err != nil {
 		return "", err
-	}
-
-	var beginTime time.Time
-	var endTime time.Time = time.Now()
-	if begin != "" {
-		beginTime, err = time.Parse("2006-01-02", begin)
-		if err != nil {
-			return "", fmt.Errorf("[stock.Price] failed to parse begin date: %w", err)
-		}
-	}
-	if end != "" {
-		endTime, err = time.Parse("2006-01-02", end)
-		if err != nil {
-			return "", fmt.Errorf("[stock.Price] failed to parse end date: %w", err)
-		}
 	}
 
 	return response.GenerateOutput(body, beginTime, endTime, format)

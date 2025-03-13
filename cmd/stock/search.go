@@ -20,11 +20,11 @@ package stock
 
 import (
 	"fmt"
-	"github.com/lentidas/hledger-price-tracker/internal/stock/search"
 
 	"github.com/spf13/cobra"
 
 	"github.com/lentidas/hledger-price-tracker/internal/flags"
+	"github.com/lentidas/hledger-price-tracker/internal/stock/search"
 )
 
 // Define the output flag and set it to the default value.

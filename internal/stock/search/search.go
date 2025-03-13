@@ -28,6 +28,7 @@ import (
 
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
+
 	"github.com/lentidas/hledger-price-tracker/internal"
 	"github.com/lentidas/hledger-price-tracker/internal/flags"
 )
@@ -149,10 +150,22 @@ func (obj *Search) GenerateOutput(body []byte, format flags.OutputFormat) (strin
 		}
 
 		t := table.NewWriter()
+		t.SetStyle(table.StyleLight)
 		if format == flags.OutputFormatTableLong {
 			t.AppendHeader(table.Row{"#", "Symbol", "Name", "Type", "Region", "Market Open", "Market Close", "Timezone", "Currency", "Match Score"})
 			for i, result := range obj.Typed.BestMatches {
-				t.AppendRow([]interface{}{i + 1, result.Symbol, result.Name, result.Type, result.Region, result.MarketOpen.Format("15:04"), result.MarketClose.Format("15:04"), result.Timezone, result.Currency, fmt.Sprintf("%.2f%%", result.MatchScore*100)})
+				t.AppendRow([]interface{}{
+					i + 1,
+					result.Symbol,
+					result.Name,
+					result.Type,
+					result.Region,
+					result.MarketOpen.Format("15:04"),
+					result.MarketClose.Format("15:04"),
+					result.Timezone,
+					result.Currency,
+					fmt.Sprintf("%.2f%%", result.MatchScore*100),
+				})
 			}
 			t.SetColumnConfigs([]table.ColumnConfig{
 				{Number: 6, Align: text.AlignRight},
@@ -162,7 +175,15 @@ func (obj *Search) GenerateOutput(body []byte, format flags.OutputFormat) (strin
 		} else {
 			t.AppendHeader(table.Row{"#", "Symbol", "Name", "Type", "Region", "Currency", "Match Score"})
 			for i, result := range obj.Typed.BestMatches {
-				t.AppendRow([]interface{}{i + 1, result.Symbol, result.Name, result.Type, result.Region, result.Currency, fmt.Sprintf("%.2f%%", result.MatchScore*100)})
+				t.AppendRow([]interface{}{
+					i + 1,
+					result.Symbol,
+					result.Name,
+					result.Type,
+					result.Region,
+					result.Currency,
+					fmt.Sprintf("%.2f%%", result.MatchScore*100),
+				})
 			}
 			t.SetColumnConfigs([]table.ColumnConfig{
 				{Number: 7, Align: text.AlignRight},
@@ -203,6 +224,28 @@ func buildURL(query string, format flags.OutputFormat) (string, error) {
 	}
 
 	return url.String(), nil
+}
+
+func GetCurrency(symbol string) (string, error) {
+	// Alpha Vantage does not use the same stocks for the search and price demos. As such, since we are essentially
+	// also performing a search when getting the price of a stock, this would fail with the `demo` API key.
+	if internal.DebugMode || internal.ApiKey == "demo" {
+		return "NIL", nil
+	}
+
+	body, err := Execute(symbol, flags.OutputFormatJSON)
+	if err != nil {
+		return "", err
+	}
+	var response Raw
+	err = json.Unmarshal([]byte(body), &response)
+	if err != nil {
+		return "", fmt.Errorf("[internal.stock.getCurrency] error unmarshalling JSON to get currency: %w", err)
+	} else if len(response.BestMatches) == 0 {
+		return "", fmt.Errorf("[internal.stock.getCurrency] error getting currency of symbol %s", symbol)
+	}
+
+	return response.BestMatches[0].Currency, nil
 }
 
 func Execute(query string, format flags.OutputFormat) (string, error) {

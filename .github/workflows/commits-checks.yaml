@@ -1,0 +1,14 @@
+---
+name: "commits-checks"
+
+on:
+  workflow_call:
+  pull_request:
+
+jobs:
+  commits-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Check commit messages"
+        uses: opensource-nepal/commitlint@v1.3.0

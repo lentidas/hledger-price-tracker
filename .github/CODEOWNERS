@@ -4,7 +4,7 @@
 # Order is important: the last matching pattern has the highest precedence.
 
 # These are the default owners/reviewers for the entire repository.
-* lentidas
+* @lentidas
 
 # Protect this CODEOWNERS file specifically and force reviews of this file only by the repository's owners.
-.github/CODEOWNERS lentidas
+.github/CODEOWNERS @lentidas

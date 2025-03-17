@@ -20,12 +20,13 @@ jobs:
       with:
         app-id: ${{ secrets.REPOSITORY_BOT_APP_ID }}
         private-key: ${{ secrets.REPOSITORY_BOT_PRIVATE_KEY }}
+        owner: ${{ github.repository_owner }}
 
     - name: Run Semantic Release
       id: semantic-release
       uses: cycjimmy/semantic-release-action@v4
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
       with:
         semantic_version: v24
         extra_plugins: |

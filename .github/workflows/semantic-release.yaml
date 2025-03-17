@@ -6,16 +6,28 @@ on:
     branches:
       - main
 
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Run semantic-release in dry-run mode"
+        required: false
+        default: false
+
 jobs:
   semantic-release:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Check if dry-run is activated and set output
+      id: setup_vars
+      run: |
+        echo "dry_run=${{ inputs.dry_run || 'false' }}" >> $GITHUB_OUTPUT
+
     - name: Checkout repository
       uses: actions/checkout@v4
 
     - name: Generate authentication token from GitHub App
-      id: app-token
+      id: app_token
       uses: actions/create-github-app-token@v1.11.1
       with:
         app-id: ${{ secrets.REPOSITORY_BOT_APP_ID }}
@@ -23,10 +35,10 @@ jobs:
         owner: ${{ github.repository_owner }}
 
     - name: Run Semantic Release
-      id: semantic-release
+      id: semantic_release
       uses: cycjimmy/semantic-release-action@v4
       env:
-        GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+        GITHUB_TOKEN: ${{ steps.app_token.outputs.token }}
       with:
         semantic_version: v24
         extra_plugins: |
@@ -36,11 +48,12 @@ jobs:
           @semantic-release/release-notes-generator@14.0.1
           @semantic-release/changelog@6.0.3
           conventional-changelog-conventionalcommits@8.0.0
-        dry_run: true # TODO Variabilize and set to true in PRs or with variable on workflow dispatch
+        dry_run: steps.setup_vars.outputs.dry_run
 
     - name: Upload release notes artifact for GoReleaser
-      if: steps.semantic-release.outputs.new_release_published == 'true'
+      if: steps.semantic_release.outputs.new_release_published == 'true' || inputs.dry_run == 'true'
       uses: actions/upload-artifact@v4
       with:
-        name: release-notes-v${{ steps.semantic-release.outputs.new_release_version }}.md
-        path: release-notes-v${{ steps.semantic-release.outputs.new_release_version }}.md
+        name: release-notes-v${{ steps.semantic_release.outputs.new_release_version }}.md
+        path: release-notes-v${{ steps.semantic_release.outputs.new_release_version }}.md
+        overwrite: true

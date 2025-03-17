@@ -43,4 +43,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: release-notes-v${{ steps.semantic-release.outputs.new_release_version }}.md
-        path: ./
+        path: release-notes-v${{ steps.semantic-release.outputs.new_release_version }}.md

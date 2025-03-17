@@ -35,8 +35,6 @@ import (
 
 const apiFunctionSearch = "SYMBOL_SEARCH"
 
-// TODO Comment functions and such.
-
 type Response interface {
 	TypeBody() error
 	GenerateOutput(body []byte, format flags.OutputFormat) (string, error)
@@ -79,13 +77,13 @@ func (obj *Search) TypeBody() error {
 	for _, result := range obj.Raw.BestMatches {
 		score, err := strconv.ParseFloat(result.MatchScore, 32)
 		if err != nil {
-			return fmt.Errorf("[stock.TypeBody] failure to parse match score: %w", err)
+			return fmt.Errorf("[stock.search.TypeBody] failure to parse match score: %w", err)
 		}
 
 		// Parse the timezone offset.
 		offset, err := strconv.Atoi(result.Timezone[3:])
 		if err != nil {
-			return fmt.Errorf("[stock.TypeBody] failure to parse timezone offset: %w", err)
+			return fmt.Errorf("[stock.search.TypeBody] failure to parse timezone offset: %w", err)
 		}
 
 		// Create a fixed timezone.
@@ -93,12 +91,12 @@ func (obj *Search) TypeBody() error {
 
 		openTime, err := time.ParseInLocation("15:04", result.MarketOpen, tz)
 		if err != nil {
-			return fmt.Errorf("[stock.TypeBody] failure to parse market open time: %w", err)
+			return fmt.Errorf("[stock.search.TypeBody] failure to parse market open time: %w", err)
 		}
 
 		closeTime, err := time.ParseInLocation("15:04", result.MarketClose, tz)
 		if err != nil {
-			return fmt.Errorf("[stock.TypeBody] failure to parse market close time: %w", err)
+			return fmt.Errorf("[stock.search.TypeBody] failure to parse market close time: %w", err)
 		}
 
 		obj.Typed.BestMatches = append(obj.Typed.BestMatches, struct {
@@ -226,6 +224,7 @@ func buildURL(query string, format flags.OutputFormat) (string, error) {
 	return url.String(), nil
 }
 
+// GetCurrency performs a search for a certain stock symbol, then returns the currency of the first result.
 func GetCurrency(symbol string) (string, error) {
 	// Alpha Vantage does not use the same stocks for the search and price demos. As such, since we are essentially
 	// also performing a search when getting the price of a stock, this would fail with the `demo` API key.
@@ -240,14 +239,20 @@ func GetCurrency(symbol string) (string, error) {
 	var response Raw
 	err = json.Unmarshal([]byte(body), &response)
 	if err != nil {
-		return "", fmt.Errorf("[internal.stock.getCurrency] error unmarshalling JSON to get currency: %w", err)
+		return "", fmt.Errorf("[stock.search.GetCurrency] error unmarshalling JSON to get currency: %w", err)
 	} else if len(response.BestMatches) == 0 {
-		return "", fmt.Errorf("[internal.stock.getCurrency] error getting currency of symbol %s", symbol)
+		return "", fmt.Errorf("[stock.search.GetCurrency] error getting currency of symbol %s", symbol)
+	}
+
+	if len(response.BestMatches) < 1 {
+		return "", errors.New("[stock.search.GetCurrency] no results found")
 	}
 
 	return response.BestMatches[0].Currency, nil
 }
 
+// Execute is the core function of the search package. It performs a search for a certain stock symbol and returns the
+// results in the specified format.
 func Execute(query string, format flags.OutputFormat) (string, error) {
 	if internal.ApiKey == "" {
 		return "", errors.New("[stock.search.Execute] API key is required")

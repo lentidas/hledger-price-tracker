@@ -31,19 +31,19 @@ func TestPrice(t *testing.T) {
 	internal.ApiKey = "demo"
 
 	t.Run("no symbol", func(t *testing.T) {
-		if _, err := Price("", flags.OutputFormatHledger, flags.IntervalWeekly, "", "", false); err == nil {
+		if _, err := Execute("", flags.OutputFormatHledger, flags.IntervalWeekly, "", "", false); err == nil {
 			t.Error("expected error, got nil")
 		}
 	})
 
 	t.Run("invalid output format", func(t *testing.T) {
-		if _, err := Price("tesco", "invalid", flags.IntervalWeekly, "", "", false); err == nil {
+		if _, err := Execute("tesco", "invalid", flags.IntervalWeekly, "", "", false); err == nil {
 			t.Error("expected error, got nil")
 		}
 	})
 
 	t.Run("invalid interval", func(t *testing.T) {
-		if _, err := Price("tesco", flags.OutputFormatHledger, "invalid", "", "", false); err == nil {
+		if _, err := Execute("tesco", flags.OutputFormatHledger, "invalid", "", "", false); err == nil {
 			t.Error("expected error, got nil")
 		}
 	})
@@ -51,7 +51,7 @@ func TestPrice(t *testing.T) {
 	internal.ApiKey = ""
 
 	t.Run("no API key", func(t *testing.T) {
-		if _, err := Price("tesco", flags.OutputFormatHledger, flags.IntervalWeekly, "", "", false); err == nil {
+		if _, err := Execute("tesco", flags.OutputFormatHledger, flags.IntervalWeekly, "", "", false); err == nil {
 			t.Error("expected error, got nil")
 		}
 	})

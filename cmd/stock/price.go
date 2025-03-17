@@ -57,7 +57,7 @@ API documentation:
 	Args: cobra.MinimumNArgs(1),
 
 	Run: func(cmd *cobra.Command, args []string) {
-		output, err := price.Price(args[0], formatPrice, interval, begin, end, adjusted)
+		output, err := price.Execute(args[0], formatPrice, interval, begin, end, adjusted)
 		cobra.CheckErr(err)
 		fmt.Print(output)
 	},

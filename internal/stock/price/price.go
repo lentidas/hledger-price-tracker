@@ -33,8 +33,6 @@ import (
 	"github.com/lentidas/hledger-price-tracker/internal/stock/search"
 )
 
-// TODO Comment functions and such.
-
 type Response interface {
 	TypeBody() error
 	GenerateOutput(body []byte, begin time.Time, end time.Time, format flags.OutputFormat) (string, error)
@@ -68,7 +66,7 @@ func (typed *TypedMetadata) TypeBody(raw RawMetadata) error {
 
 	typed.Currency, err = search.GetCurrency(typed.Symbol)
 	if err != nil {
-		return fmt.Errorf("[(*TypedMetadata).TypeBody] error getting currency: %w", err)
+		return fmt.Errorf("[stock.price.(*TypedMetadata).TypeBody] error getting currency: %w", err)
 	}
 
 	return nil
@@ -104,7 +102,7 @@ func (typed *TypedMetadataDaily) TypeBody(raw RawMetadataDaily) error {
 
 	typed.Currency, err = search.GetCurrency(typed.Symbol)
 	if err != nil {
-		return fmt.Errorf("[(*TypedMetadata).TypeBody] error getting currency: %w", err)
+		return fmt.Errorf("[stock.price.(*TypedMetadataDaily).TypeBody] error getting currency: %w", err)
 	}
 
 	return nil
@@ -130,23 +128,23 @@ func (typed *TypedPrices) TypeBody(raw RawPrices) error {
 	// TODO Maybe wrap these errors?
 	openPrice, err := strconv.ParseFloat(raw.Open, 64)
 	if err != nil {
-		return err
+		return fmt.Errorf("[stock.price.(*TypedPrices).TypeBody] error parsing open price: %w", err)
 	}
 	highPrice, err := strconv.ParseFloat(raw.High, 64)
 	if err != nil {
-		return err
+		return fmt.Errorf("[stock.price.(*TypedPrices).TypeBody] error parsing high price: %w", err)
 	}
 	lowPrice, err := strconv.ParseFloat(raw.Low, 64)
 	if err != nil {
-		return err
+		return fmt.Errorf("[stock.price.(*TypedPrices).TypeBody] error parsing low price: %w", err)
 	}
 	closePrice, err := strconv.ParseFloat(raw.Close, 64)
 	if err != nil {
-		return err
+		return fmt.Errorf("[stock.price.(*TypedPrices).TypeBody] error parsing close price: %w", err)
 	}
 	volume, err := strconv.ParseUint(raw.Volume, 10, 32)
 	if err != nil {
-		return err
+		return fmt.Errorf("[stock.price.(*TypedPrices).TypeBody] error parsing volume: %w", err)
 	}
 
 	typed.Open = openPrice
@@ -180,34 +178,33 @@ type TypedPricesAdjusted struct {
 }
 
 func (typed *TypedPricesAdjusted) TypeBody(raw RawPricesAdjusted) error {
-	// TODO Maybe wrap these errors?
 	openPrice, err := strconv.ParseFloat(raw.Open, 64)
 	if err != nil {
-		return err
+		return fmt.Errorf("[stock.price.(*TypedPricesAdjusted).TypeBody] error parsing open price: %w", err)
 	}
 	highPrice, err := strconv.ParseFloat(raw.High, 64)
 	if err != nil {
-		return err
+		return fmt.Errorf("[stock.price.(*TypedPricesAdjusted).TypeBody] error parsing high price: %w", err)
 	}
 	lowPrice, err := strconv.ParseFloat(raw.Low, 64)
 	if err != nil {
-		return err
+		return fmt.Errorf("[stock.price.(*TypedPricesAdjusted).TypeBody] error parsing low price: %w", err)
 	}
 	closePrice, err := strconv.ParseFloat(raw.Close, 64)
 	if err != nil {
-		return err
+		return fmt.Errorf("[stock.price.(*TypedPricesAdjusted).TypeBody] error parsing close price: %w", err)
 	}
 	adjustedClose, err := strconv.ParseFloat(raw.AdjustedClose, 64)
 	if err != nil {
-		return err
+		return fmt.Errorf("[stock.price.(*TypedPricesAdjusted).TypeBody] error parsing adjusted close price: %w", err)
 	}
 	volume, err := strconv.ParseUint(raw.Volume, 10, 32)
 	if err != nil {
-		return err
+		return fmt.Errorf("[stock.price.(*TypedPricesAdjusted).TypeBody] error parsing volume: %w", err)
 	}
 	dividendAmount, err := strconv.ParseFloat(raw.DividendAmount, 64)
 	if err != nil {
-		return err
+		return fmt.Errorf("[stock.price.(*TypedPricesAdjusted).TypeBody] error parsing dividend amount: %w", err)
 	}
 
 	typed.Open = openPrice
@@ -313,6 +310,7 @@ func createResponseObject(interval flags.Interval, adjusted bool) (Response, err
 	return obj, nil
 }
 
+// getDates returns the dates in the time series that are within the specified interval.
 func getDatesNormal(timeSeries map[time.Time]TypedPrices, begin time.Time, end time.Time) []time.Time {
 	var dates []time.Time
 	for date := range timeSeries {
@@ -329,6 +327,7 @@ func getDatesNormal(timeSeries map[time.Time]TypedPrices, begin time.Time, end t
 	return dates
 }
 
+// getDatesAdjusted returns the dates for the adjusted prices that are within the interval defined by `begin` and `end`.
 func getDatesAdjusted(timeSeries map[time.Time]TypedPricesAdjusted, begin time.Time, end time.Time) []time.Time {
 	var dates []time.Time
 	for date := range timeSeries {
@@ -345,6 +344,7 @@ func getDatesAdjusted(timeSeries map[time.Time]TypedPricesAdjusted, begin time.T
 	return dates
 }
 
+// generateOutputHledger generates the output in hledger format for non-adjusted prices.
 func generateOutputHledger(timeSeries map[time.Time]TypedPrices, dates []time.Time, symbol string, currency string) string {
 	out := strings.Builder{}
 	for _, date := range dates {
@@ -357,6 +357,7 @@ func generateOutputHledger(timeSeries map[time.Time]TypedPrices, dates []time.Ti
 	return out.String()
 }
 
+// generateOutputHledgerAdjusted generates the output in hledger format for adjusted prices.
 func generateOutputHledgerAdjusted(timeSeries map[time.Time]TypedPricesAdjusted, dates []time.Time, symbol string, currency string) string {
 	out := strings.Builder{}
 	for _, date := range dates {
@@ -369,6 +370,8 @@ func generateOutputHledgerAdjusted(timeSeries map[time.Time]TypedPricesAdjusted,
 	return out.String()
 }
 
+// generateMetadataTable generates a table with the metadata for a given stock symbol. It is used to display the
+// the information about the stock before the table with the stock prices.
 func generateMetadataTable(symbol string, currency string, lastRefresh time.Time, timeZone string) string {
 	t := table.NewWriter()
 	t.SetStyle(table.StyleLight)
@@ -377,6 +380,9 @@ func generateMetadataTable(symbol string, currency string, lastRefresh time.Time
 	return t.Render() + "\n"
 }
 
+// generateTimeSeriesTableShort generates a short table with the prices for a given stock symbol.
+// It is used to display the stock prices in a compact way.
+// Note that for non-adjusted prices this output format is used both in `table` and `table-long`.
 func generateTimeSeriesTableShort(timeSeries map[time.Time]TypedPrices, dates []time.Time) string {
 	t := table.NewWriter()
 	t.SetStyle(table.StyleLight)
@@ -395,6 +401,8 @@ func generateTimeSeriesTableShort(timeSeries map[time.Time]TypedPrices, dates []
 	return t.Render() + "\n"
 }
 
+// generateTimeSeriesTableShortAdjusted generates a table with the adjusted prices for a given stock symbol.
+// It is used to display the stock prices in a compact way, but only for adjusted prices output.
 func generateTimeSeriesTableShortAdjusted(timeSeries map[time.Time]TypedPricesAdjusted, dates []time.Time) string {
 	t := table.NewWriter()
 	t.SetStyle(table.StyleLight)
@@ -414,6 +422,8 @@ func generateTimeSeriesTableShortAdjusted(timeSeries map[time.Time]TypedPricesAd
 	return t.Render() + "\n"
 }
 
+// generateTimeSeriesTableLongAdjusted generates a long table with the adjusted prices for a given stock symbol.
+// It is used to display the stock prices in a detailed way, but only for adjusted prices output.
 func generateTimeSeriesTableLongAdjusted(timeSeries map[time.Time]TypedPricesAdjusted, dates []time.Time) string {
 	t := table.NewWriter()
 	t.SetStyle(table.StyleLight)
@@ -435,13 +445,16 @@ func generateTimeSeriesTableLongAdjusted(timeSeries map[time.Time]TypedPricesAdj
 }
 
 // TODO Continue implementing unitary tests for this
-func Price(symbol string, format flags.OutputFormat, interval flags.Interval, begin string, end string, adjusted bool) (string, error) {
+
+// Execute is the core function of the price package. It fetches the stock prices from the Alpha Vantage API for a given
+// stock symbol and returns it in the desired format.
+func Execute(symbol string, format flags.OutputFormat, interval flags.Interval, begin string, end string, adjusted bool) (string, error) {
 	// Verify function parameters and variables.
 	if internal.ApiKey == "" {
-		return "", errors.New("[stock.price.Price] API key is required")
+		return "", errors.New("[stock.price.Execute] API key is required")
 	}
 	if symbol == "" {
-		return "", errors.New("[stock.price.Price] no stock symbol provided")
+		return "", errors.New("[stock.price.Execute] no stock symbol provided")
 	}
 
 	var err error
@@ -450,20 +463,20 @@ func Price(symbol string, format flags.OutputFormat, interval flags.Interval, be
 	if begin != "" {
 		beginTime, err = time.Parse("2006-01-02", begin)
 		if err != nil {
-			return "", fmt.Errorf("[stock.Price] failed to parse begin date: %w", err)
+			return "", fmt.Errorf("[stock.price.Execute] failed to parse begin date: %w", err)
 		}
 		if beginTime.After(time.Now()) {
-			return "", errors.New("[stock.Price] begin date is in the future")
+			return "", errors.New("[stock.price.Execute] begin date is in the future")
 		}
 	}
 	if end != "" {
 		endTime, err = time.Parse("2006-01-02", end)
 		if err != nil {
-			return "", fmt.Errorf("[stock.Price] failed to parse end date: %w", err)
+			return "", fmt.Errorf("[stock.price.Execute] failed to parse end date: %w", err)
 		}
 	}
 	if beginTime.After(endTime) {
-		return "", errors.New("[stock.Price] begin date is after end date")
+		return "", errors.New("[stock.price.Execute] begin date is after end date")
 	}
 
 	url, err := buildURL(symbol, format, interval, adjusted)

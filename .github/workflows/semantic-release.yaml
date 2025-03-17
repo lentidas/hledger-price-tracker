@@ -21,10 +21,11 @@ jobs:
         app-id: ${{ secrets.REPOSITORY_BOT_APP_ID }}
         private-key: ${{ secrets.REPOSITORY_BOT_PRIVATE_KEY }}
 
-
     - name: Run Semantic Release
       id: semantic-release
       uses: cycjimmy/semantic-release-action@v4
+      env:
+        GH_TOKEN: ${{ steps.app-token.outputs.token }}
       with:
         semantic_version: v24
         extra_plugins: |
@@ -35,8 +36,6 @@ jobs:
           @semantic-release/changelog@6.0.3
           conventional-changelog-conventionalcommits@8.0.0
         dry_run: true # TODO Variabilize and set to true in PRs or with variable on workflow dispatch
-      env:
-        GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
     - name: Upload release notes artifact for GoReleaser
       if: steps.semantic-release.outputs.new_release_published == 'true'

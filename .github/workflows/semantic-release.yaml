@@ -58,9 +58,9 @@ jobs:
         semantic_version: v24
         extra_plugins: |
           @semantic-release/git@10.0.1
-          @semantic-release/exec@6.0.0
-          @semantic-release/commit-analyzer@13.0.0
-          @semantic-release/release-notes-generator@14.0.1
+          @semantic-release/exec@6.0.3
+          @semantic-release/commit-analyzer@13.0.1
+          @semantic-release/release-notes-generator@14.0.3
           @semantic-release/changelog@6.0.3
           conventional-changelog-conventionalcommits@8.0.0
         dry_run: steps.setup_vars.outputs.dry_run

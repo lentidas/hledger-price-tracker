@@ -39,10 +39,10 @@ jobs:
       uses: cycjimmy/semantic-release-action@v4
       env:
         GITHUB_TOKEN: ${{ steps.app_token.outputs.token }}
-        GIT_AUTHOR_NAME: repository-bot[bot]
-        GIT_AUTHOR_EMAIL: 191768328+repository-bot[bot]@users.noreply.github.com
-        GIT_COMMITTER_NAME: repository-bot[bot]
-        GIT_COMMITTER_EMAIL: 191768328+repository-bot[bot]@users.noreply.github.com
+        GIT_AUTHOR_NAME: ${{ variables.REPOSITORY_BOT_GIT_NAME }}
+        GIT_AUTHOR_EMAIL: ${{ variables.REPOSITORY_BOT_GIT_EMAIL }}
+        GIT_COMMITTER_NAME: ${{ variables.REPOSITORY_BOT_GIT_NAME }}
+        GIT_COMMITTER_EMAIL: ${{ variables.REPOSITORY_BOT_GIT_EMAIL }}
       with:
         semantic_version: v24
         extra_plugins: |

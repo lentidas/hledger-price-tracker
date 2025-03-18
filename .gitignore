@@ -1,3 +1,10 @@
+# Manually added entries
+
+### GoReleaser ###
+dist/
+
+# ----- #
+
 # Created by https://www.toptal.com/developers/gitignore/api/macos,linux,windows,visualstudiocode,goland,go
 # Edit at https://www.toptal.com/developers/gitignore?templates=macos,linux,windows,visualstudiocode,goland,go
 
@@ -230,4 +237,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# End of https://www.toptal.com/developers/gitignore/api/macos,linux,windows,visualstudiocode,goland,go
+# End of https://www.toptal.com/developers/gitignore/api/macos,linux,windows,visualstudiocode,goland,go# Added by goreleaser init:

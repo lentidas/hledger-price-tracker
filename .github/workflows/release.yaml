@@ -20,7 +20,7 @@ jobs:
 
     outputs:
       dry_run: ${{ steps.setup_vars.outputs.dry_run }}
-      release_notes: ${{ steps.semantic_release.outputs.new_release_notes }}
+      release_notes: ${{ steps.release_notes.outputs.content }}
       new_release_published: ${{ steps.semantic_release.outputs.new_release_published }}
       new_release_version: ${{ steps.semantic_release.outputs.new_release_version }}
 
@@ -71,8 +71,13 @@ jobs:
           conventional-changelog-conventionalcommits@8.0.0
         dry_run: steps.setup_vars.outputs.dry_run
 
-    - name: Print release notes
-      run: cat /tmp/release-notes.md
+    # Although the step semantic_release already has an output, it was not properly formatted, so we extract the
+    # necessary information with the `exec` plugin.
+    - name: Upload release notes artifact
+      uses: actions/upload-artifact@v4.1.0
+      with:
+        name: release-notes-v${{ steps.semantic_release.outputs.new_release_version }}
+        path: /tmp/release-notes-v${{ steps.semantic_release.outputs.new_release_version }}.md
 
   goreleaser:
     runs-on: ubuntu-latest
@@ -83,23 +88,27 @@ jobs:
     if: ${{ needs.semantic-release.outputs.new_release_published == 'true' && needs.semantic-release.outputs.dry_run == 'false' }}
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4.2.2
-      with:
-        token: '${{ github.token }}'
-        ref: v${{ needs.semantic-release.outputs.new_release_version }}
-        fetch-depth: 0
-        persist-credentials: false
-
-    - name: Create release notes file
-      run: echo "${{ needs.semantic-release.outputs.release_notes }}" > /tmp/release-notes.md
-
     - name: Generate authentication token from GitHub App
       id: app-token
       uses: actions/create-github-app-token@v1.11.6
       with:
         app-id: ${{ secrets.REPOSITORY_BOT_APP_ID }}
         private-key: ${{ secrets.REPOSITORY_BOT_PRIVATE_KEY }}
+
+    - name: Checkout repository
+      uses: actions/checkout@v4.2.2
+      with:
+        token: ${{ steps.app-token.outputs.token }}
+        ref: v${{ needs.semantic-release.outputs.new_release_version }}
+        fetch-depth: 0
+        persist-credentials: false
+
+    - name: Download release notes artifact
+      uses: actions/download-artifact@v4.1.0
+      with:
+        github-token: ${{ steps.app-token.outputs.token }}
+        name: release-notes-v${{ needs.semantic-release.outputs.new_release_version }}
+        path: /tmp
 
     - name: Set up Go
       uses: actions/setup-go@v5.3.0
@@ -111,6 +120,6 @@ jobs:
       with:
         distribution: goreleaser
         version: "~> v2"
-        args: release --clean --release-notes /tmp/release-notes.md
+        args: release --clean --release-notes /tmp/release-notes-v${{ needs.semantic-release.outputs.new_release_version }}.md
       env:
         GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}

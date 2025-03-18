@@ -21,7 +21,7 @@
     [
       "@semantic-release/exec",
       {
-        "publishCmd": "echo \"${nextRelease.notes}\" > /tmp/release-notes.md"
+        "publishCmd": "echo \"${nextRelease.notes}\" > /tmp/release-notes-v${nextRelease.version}.md"
       }
     ]
   ],

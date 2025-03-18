@@ -8,13 +8,5 @@
       ],
       "datasourceTemplate": "npm"
     }
-  ],
-  "packageRules": [
-    {
-      "matchFileNames": [
-        ".github/workflows/**"
-      ],
-      "commitMessageExtra": "[skip ci]"
-    }
   ]
 }

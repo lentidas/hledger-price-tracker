@@ -11,6 +11,7 @@ on:
       dry_run:
         description: "Run semantic-release in dry-run mode"
         required: false
+        type: boolean
         default: false
 
 jobs:
@@ -21,7 +22,7 @@ jobs:
     - name: Check if dry-run is activated and set output
       id: setup_vars
       run: |
-        echo "dry_run=${{ inputs.dry_run || 'false' }}" >> $GITHUB_OUTPUT
+        echo "dry_run=${{ inputs.dry_run || false }}" >> $GITHUB_OUTPUT
 
     - name: Generate authentication token from GitHub App
       id: app_token

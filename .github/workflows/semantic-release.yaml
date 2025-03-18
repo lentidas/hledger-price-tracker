@@ -26,13 +26,11 @@ jobs:
 
     - name: Generate authentication token from GitHub App
       id: app_token
-      uses: actions/create-github-app-token@v1.11.6
+      uses: actions/create-github-app-token@v1.11.1
       with:
         app-id: ${{ secrets.REPOSITORY_BOT_APP_ID }}
         private-key: ${{ secrets.REPOSITORY_BOT_PRIVATE_KEY }}
         owner: ${{ github.repository_owner }}
-        repositories: |
-          ${{ github.repository.name }}
 
     - name: Get GitHub App User ID
       id: get_user_id

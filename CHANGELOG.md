@@ -1,3 +1,22 @@
+## [1.1.0](https://github.com/lentidas/hledger-price-tracker/compare/v1.0.0...v1.1.0) (2025-03-18)
+
+### Continuous Integration
+
+* add comment ([3824914](https://github.com/lentidas/hledger-price-tracker/commit/38249140310aee465b87e3ff890180d1805d063e))
+* add custom Renovate configuration ([31e893d](https://github.com/lentidas/hledger-price-tracker/commit/31e893d3a4065745b7cec259d48f7951c0ba1bde))
+* dynamically generate the app name and e-mail ([9cac8d4](https://github.com/lentidas/hledger-price-tracker/commit/9cac8d46e007cec6ad465a7a2844de2979301f14))
+* fix syntax ([fd1c314](https://github.com/lentidas/hledger-price-tracker/commit/fd1c3142078c63530242721c042662713ef411ef))
+* give a type to the variable ([db0e7ad](https://github.com/lentidas/hledger-price-tracker/commit/db0e7adfb8dab1dced3742785201efb3630684dc))
+* overload both environment variables ([052a57c](https://github.com/lentidas/hledger-price-tracker/commit/052a57cd8a035de4c3bb31988108a1950db4dd9a))
+* try setting up the repository explicitly ([09b21fc](https://github.com/lentidas/hledger-price-tracker/commit/09b21fc285674b5f160192cbec0ff9d26ef70b64))
+* try using last working version ([db679b3](https://github.com/lentidas/hledger-price-tracker/commit/db679b35358a083bf4aa03bbedb19b3287e23fbe))
+* use another environment variable ([fa99e6c](https://github.com/lentidas/hledger-price-tracker/commit/fa99e6cac118bfd5417c944b5d8215f87bd9b0d4))
+* use variables to set application bot email and name ([9e7c4a9](https://github.com/lentidas/hledger-price-tracker/commit/9e7c4a99f18cdd1f20b29a3d076d3fd4a29285c3))
+
+### Miscellaneous Chores
+
+* **deps:** update actions/create-github-app-token action to v1.11.6 ([#11](https://github.com/lentidas/hledger-price-tracker/issues/11)) ([f065359](https://github.com/lentidas/hledger-price-tracker/commit/f065359fa11500c6cdc145cb953d73ea3d60ea1c))
+
 ## 1.0.0 (2025-03-17)
 
 ### ⚠ BREAKING CHANGES

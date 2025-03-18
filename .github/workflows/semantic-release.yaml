@@ -38,10 +38,11 @@ jobs:
       env:
         GH_TOKEN: ${{ steps.app_token.outputs.token }}
 
-    - name: Checkout repository
+    - name: Check out repository
       uses: actions/checkout@v4.2.2
       with:
         persist-credentials: false
+        token: ${{ steps.app_token.outputs.token }}
 
     - name: Run Semantic Release
       id: semantic_release

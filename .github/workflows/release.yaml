@@ -20,7 +20,7 @@ jobs:
 
     outputs:
       dry_run: ${{ steps.setup_vars.outputs.dry_run }}
-      release_notes: ${{ steps.semantic_release.outputs.new_release_notes }}
+      release_notes: ${{ steps.release_notes.outputs.content }}
       new_release_published: ${{ steps.semantic_release.outputs.new_release_published }}
       new_release_version: ${{ steps.semantic_release.outputs.new_release_version }}
 
@@ -71,8 +71,11 @@ jobs:
           conventional-changelog-conventionalcommits@8.0.0
         dry_run: steps.setup_vars.outputs.dry_run
 
-    - name: Print release notes
-      run: cat /tmp/release-notes.md
+    # Although the step semantic_release already has an output, it was not properly formatted, so we extract the
+    # necessary information with the `exec` plugin.
+    - name: Output release notes
+      id: release_notes
+      run: echo "content=$(cat /tmp/release-notes.md)" >> $GITHUB_OUTPUT
 
   goreleaser:
     runs-on: ubuntu-latest

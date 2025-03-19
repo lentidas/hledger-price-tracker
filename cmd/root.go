@@ -69,7 +69,7 @@ func init() {
 	rootCmd.PersistentFlags().BoolVar(&internal.DebugMode, "debug", false, "enable debug mode (disables a few API requests and prints more information)")
 	rootCmd.PersistentFlags().MarkHidden("debug")
 
-	// Mark which flags are required for this subcommand.
+	// Mark which flags are required for the program.
 	requiredPersistentFlags := []string{"api-key"}
 	for _, flag := range requiredPersistentFlags {
 		if err := rootCmd.MarkPersistentFlagRequired(flag); err != nil {

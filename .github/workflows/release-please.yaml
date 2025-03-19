@@ -26,7 +26,6 @@ jobs:
       id: release-please
       with:
         token: ${{ steps.app-token.outputs.token }}
-        skip-github-release: true
         config-file: .release-please-config.json
         manifest-file: .release-please-manifest.json
 

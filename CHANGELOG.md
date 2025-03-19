@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.0...v0.1.1) (2025-03-19)
+
+
+### Bug Fixes
+
+* add more expressive message when no config found ([1bc28e4](https://github.com/lentidas/hledger-price-tracker/commit/1bc28e499cc872fde78a6521c774e3e7a2eff49c))
+
 ## [0.1.0](https://github.com/lentidas/hledger-price-tracker/compare/v0.0.1...v0.1.0) (2025-03-19)
 
 

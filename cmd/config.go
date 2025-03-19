@@ -35,7 +35,11 @@ hledger-price-tracker
 Command to get details about the application's configuration file.`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("Using config file: %s\n", viper.ConfigFileUsed())
+		if err := viper.ReadInConfig(); err != nil {
+			fmt.Println("No configuration file found.")
+		} else {
+			fmt.Printf("Using config file: %s\n", viper.ConfigFileUsed())
+		}
 	},
 }
 

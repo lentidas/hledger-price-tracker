@@ -38,12 +38,3 @@ archives:
 
 changelog:
   disable: true
-
-release:
-  footer: >-
-    
-    Check the full changelog [here](https://github.com/lentidas/hledger-price-tracker/blob/main/CHANGELOG.md).
-
-    ---
-
-    Released by [GoReleaser](https://github.com/goreleaser/goreleaser)

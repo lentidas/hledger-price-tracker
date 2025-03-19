@@ -69,14 +69,6 @@ func init() {
 	rootCmd.PersistentFlags().BoolVar(&internal.DebugMode, "debug", false, "enable debug mode (disables a few API requests and prints more information)")
 	rootCmd.PersistentFlags().MarkHidden("debug")
 
-	// Mark which flags are required for the program.
-	requiredPersistentFlags := []string{"api-key"}
-	for _, flag := range requiredPersistentFlags {
-		if err := rootCmd.MarkPersistentFlagRequired(flag); err != nil {
-			// Ignore the error, because Cobra only returns an error if the flag is not previously created.
-		}
-	}
-
 	// Add command palettes as subgroups to make the message clearer.
 	rootCmd.AddGroup(&cobra.Group{ID: "palette", Title: "Command Palettes:"})
 

@@ -40,8 +40,6 @@ hledger-price-tracker
 
 Command to get the application's version.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// FIXME Make the subcommand not require any flags.
-
 		fmt.Printf("hledger-price-tracker %s, commit %s, built at %s\n", version, commit, date)
 	},
 }

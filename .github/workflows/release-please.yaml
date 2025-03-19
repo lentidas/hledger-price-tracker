@@ -1,0 +1,32 @@
+---
+name: "release-please"
+
+on:
+  push:
+    branches:
+    - main
+
+  workflow_dispatch:
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Generate authentication token from GitHub App
+      id: app-token
+      uses: actions/create-github-app-token@v1.11.6
+      with:
+        app-id: ${{ secrets.REPOSITORY_BOT_APP_ID }}
+        private-key: ${{ secrets.REPOSITORY_BOT_PRIVATE_KEY }}
+        owner: ${{ github.repository_owner }}
+
+    - name: Run Release Please
+      uses: googleapis/release-please-action@v4.2.0
+      id: release-please
+      with:
+        token: ${{ steps.app-token.outputs.token }}
+        skip-github-release: true
+        config-file: .release-please-config.json
+        manifest-file: .release-please-manifest.json
+

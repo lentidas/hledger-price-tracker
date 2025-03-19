@@ -18,6 +18,8 @@ builds:
       - linux
       - windows
       - darwin
+    ldflags:
+      - -s -w -X github.com/lentidas/hledger-price-tracker/cmd.version={{.Version}} -X github.com/lentidas/hledger-price-tracker/cmd.commit={{.Commit}} -X github.com/lentidas/hledger-price-tracker/cmd.date={{.Date}}
 
 archives:
   - formats: [tar.gz]
@@ -39,6 +41,8 @@ changelog:
 
 release:
   footer: >-
+    
+    Check the full changelog [here](https://github.com/lentidas/hledger-price-tracker/blob/main/CHANGELOG.md).
 
     ---
 

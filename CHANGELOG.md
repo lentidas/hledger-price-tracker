@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/lentidas/hledger-price-tracker/compare/v0.2.0...v0.2.1) (2025-03-19)
+
+
+### Bug Fixes
+
+* test Release Please ([31dbb0c](https://github.com/lentidas/hledger-price-tracker/commit/31dbb0cb956f69397aefcc90cf00c4b0c04aa11a))
+
 ## [0.2.0](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.0...v0.2.0) (2025-03-19)
 
 

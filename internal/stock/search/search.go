@@ -128,7 +128,7 @@ func (obj *Search) TypeBody() error {
 func (obj *Search) GenerateOutput(body []byte, format flags.OutputFormat) (string, error) {
 	switch format {
 	case flags.OutputFormatHledger:
-		return "", errors.New("[internal.search.generateSearchOutput] hledger output format not supported")
+		return "", errors.New("[(*Search).GenerateOutput] hledger output format not supported")
 	case flags.OutputFormatJSON, flags.OutputFormatCSV:
 		return string(body), nil
 	case flags.OutputFormatTable, flags.OutputFormatTableLong:
@@ -190,7 +190,7 @@ func (obj *Search) GenerateOutput(body []byte, format flags.OutputFormat) (strin
 
 		return t.Render(), nil
 	default:
-		return "", errors.New("[internal.search.generateSearchOutput] invalid output format")
+		return "", errors.New("[(*Search).GenerateOutput] invalid output format")
 	}
 }
 
@@ -244,9 +244,13 @@ func GetCurrency(symbol string) (string, error) {
 		return "", fmt.Errorf("[stock.search.GetCurrency] error getting currency of symbol %s", symbol)
 	}
 
+	// If no results are found, return an error. An error is a correct in this case, because if the user uses a known
+	// stock symbol, the API should always return at least one result.
 	if len(response.BestMatches) < 1 {
 		return "", errors.New("[stock.search.GetCurrency] no results found")
 	}
+
+	// TODO Maybe consider also returning an error if the match score is not 100%.
 
 	return response.BestMatches[0].Currency, nil
 }

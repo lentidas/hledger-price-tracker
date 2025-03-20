@@ -1,5 +1,39 @@
 # Changelog
 
+## [0.1.2](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.1...v0.1.2) (2025-03-20)
+
+
+### Features
+
+* add commands to list (crypto)currencies ([bfef918](https://github.com/lentidas/hledger-price-tracker/commit/bfef918cda7163b34355e254dd94e6f221a2e7e0))
+
+
+### Bug Fixes
+
+* fix error messages ([a59668f](https://github.com/lentidas/hledger-price-tracker/commit/a59668f7026e4d5fc16797ea75af8e0462eb0b7e))
+* remove debug code ([cfaba1e](https://github.com/lentidas/hledger-price-tracker/commit/cfaba1e4d0a14916804c98656d891c7c8368f6fe))
+* remove debug output from `currency` palette ([576c424](https://github.com/lentidas/hledger-price-tracker/commit/576c42462a26d040146e44034bead5b30d0d7c80))
+
+
+### Documentation
+
+* add README.md badges ([d8445a8](https://github.com/lentidas/hledger-price-tracker/commit/d8445a828d2bfd703128fd1cc059de192e6f2147))
+* small fix on the README.md ([8cf3771](https://github.com/lentidas/hledger-price-tracker/commit/8cf37715f849773c17674231bcb2351b890e928f))
+
+
+### Miscellaneous Chores
+
+* **deps:** update actions/create-github-app-token action [skip ci] ([#24](https://github.com/lentidas/hledger-price-tracker/issues/24)) ([0484f31](https://github.com/lentidas/hledger-price-tracker/commit/0484f31580cb42e411b720f270741975ae53d94c))
+* **deps:** update actions/setup-go action [skip ci] ([#14](https://github.com/lentidas/hledger-price-tracker/issues/14)) ([8e2dee6](https://github.com/lentidas/hledger-price-tracker/commit/8e2dee637062e1dc3b77ba9e5e2d8e09e7768d3a))
+* merge pull request [#22](https://github.com/lentidas/hledger-price-tracker/issues/22) from lentidas/ci/go-tests ([b011487](https://github.com/lentidas/hledger-price-tracker/commit/b0114876389ba845de55477ed7199e2c2fc9243d))
+* merge pull request [#25](https://github.com/lentidas/hledger-price-tracker/issues/25) from lentidas/feat/currency-crypto-list-subcommand ([0de88a7](https://github.com/lentidas/hledger-price-tracker/commit/0de88a76179ed3e6eb634106985cee33fc8319d6))
+
+
+### Continuous Integration
+
+* add configuration to publish Homebrew formula ([df93f72](https://github.com/lentidas/hledger-price-tracker/commit/df93f72bda53d4753c6bad36ebf11cf4c6c6057e))
+* add unitary tests automation ([7ac533a](https://github.com/lentidas/hledger-price-tracker/commit/7ac533a10f14e2bd03750588aedd6cefffefe7a2))
+
 ## [0.1.1](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.0...v0.1.1) (2025-03-19)
 
 

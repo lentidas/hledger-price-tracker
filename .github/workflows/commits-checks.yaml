@@ -22,4 +22,3 @@ jobs:
       uses: opensource-nepal/commitlint@v1.3.0
       with:
         token: ${{ steps.app-token.outputs.token }}
-

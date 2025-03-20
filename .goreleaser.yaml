@@ -55,5 +55,6 @@ brews:
   repository:
     owner: lentidas
     name: homebrew-tap
+    branch: goreleaser-hledger-price-tracker
     pull_request:
       enabled: true

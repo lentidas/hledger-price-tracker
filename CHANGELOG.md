@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.3...v0.1.4) (2025-03-20)
+
+
+### Bug Fixes
+
+* fix branch to allow PR creation for Homebrew tap ([#28](https://github.com/lentidas/hledger-price-tracker/issues/28)) ([32e0420](https://github.com/lentidas/hledger-price-tracker/commit/32e042008c215c9ea4e6e763681afa0e4145d507))
+
 ## [0.1.3](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.2...v0.1.3) (2025-03-20)
 
 

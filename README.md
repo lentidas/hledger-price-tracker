@@ -1,4 +1,11 @@
-# hledger-price-tracker
+<h1 align="center" style="margin-top: 0px;">hledger-price-tracker</h1>
+
+<div align="center">
+
+![Release](https://img.shields.io/github/v/release/lentidas/hledger-price-tracker?style=for-the-badge) ![License](https://img.shields.io/github/license/lentidas/hledger-price-tracker?style=for-the-badge)
+![Tests](https://img.shields.io/github/actions/workflow/status/lentidas/hledger-price-tracker/go-tests.yaml?style=for-the-badge&label=Tests)
+
+</div>
 
 CLI program to generate market price records for [hledger](https://hledger.org/), using the [Alpha Vantage API](https://www.alphavantage.co/documentation/) and written in [Go](https://go.dev/).
 
@@ -6,6 +13,14 @@ CLI program to generate market price records for [hledger](https://hledger.org/)
 > This is my first Go project. Despite my best efforts, the code may not follow best practices, but I'm open to suggestions and improvements.
 > 
 > Also note that maybe some of it might be specific to how I use hledger, how I set my commodities, and so on.
+
+## Table of Contents
+
+- [Table of Contents](#table-of-contents)
+- [Configuration](#configuration)
+- [Usage](#usage)
+  - [`stock search`](#stock-search)
+  - [`stock price`](#stock-price)
 
 ## Configuration
 
@@ -36,7 +51,9 @@ default-currency: EUR
 This command allows you to search for a stock symbol with a given query. The query can be a part of the company name or the stock symbol itself.
 
 ```shell
-$ hledger-price-tracker stock search tesco --api-key demo
+hledger-price-tracker stock search tesco --api-key demo
+```
+```
 ┌───┬──────────┬───────────────────────┬────────┬────────────────┬──────────┬─────────────┐
 │ # │ SYMBOL   │ NAME                  │ TYPE   │ REGION         │ CURRENCY │ MATCH SCORE │
 ├───┼──────────┼───────────────────────┼────────┼────────────────┼──────────┼─────────────┤
@@ -52,7 +69,9 @@ You can specify a different output format using the `--format` or `-f` flag. The
 Both `json` and `csv` output nothing more than the raw body of the response from the Alpha Vantage API.
 
 ```shell
-$ hledger-price-tracker stock search tesco --api-key demo --format table-long
+hledger-price-tracker stock search tesco --api-key demo --format table-long
+```
+```
 ┌───┬──────────┬───────────────────────┬────────┬────────────────┬─────────────┬──────────────┬──────────┬──────────┬─────────────┐
 │ # │ SYMBOL   │ NAME                  │ TYPE   │ REGION         │ MARKET OPEN │ MARKET CLOSE │ TIMEZONE │ CURRENCY │ MATCH SCORE │
 ├───┼──────────┼───────────────────────┼────────┼────────────────┼─────────────┼──────────────┼──────────┼──────────┼─────────────┤
@@ -62,8 +81,11 @@ $ hledger-price-tracker stock search tesco --api-key demo --format table-long
 │ 4 │ TCO2.FRK │ TESCO PLC ADR/1 LS-05 │ Equity │ Frankfurt      │       08:00 │        20:00 │ UTC+02   │ EUR      │      54.55% │
 │ 5 │ TCO0.FRK │ TESCO PLC LS-0633333  │ Equity │ Frankfurt      │       08:00 │        20:00 │ UTC+02   │ EUR      │      54.55% │
 └───┴──────────┴───────────────────────┴────────┴────────────────┴─────────────┴──────────────┴──────────┴──────────┴─────────────┘
-
-$ hledger-price-tracker stock search tesco --api-key demo --format json
+```
+```shell
+hledger-price-tracker stock search tesco --api-key demo --format json
+```
+```
 {
     "bestMatches": [
         {
@@ -123,8 +145,11 @@ $ hledger-price-tracker stock search tesco --api-key demo --format json
         }
     ]
 }
-
-$ hledger-price-tracker stock search BA --api-key demo --format csv
+```
+```shell
+hledger-price-tracker stock search BA --api-key demo --format csv
+```
+```
 symbol,name,type,region,marketOpen,marketClose,timezone,currency,matchScore
 BA,Boeing Company,Equity,United States,09:30,16:00,UTC-04,USD,1.0000
 BA.LON,BAE Systems plc,Equity,United Kingdom,08:00,16:30,UTC+01,GBX,0.6667
@@ -207,7 +232,9 @@ The `hledger` format always uses the closing price of the stock. The other forma
 The following example shows the price of IBM stock in the weekly interval for the first quarter of 2025, specified using the `--begin` and `--end` flags.
 
 ```shell
-$ hledger-price-tracker stock price IBM -k demo --format table --begin 2025-01-01 --end 2025-03-21
+hledger-price-tracker stock price IBM -k demo --format table --begin 2025-01-01 --end 2025-03-21
+```
+```
 ┌────────┬──────────┬──────────────┬────────────┐
 │ SYMBOL │ CURRENCY │ LAST REFRESH │ TIMEZONE   │
 ├────────┼──────────┼──────────────┼────────────┤
@@ -236,7 +263,9 @@ $ hledger-price-tracker stock price IBM -k demo --format table --begin 2025-01-0
 Alpha Vantage also provides the option to get an adjusted closing price, along with the given dividends. You can use the `--adjusted` or `-a` flag to get this information.
 
 ```shell
-$ hledger-price-tracker stock price IBM -k demo --format table-long --begin 2024-01-01 --end 2024-12-31 --adjusted
+hledger-price-tracker stock price IBM -k demo --format table-long --begin 2024-01-01 --end 2024-12-31 --adjusted
+```
+```
 ┌────────┬──────────┬──────────────┬────────────┐
 │ SYMBOL │ CURRENCY │ LAST REFRESH │ TIMEZONE   │
 ├────────┼──────────┼──────────────┼────────────┤

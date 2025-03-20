@@ -27,6 +27,7 @@ import (
 	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 
+	"github.com/lentidas/hledger-price-tracker/cmd/crypto"
 	"github.com/lentidas/hledger-price-tracker/cmd/currency"
 	"github.com/lentidas/hledger-price-tracker/cmd/stock"
 	"github.com/lentidas/hledger-price-tracker/internal"
@@ -75,6 +76,7 @@ func init() {
 	// Add all subcommand palettes to the root command.
 	rootCmd.AddCommand(stock.PaletteCmd)
 	rootCmd.AddCommand(currency.PaletteCmd)
+	rootCmd.AddCommand(crypto.PaletteCmd)
 }
 
 // initConfig reads in config file and ENV variables if set.

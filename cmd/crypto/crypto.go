@@ -16,7 +16,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package stock
+package crypto
 
 import (
 	"os"
@@ -24,15 +24,16 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// PaletteCmd represents the stock command palette.
+// PaletteCmd represents the currency command palette.
 var PaletteCmd = &cobra.Command{
-	Use:     "stock",
+	Use:     "crypto",
 	GroupID: "palette",
-	Short:   "Palette command that groups all subcommands related to stocks",
+	Short:   "Palette command that groups all subcommands related to cryptocurrencies",
 	Long: `
 hledger-price-tracker
 
-Palette command that groups all subcommands related to stocks.`,
+Palette command that groups all subcommands related to cryptocurrencies and
+their exchange rates.`,
 
 	Run: func(cmd *cobra.Command, args []string) {
 		// Print the help message for this command palette.

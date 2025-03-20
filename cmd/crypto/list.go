@@ -16,31 +16,40 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package stock
+package crypto
 
 import (
-	"os"
+	"fmt"
 
 	"github.com/spf13/cobra"
+
+	"github.com/lentidas/hledger-price-tracker/internal/crypto/list"
+	"github.com/lentidas/hledger-price-tracker/internal/flags"
 )
 
-// PaletteCmd represents the stock command palette.
-var PaletteCmd = &cobra.Command{
-	Use:     "stock",
-	GroupID: "palette",
-	Short:   "Palette command that groups all subcommands related to stocks",
+// Define the output flag and set it to the default value.
+var formatList = flags.OutputFormatTable
+
+// listCmd represents the list command.
+var listCmd = &cobra.Command{
+	Use:   "list",
+	Short: "List all available digital currencies",
 	Long: `
 hledger-price-tracker
 
-Palette command that groups all subcommands related to stocks.`,
+Command to list all available physical currencies.`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		// Print the help message for this command palette.
-		err := cmd.Help()
-		if err != nil {
-			os.Exit(1)
-		}
+		output, err := list.Execute(formatList)
+		cobra.CheckErr(err)
+		fmt.Print(output)
 	},
 }
 
-func init() {}
+func init() {
+	// Add this subcommand to the `currency` command palette.
+	PaletteCmd.AddCommand(listCmd)
+
+	// Add flags to the `list` subcommand.
+	listCmd.Flags().VarP(&formatList, "format", "f", "format of the output (possible values are \"csv\" and \"table\")")
+}

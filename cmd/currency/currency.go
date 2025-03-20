@@ -19,7 +19,6 @@
 package currency
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -31,12 +30,12 @@ var PaletteCmd = &cobra.Command{
 	GroupID: "palette",
 	Short:   "Palette command that groups all subcommands related to currencies",
 	Long: `
-TODO`, // TODO
+hledger-price-tracker
+
+Palette command that groups all subcommands related to currencies and
+their exchange rates.`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("currency called") // TODO Remove these debug lines
-		fmt.Println()
-
 		// Print the help message for this command palette.
 		err := cmd.Help()
 		if err != nil {
@@ -45,14 +44,4 @@ TODO`, // TODO
 	},
 }
 
-func init() {
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// PaletteCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// PaletteCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-}
+func init() {}

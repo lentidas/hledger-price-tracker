@@ -170,7 +170,9 @@ This command allows you to get the price of a stock symbol, either daily, weekly
 The following example shows the price of IBM stock in the weekly interval for the entirety of the available data.
 
 ```shell
-$ hledger-price-tracker stock price IBM --api-key demo
+hledger-price-tracker stock price IBM --api-key demo
+```
+```
 P 1999-11-12 "IBM" 95.87 NIL
 P 1999-11-19 "IBM" 103.94 NIL
 P 1999-11-26 "IBM" 105.00 NIL

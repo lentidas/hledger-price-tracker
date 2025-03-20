@@ -19,7 +19,6 @@
 package stock
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -31,12 +30,11 @@ var PaletteCmd = &cobra.Command{
 	GroupID: "palette",
 	Short:   "Palette command that groups all subcommands related to stocks",
 	Long: `
-TODO`, // TODO
+hledger-price-tracker
+
+Palette command that groups all subcommands related to stocks.`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("stock called") // TODO Remove these debug lines
-		fmt.Println()
-
 		// Print the help message for this command palette.
 		err := cmd.Help()
 		if err != nil {

@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.1.3](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.2...v0.1.3) (2025-03-20)
+
+
+### Bug Fixes
+
+* fix a few errors on the Homebrew formula ([3482bbc](https://github.com/lentidas/hledger-price-tracker/commit/3482bbcfd6cdd15454f9d09e768dc5470780e65c))
+* fix a few errors on the Homebrew formula ([3d2899e](https://github.com/lentidas/hledger-price-tracker/commit/3d2899ea48e7cdf6bff761abf8e9defa19323ad6))
+
+
+### Miscellaneous Chores
+
+* merge pull request [#26](https://github.com/lentidas/hledger-price-tracker/issues/26) from lentidas/fix/goreleaser-homebrew ([3482bbc](https://github.com/lentidas/hledger-price-tracker/commit/3482bbcfd6cdd15454f9d09e768dc5470780e65c))
+
 ## [0.1.2](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.1...v0.1.2) (2025-03-20)
 
 

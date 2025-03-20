@@ -43,8 +43,10 @@ brews:
 - name: hledger-price-tracker
 
   homepage: https://github.com/lentidas/hledger-price-tracker
-  description: A CLI tool to get market prices for commodities.
-  license: GPL-3.0-or-later
+  description: CLI tool to get market prices for commodities
+  license: GPL-3.0
+
+  directory: Formula
 
   commit_author:
     name: repository-bot[bot]
@@ -53,3 +55,5 @@ brews:
   repository:
     owner: lentidas
     name: homebrew-tap
+    pull_request:
+      enabled: true

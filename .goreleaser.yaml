@@ -38,23 +38,3 @@ archives:
 
 changelog:
   disable: true
-
-brews:
-- name: hledger-price-tracker
-
-  homepage: https://github.com/lentidas/hledger-price-tracker
-  description: CLI tool to get market prices for commodities
-  license: GPL-3.0
-
-  directory: Formula
-
-  commit_author:
-    name: repository-bot[bot]
-    email: 191768328+repository-bot[bot]@users.noreply.github.com
-
-  repository:
-    owner: lentidas
-    name: homebrew-tap
-    branch: goreleaser-hledger-price-tracker
-    pull_request:
-      enabled: true

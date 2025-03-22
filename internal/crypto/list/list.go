@@ -32,12 +32,7 @@ import (
 
 const url = "https://www.alphavantage.co/digital_currency_list/"
 
-type Crypto struct {
-	Code string
-	Name string
-}
-
-type Cryptos []Crypto
+type Cryptos map[string]string
 
 func (obj *Cryptos) GenerateOutput(body []byte, format flags.OutputFormat) (string, error) {
 	switch format {
@@ -57,16 +52,17 @@ func (obj *Cryptos) GenerateOutput(body []byte, format flags.OutputFormat) (stri
 		// Parse CSV data into a slice of Crypto objects.
 		for i, line := range data {
 			if i > 0 { // Skip the header line.
-				var currency Crypto
+				var currencyCode string
+				var currencyName string
 				for j, field := range line {
 					switch j {
 					case 0:
-						currency.Code = field
+						currencyCode = field
 					case 1:
-						currency.Name = field
+						currencyName = field
 					}
 				}
-				*obj = append(*obj, currency)
+				(*obj)[currencyCode] = currencyName
 			}
 		}
 
@@ -74,9 +70,10 @@ func (obj *Cryptos) GenerateOutput(body []byte, format flags.OutputFormat) (stri
 		t := table.NewWriter()
 		t.SetStyle(table.StyleLight)
 		t.AppendHeader(table.Row{"Code", "Currency Name"})
-		for _, currency := range *obj {
-			t.AppendRow(table.Row{currency.Code, currency.Name})
+		for currencyCode, currencyName := range *obj {
+			t.AppendRow(table.Row{currencyCode, currencyName})
 		}
+		t.SortBy([]table.SortBy{{Name: "Code", Mode: table.Asc}})
 		return t.Render() + "\n", nil
 	default:
 		return "", errors.New("[(*Cryptos).GenerateOutput] invalid output format")

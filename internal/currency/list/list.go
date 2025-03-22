@@ -32,12 +32,7 @@ import (
 
 const url = "https://www.alphavantage.co/physical_currency_list/"
 
-type Currency struct {
-	Code string
-	Name string
-}
-
-type Currencies []Currency
+type Currencies map[string]string
 
 func (obj *Currencies) GenerateOutput(body []byte, format flags.OutputFormat) (string, error) {
 	switch format {
@@ -57,16 +52,17 @@ func (obj *Currencies) GenerateOutput(body []byte, format flags.OutputFormat) (s
 		// Parse CSV data into a slice of Currency objects.
 		for i, line := range data {
 			if i > 0 { // Skip the header line.
-				var currency Currency
+				var currencyCode string
+				var currencyName string
 				for j, field := range line {
 					switch j {
 					case 0:
-						currency.Code = field
+						currencyCode = field
 					case 1:
-						currency.Name = field
+						currencyName = field
 					}
 				}
-				*obj = append(*obj, currency)
+				(*obj)[currencyCode] = currencyName
 			}
 		}
 
@@ -74,9 +70,10 @@ func (obj *Currencies) GenerateOutput(body []byte, format flags.OutputFormat) (s
 		t := table.NewWriter()
 		t.SetStyle(table.StyleLight)
 		t.AppendHeader(table.Row{"Code", "Currency Name"})
-		for _, currency := range *obj {
-			t.AppendRow(table.Row{currency.Code, currency.Name})
+		for currencyCode, currencyName := range *obj {
+			t.AppendRow(table.Row{currencyCode, currencyName})
 		}
+		t.SortBy([]table.SortBy{{Name: "Code", Mode: table.Asc}})
 		return t.Render() + "\n", nil
 	default:
 		return "", errors.New("[internal.search.generateSearchOutput] invalid output format")

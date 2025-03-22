@@ -80,6 +80,43 @@ func (obj *Currencies) GenerateOutput(body []byte, format flags.OutputFormat) (s
 	}
 }
 
+func CurrencyExists(currencyCode string) (bool, error) {
+	body, err := internal.HTTPRequest(url)
+	if err != nil {
+		return false, err
+	}
+
+	// Read CSV data.
+	csvReader := csv.NewReader(bytes.NewReader(body))
+	data, err := csvReader.ReadAll()
+	if err != nil {
+		return false, fmt.Errorf("[crypto.list.CurrencyExists] failure to read CSV data: %w", err)
+	}
+
+	currencies := Currencies{}
+
+	// Parse CSV data into a slice of Currency objects.
+	for i, line := range data {
+		if i > 0 { // Skip the header line.
+			var currencyCode string
+			var currencyName string
+			for j, field := range line {
+				switch j {
+				case 0:
+					currencyCode = field
+				case 1:
+					currencyName = field
+				}
+			}
+			currencies[currencyCode] = currencyName
+		}
+	}
+
+	_, exists := currencies[currencyCode]
+
+	return exists, nil
+}
+
 func Execute(format flags.OutputFormat) (string, error) {
 	body, err := internal.HTTPRequest(url)
 	if err != nil {

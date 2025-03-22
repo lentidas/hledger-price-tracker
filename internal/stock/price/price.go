@@ -291,7 +291,7 @@ func createResponseObject(interval flags.Interval, adjusted bool) (Response, err
 		case flags.IntervalMonthly:
 			obj = &MonthlyAdjusted{}
 		default:
-			return obj, errors.New("[internal.stock.createResponseObject] invalid interval for adjusted prices")
+			return obj, errors.New("[stock.price.createResponseObject] invalid interval for adjusted prices")
 		}
 	} else {
 		switch interval {
@@ -302,7 +302,7 @@ func createResponseObject(interval flags.Interval, adjusted bool) (Response, err
 		case flags.IntervalMonthly:
 			obj = &Monthly{}
 		default:
-			return obj, errors.New("[internal.stock.createResponseObject] invalid interval")
+			return obj, errors.New("[stock.price.createResponseObject] invalid interval")
 		}
 	}
 

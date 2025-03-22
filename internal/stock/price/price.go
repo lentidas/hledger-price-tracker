@@ -125,7 +125,6 @@ type TypedPrices struct {
 }
 
 func (typed *TypedPrices) TypeBody(raw RawPrices) error {
-	// TODO Maybe wrap these errors?
 	openPrice, err := strconv.ParseFloat(raw.Open, 64)
 	if err != nil {
 		return fmt.Errorf("[stock.price.(*TypedPrices).TypeBody] error parsing open price: %w", err)

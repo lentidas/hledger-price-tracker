@@ -218,7 +218,7 @@ func (typed *TypedPricesAdjusted) TypeBody(raw RawPricesAdjusted) error {
 }
 
 // buildURL creates the URL to make the HTTP request to the Alpha Vantage API.
-func buildURL(symbol string, format flags.OutputFormat, interval flags.Interval, adjusted bool) (string, error) {
+func buildURL(symbol string, format flags.OutputFormat, interval flags.Interval, adjusted bool, full bool) (string, error) {
 	if internal.ApiKey == "" {
 		return "", errors.New("[price.buildURL] api key is required")
 	}
@@ -264,7 +264,7 @@ func buildURL(symbol string, format flags.OutputFormat, interval flags.Interval,
 	url.WriteString(symbol)
 
 	// Print entire time series if daily, because user can then limit the interval with `begin` and `end`.
-	if interval == flags.IntervalDaily {
+	if interval == flags.IntervalDaily && full {
 		url.WriteString("&outputsize=full")
 	}
 	url.WriteString("&apikey=")
@@ -447,7 +447,7 @@ func generateTimeSeriesTableLongAdjusted(timeSeries map[time.Time]TypedPricesAdj
 
 // Execute is the core function of the price package. It fetches the stock prices from the Alpha Vantage API for a given
 // stock symbol and returns it in the desired format.
-func Execute(symbol string, format flags.OutputFormat, interval flags.Interval, begin string, end string, adjusted bool) (string, error) {
+func Execute(symbol string, format flags.OutputFormat, interval flags.Interval, begin string, end string, adjusted bool, full bool) (string, error) {
 	// Verify function parameters and variables.
 	if internal.ApiKey == "" {
 		return "", errors.New("[stock.price.Execute] API key is required")
@@ -478,7 +478,7 @@ func Execute(symbol string, format flags.OutputFormat, interval flags.Interval, 
 		return "", errors.New("[stock.price.Execute] begin date is after end date")
 	}
 
-	url, err := buildURL(symbol, format, interval, adjusted)
+	url, err := buildURL(symbol, format, interval, adjusted, full)
 	if err != nil {
 		return "", err
 	}

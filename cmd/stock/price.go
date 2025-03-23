@@ -32,6 +32,7 @@ var interval = flags.IntervalWeekly
 var begin string
 var end string
 var adjusted bool
+var full bool
 
 // priceCmd represents the price command
 var priceCmd = &cobra.Command{
@@ -57,7 +58,7 @@ API documentation:
 	Args: cobra.MinimumNArgs(1),
 
 	Run: func(cmd *cobra.Command, args []string) {
-		output, err := price.Execute(args[0], formatPrice, interval, begin, end, adjusted)
+		output, err := price.Execute(args[0], formatPrice, interval, begin, end, adjusted, full)
 		cobra.CheckErr(err)
 		fmt.Print(output)
 	},
@@ -75,4 +76,5 @@ func init() {
 	priceCmd.Flags().StringVarP(&begin, "begin", "b", "", "beginning of the time period (format YYYY-MM-DD) (does not apply to  \"json\" or \"csv\" output formats)")
 	priceCmd.Flags().StringVarP(&end, "end", "e", "", "end of the time period (format YYYY-MM-DD) (does not apply to  \"json\" or \"csv\" output formats)")
 	priceCmd.Flags().BoolVarP(&adjusted, "adjusted", "a", false, "return adjusted close prices")
+	priceCmd.Flags().BoolVar(&full, "full", false, "for daily intervals, return all the data, otherwise return only the last 100 data points (does nothing for weekly or monthly intervals)")
 }

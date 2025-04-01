@@ -267,13 +267,6 @@ func GetCurrency(symbol string) (string, error) {
 // Execute is the core function of the search package. It performs a search for a certain stock symbol and returns the
 // results in the specified format.
 func Execute(query string, format flags.OutputFormat) (string, error) {
-	if internal.ApiKey == "" {
-		return "", errors.New("[stock.search.Execute] API key is required")
-	}
-	if query == "" {
-		return "", errors.New("[stock.search.Execute] no search query provided")
-	}
-
 	url, err := buildURL(query, format)
 	if err != nil {
 		return "", err

@@ -30,20 +30,24 @@ import (
 func TestPrice(t *testing.T) {
 	internal.ApiKey = "demo"
 
+	// t.Run("success", func(t *testing.T) {
+	// 	// TODO Implement expected response.
+	// })
+
 	t.Run("no symbol", func(t *testing.T) {
-		if _, err := Execute("", flags.OutputFormatHledger, flags.IntervalWeekly, "", "", false); err == nil {
+		if _, err := Execute("", flags.OutputFormatHledger, flags.IntervalWeekly, "", "", false, false); err == nil {
 			t.Error("expected error, got nil")
 		}
 	})
 
 	t.Run("invalid output format", func(t *testing.T) {
-		if _, err := Execute("tesco", "invalid", flags.IntervalWeekly, "", "", false); err == nil {
+		if _, err := Execute("tesco", "invalid", flags.IntervalWeekly, "", "", false, false); err == nil {
 			t.Error("expected error, got nil")
 		}
 	})
 
 	t.Run("invalid interval", func(t *testing.T) {
-		if _, err := Execute("tesco", flags.OutputFormatHledger, "invalid", "", "", false); err == nil {
+		if _, err := Execute("tesco", flags.OutputFormatHledger, "invalid", "", "", false, false); err == nil {
 			t.Error("expected error, got nil")
 		}
 	})
@@ -51,24 +55,14 @@ func TestPrice(t *testing.T) {
 	internal.ApiKey = ""
 
 	t.Run("no API key", func(t *testing.T) {
-		if _, err := Execute("tesco", flags.OutputFormatHledger, flags.IntervalWeekly, "", "", false); err == nil {
+		if _, err := Execute("tesco", flags.OutputFormatHledger, flags.IntervalWeekly, "", "", false, false); err == nil {
 			t.Error("expected error, got nil")
 		}
 	})
 }
 
-func TestPriceURLBuilderDaily(t *testing.T) {
-	internal.ApiKey = "demo"
-
-	expected := "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&outputsize=full&apikey=demo"
-	url, err := buildURL("IBM", flags.OutputFormatHledger, flags.IntervalDaily, false)
-	if err != nil {
-		t.Errorf("expected nil, got %v", err)
-	}
-	if url != expected {
-		t.Errorf("expected %s, got %s", expected, url)
-	}
-}
+// FIXME Fix the tests to use the new functions
+// FIXME Use current_test.go as an example because we should use a if else instead of consecutive if statements.
 
 func TestPriceURLBuilder(t *testing.T) {
 	internal.ApiKey = "demo"
@@ -76,11 +70,10 @@ func TestPriceURLBuilder(t *testing.T) {
 	t.Run("daily", func(t *testing.T) {
 		expected := "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&outputsize=full&apikey=demo"
 
-		url, err := buildURL("IBM", flags.OutputFormatHledger, flags.IntervalDaily, false)
+		url, err := buildURL("IBM", flags.OutputFormatHledger, flags.IntervalDaily, false, true)
 		if err != nil {
 			t.Errorf("expected nil, got %v", err)
-		}
-		if url != expected {
+		} else if url != expected {
 			t.Errorf("expected %s, got %s", expected, url)
 		}
 	})
@@ -88,11 +81,10 @@ func TestPriceURLBuilder(t *testing.T) {
 	t.Run("daily adjusted", func(t *testing.T) {
 		expected := "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=IBM&outputsize=full&apikey=demo"
 
-		url, err := buildURL("IBM", flags.OutputFormatHledger, flags.IntervalDaily, true)
+		url, err := buildURL("IBM", flags.OutputFormatHledger, flags.IntervalDaily, true, true)
 		if err != nil {
 			t.Errorf("expected nil, got %v", err)
-		}
-		if url != expected {
+		} else if url != expected {
 			t.Errorf("expected %s, got %s", expected, url)
 		}
 	})
@@ -100,11 +92,10 @@ func TestPriceURLBuilder(t *testing.T) {
 	t.Run("weekly", func(t *testing.T) {
 		expected := "https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol=IBM&apikey=demo"
 
-		url, err := buildURL("IBM", flags.OutputFormatHledger, flags.IntervalWeekly, false)
+		url, err := buildURL("IBM", flags.OutputFormatHledger, flags.IntervalWeekly, false, false)
 		if err != nil {
 			t.Errorf("expected nil, got %v", err)
-		}
-		if url != expected {
+		} else if url != expected {
 			t.Errorf("expected %s, got %s", expected, url)
 		}
 	})
@@ -112,11 +103,10 @@ func TestPriceURLBuilder(t *testing.T) {
 	t.Run("weekly adjusted", func(t *testing.T) {
 		expected := "https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY_ADJUSTED&symbol=IBM&apikey=demo"
 
-		url, err := buildURL("IBM", flags.OutputFormatHledger, flags.IntervalWeekly, true)
+		url, err := buildURL("IBM", flags.OutputFormatHledger, flags.IntervalWeekly, true, false)
 		if err != nil {
 			t.Errorf("expected nil, got %v", err)
-		}
-		if url != expected {
+		} else if url != expected {
 			t.Errorf("expected %s, got %s", expected, url)
 		}
 	})
@@ -124,11 +114,10 @@ func TestPriceURLBuilder(t *testing.T) {
 	t.Run("monthly", func(t *testing.T) {
 		expected := "https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol=IBM&apikey=demo"
 
-		url, err := buildURL("IBM", flags.OutputFormatHledger, flags.IntervalMonthly, false)
+		url, err := buildURL("IBM", flags.OutputFormatHledger, flags.IntervalMonthly, false, false)
 		if err != nil {
 			t.Errorf("expected nil, got %v", err)
-		}
-		if url != expected {
+		} else if url != expected {
 			t.Errorf("expected %s, got %s", expected, url)
 		}
 	})
@@ -136,11 +125,10 @@ func TestPriceURLBuilder(t *testing.T) {
 	t.Run("monthly adjusted", func(t *testing.T) {
 		expected := "https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY_ADJUSTED&symbol=IBM&apikey=demo"
 
-		url, err := buildURL("IBM", flags.OutputFormatHledger, flags.IntervalMonthly, true)
+		url, err := buildURL("IBM", flags.OutputFormatHledger, flags.IntervalMonthly, true, false)
 		if err != nil {
 			t.Errorf("expected nil, got %v", err)
-		}
-		if url != expected {
+		} else if url != expected {
 			t.Errorf("expected %s, got %s", expected, url)
 		}
 	})
@@ -148,11 +136,10 @@ func TestPriceURLBuilder(t *testing.T) {
 	t.Run("CSV", func(t *testing.T) {
 		expected := "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=IBM&outputsize=full&apikey=demo&datatype=csv"
 
-		url, err := buildURL("IBM", flags.OutputFormatCSV, flags.IntervalDaily, false)
+		url, err := buildURL("IBM", flags.OutputFormatCSV, flags.IntervalDaily, false, true)
 		if err != nil {
 			t.Errorf("expected nil, got %v", err)
-		}
-		if url != expected {
+		} else if url != expected {
 			t.Errorf("expected %s, got %s", expected, url)
 		}
 	})

@@ -92,7 +92,7 @@ type TypedMetadataDaily struct {
 func (typed *TypedMetadataDaily) TypeBody(raw RawMetadataDaily) error {
 	lastRefreshed, err := time.Parse("2006-01-02", raw.LastRefreshed)
 	if err != nil {
-		return err
+		return fmt.Errorf("[stock.price.(*TypedMetadataDaily).TypeBody] error parsing last refreshed date: %w", err)
 	}
 
 	typed.Information = raw.Information
@@ -371,11 +371,11 @@ func generateOutputHledgerAdjusted(timeSeries map[time.Time]TypedPricesAdjusted,
 
 // generateMetadataTable generates a table with the metadata for a given stock symbol. It is used to display the
 // the information about the stock before the table with the stock prices.
-func generateMetadataTable(symbol string, currency string, lastRefresh time.Time, timeZone string) string {
+func generateMetadataTable(symbol string, currency string, lastRefreshed time.Time, timeZone string) string {
 	t := table.NewWriter()
 	t.SetStyle(table.StyleLight)
-	t.AppendHeader(table.Row{"Symbol", "Currency", "Last Refresh", "Timezone"})
-	t.AppendRow(table.Row{symbol, currency, lastRefresh.Format("2006-01-02"), timeZone})
+	t.AppendHeader(table.Row{"Symbol", "Currency", "Last Refreshed", "Timezone"})
+	t.AppendRow(table.Row{symbol, currency, lastRefreshed.Format("2006-01-02"), timeZone})
 	return t.Render() + "\n"
 }
 
@@ -448,14 +448,6 @@ func generateTimeSeriesTableLongAdjusted(timeSeries map[time.Time]TypedPricesAdj
 // Execute is the core function of the price package. It fetches the stock prices from the Alpha Vantage API for a given
 // stock symbol and returns it in the desired format.
 func Execute(symbol string, format flags.OutputFormat, interval flags.Interval, begin string, end string, adjusted bool, full bool) (string, error) {
-	// Verify function parameters and variables.
-	if internal.ApiKey == "" {
-		return "", errors.New("[stock.price.Execute] API key is required")
-	}
-	if symbol == "" {
-		return "", errors.New("[stock.price.Execute] no stock symbol provided")
-	}
-
 	var err error
 	var beginTime time.Time
 	var endTime time.Time = time.Now()

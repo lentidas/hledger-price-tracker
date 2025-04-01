@@ -206,7 +206,7 @@ func (obj *Search) GenerateOutput(body []byte, format flags.OutputFormat) (strin
 // buildURL creates the URL to make the HTTP request to the Alpha Vantage API.
 func buildURL(query string, format flags.OutputFormat) (string, error) {
 	if internal.ApiKey == "" {
-		return "", errors.New("[search.buildURL] api key is required")
+		return "", errors.New("[search.buildURL] API key is required")
 	}
 	if query == "" {
 		return "", errors.New("[search.buildURL] no search query provided")

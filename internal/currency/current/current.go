@@ -172,7 +172,7 @@ func (obj *Current) GenerateOutput(body []byte, format flags.OutputFormat) (stri
 
 func buildURL(from string, to string) (string, error) {
 	if internal.ApiKey == "" {
-		return "", errors.New("[search.buildURL] api key is required")
+		return "", errors.New("[currency/crypto.current.buildURL] API key is required")
 	}
 	if from == "" {
 		return "", errors.New("[currency/crypto.current.buildURL] from currency is required")

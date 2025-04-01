@@ -220,7 +220,7 @@ func (typed *TypedPricesAdjusted) TypeBody(raw RawPricesAdjusted) error {
 // buildURL creates the URL to make the HTTP request to the Alpha Vantage API.
 func buildURL(symbol string, format flags.OutputFormat, interval flags.Interval, adjusted bool, full bool) (string, error) {
 	if internal.ApiKey == "" {
-		return "", errors.New("[price.buildURL] api key is required")
+		return "", errors.New("[price.buildURL] API key is required")
 	}
 	if symbol == "" {
 		return "", errors.New("[price.buildURL] no search query provided")

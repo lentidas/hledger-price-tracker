@@ -1,5 +1,48 @@
 # Changelog
 
+## [0.1.5](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.4...v0.1.5) (2025-04-01)
+
+
+### Features
+
+* add function to verify if a currency exists ([d42b712](https://github.com/lentidas/hledger-price-tracker/commit/d42b712d7f93f2713cae3e15cb3e7889c1f78a07))
+* create function to verify if cryptocurrency exists ([c3b9a8d](https://github.com/lentidas/hledger-price-tracker/commit/c3b9a8d8294f2d39f1444f17c02ae3bae87727f0))
+* create ParseCurrenciesCSV() to improve code ([a24c0c8](https://github.com/lentidas/hledger-price-tracker/commit/a24c0c861fb30226f1e4c81101eff428b45761f3))
+* implement `crypto current` and `currency current` commands ([1d9d282](https://github.com/lentidas/hledger-price-tracker/commit/1d9d282cd640b01a451bc7fce5c2cbae4feac118))
+* implement flag to limit results for daily intervals ([62a30a1](https://github.com/lentidas/hledger-price-tracker/commit/62a30a1c765fef5d19816f75d96b6ddb186e8765))
+* implement subcommands to get current exchange rate ([74f2fb0](https://github.com/lentidas/hledger-price-tracker/commit/74f2fb0b130e3a46515edc281df06fbfa3ee6364))
+* use map of strings to ease validation of currencies ([106bb88](https://github.com/lentidas/hledger-price-tracker/commit/106bb88910b4d77184e3dad4a3de5dbf7578386e))
+
+
+### Bug Fixes
+
+* add condition to truncate decimal TZs ([c1a5121](https://github.com/lentidas/hledger-price-tracker/commit/c1a5121eb5dbc43a74b03a42099cf847358750f8))
+* correct error messages ([5ebbc25](https://github.com/lentidas/hledger-price-tracker/commit/5ebbc254b6aa1557d4e133aa1eedf338591c1892))
+* fix a few error messages ([e7dc07a](https://github.com/lentidas/hledger-price-tracker/commit/e7dc07a0cbd2d82d984b657e4a299a67ffd3c1e0))
+
+
+### Miscellaneous Chores
+
+* **deps:** update module github.com/spf13/viper to v1.20.1 ([#30](https://github.com/lentidas/hledger-price-tracker/issues/30)) ([f0aa850](https://github.com/lentidas/hledger-price-tracker/commit/f0aa8506e607f2e286f5eafd95bfd2937b3a3d75))
+* merge pull request [#34](https://github.com/lentidas/hledger-price-tracker/issues/34) from lentidas/feat/currency-current-price ([1d9d282](https://github.com/lentidas/hledger-price-tracker/commit/1d9d282cd640b01a451bc7fce5c2cbae4feac118))
+* remove leftover TODO ([51eb2fd](https://github.com/lentidas/hledger-price-tracker/commit/51eb2fd156896fffac0da546a9dd55fc484aa01a))
+
+
+### Code Refactoring
+
+* capitalize API in error messages ([1a05d2a](https://github.com/lentidas/hledger-price-tracker/commit/1a05d2ad426d5f0b8d3ab2aab339f0188d1c73c6))
+
+
+### Tests
+
+* fix tests after a change in Execute() signature ([71deec4](https://github.com/lentidas/hledger-price-tracker/commit/71deec4c9adc7668844802d08daf421ac9aa4d6c))
+
+
+### Continuous Integration
+
+* add workflow to perform a `brew bump-formula-pr` ([ecad741](https://github.com/lentidas/hledger-price-tracker/commit/ecad741c37ed002cb5a1a958655e7c41b960eb41))
+* remove the ability to update the tap with GoReleaser ([141cbbf](https://github.com/lentidas/hledger-price-tracker/commit/141cbbfcbc82e35dbb51f7cfc243a151fbf35e9c))
+
 ## [0.1.4](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.3...v0.1.4) (2025-03-20)
 
 

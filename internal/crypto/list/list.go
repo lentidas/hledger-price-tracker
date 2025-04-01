@@ -19,8 +19,6 @@
 package list
 
 import (
-	"bytes"
-	"encoding/csv"
 	"errors"
 	"fmt"
 
@@ -42,29 +40,11 @@ func (obj *Cryptos) GenerateOutput(body []byte, format flags.OutputFormat) (stri
 	case flags.OutputFormatCSV:
 		return string(body), nil
 	case flags.OutputFormatTable:
-		// Read CSV data.
-		csvReader := csv.NewReader(bytes.NewReader(body))
-		data, err := csvReader.ReadAll()
+		data, err := internal.ParseCurrenciesCSV(body)
 		if err != nil {
-			return "", fmt.Errorf("[(*Cryptos).GenerateOutput] failure to read CSV data: %w", err)
+			return "", err
 		}
-
-		// Parse CSV data into a slice of Crypto objects.
-		for i, line := range data {
-			if i > 0 { // Skip the header line.
-				var currencyCode string
-				var currencyName string
-				for j, field := range line {
-					switch j {
-					case 0:
-						currencyCode = field
-					case 1:
-						currencyName = field
-					}
-				}
-				(*obj)[currencyCode] = currencyName
-			}
-		}
+		*obj = data
 
 		// Create a table and send it to the output.
 		t := table.NewWriter()

@@ -19,6 +19,8 @@
 package internal
 
 import (
+	"bytes"
+	"encoding/csv"
 	"fmt"
 	"io"
 	"net/http"
@@ -44,4 +46,34 @@ func HTTPRequest(url string) ([]byte, error) {
 	}
 
 	return body, nil
+}
+
+func ParseCurrenciesCSV(body []byte) (map[string]string, error) {
+	// Read CSV data.
+	csvReader := csv.NewReader(bytes.NewReader(body))
+	data, err := csvReader.ReadAll()
+	if err != nil {
+		return nil, fmt.Errorf("[internal.ParseCurrenciesCSV] failure to read CSV data: %w", err)
+	}
+
+	currencies := make(map[string]string)
+
+	// Parse CSV data into a slice of Currency objects.
+	for i, line := range data {
+		if i > 0 { // Skip the header line.
+			var code string
+			var name string
+			for j, field := range line {
+				switch j {
+				case 0:
+					code = field
+				case 1:
+					name = field
+				}
+			}
+			currencies[code] = name
+		}
+	}
+
+	return currencies, nil
 }

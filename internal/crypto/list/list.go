@@ -60,6 +60,22 @@ func (obj *Cryptos) GenerateOutput(body []byte, format flags.OutputFormat) (stri
 	}
 }
 
+func CryptoExists(cryptoCode string) (bool, error) {
+	body, err := internal.HTTPRequest(url)
+	if err != nil {
+		return false, err
+	}
+
+	cryptos, err := internal.ParseCurrenciesCSV(body)
+	if err != nil {
+		return false, err
+	}
+
+	_, exists := cryptos[cryptoCode]
+
+	return exists, nil
+}
+
 func Execute(format flags.OutputFormat) (string, error) {
 	body, err := internal.HTTPRequest(url)
 	if err != nil {

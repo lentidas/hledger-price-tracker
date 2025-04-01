@@ -80,6 +80,15 @@ func (obj *Search) TypeBody() error {
 			return fmt.Errorf("[stock.search.TypeBody] failure to parse match score: %w", err)
 		}
 
+		// Extract only the integer part from timezone strings like "UTC+5.5".
+		if strings.Contains(result.Timezone[3:], ".") {
+			// Find the position of the decimal point.
+			decimalIndex := strings.Index(result.Timezone, ".")
+
+			// Keep everything before the decimal point.
+			result.Timezone = result.Timezone[:decimalIndex]
+		}
+
 		// Parse the timezone offset.
 		offset, err := strconv.Atoi(result.Timezone[3:])
 		if err != nil {
@@ -197,7 +206,7 @@ func (obj *Search) GenerateOutput(body []byte, format flags.OutputFormat) (strin
 // buildURL creates the URL to make the HTTP request to the Alpha Vantage API.
 func buildURL(query string, format flags.OutputFormat) (string, error) {
 	if internal.ApiKey == "" {
-		return "", errors.New("[search.buildURL] api key is required")
+		return "", errors.New("[search.buildURL] API key is required")
 	}
 	if query == "" {
 		return "", errors.New("[search.buildURL] no search query provided")
@@ -258,13 +267,6 @@ func GetCurrency(symbol string) (string, error) {
 // Execute is the core function of the search package. It performs a search for a certain stock symbol and returns the
 // results in the specified format.
 func Execute(query string, format flags.OutputFormat) (string, error) {
-	if internal.ApiKey == "" {
-		return "", errors.New("[stock.search.Execute] API key is required")
-	}
-	if query == "" {
-		return "", errors.New("[stock.search.Execute] no search query provided")
-	}
-
 	url, err := buildURL(query, format)
 	if err != nil {
 		return "", err

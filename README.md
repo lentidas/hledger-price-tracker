@@ -237,11 +237,11 @@ The following example shows the price of IBM stock in the weekly interval for th
 hledger-price-tracker stock price IBM -k demo --format table --begin 2025-01-01 --end 2025-03-21
 ```
 ```
-┌────────┬──────────┬──────────────┬────────────┐
-│ SYMBOL │ CURRENCY │ LAST REFRESH │ TIMEZONE   │
-├────────┼──────────┼──────────────┼────────────┤
-│ IBM    │ NIL      │ 2025-03-12   │ US/Eastern │
-└────────┴──────────┴──────────────┴────────────┘
+┌────────┬──────────┬────────────────┬────────────┐
+│ SYMBOL │ CURRENCY │ LAST REFRESHED │ TIMEZONE   │
+├────────┼──────────┼────────────────┼────────────┤
+│ IBM    │ NIL      │ 2025-03-12     │ US/Eastern │
+└────────┴──────────┴────────────────┴────────────┘
 ┌────────────┬────────┬────────┬────────┬────────┬──────────┐
 │ DATE       │ OPEN   │ HIGH   │ LOW    │ CLOSE  │   VOLUME │
 ├────────────┼────────┼────────┼────────┼────────┼──────────┤
@@ -268,11 +268,11 @@ Alpha Vantage also provides the option to get an adjusted closing price, along w
 hledger-price-tracker stock price IBM -k demo --format table-long --begin 2024-01-01 --end 2024-12-31 --adjusted
 ```
 ```
-┌────────┬──────────┬──────────────┬────────────┐
-│ SYMBOL │ CURRENCY │ LAST REFRESH │ TIMEZONE   │
-├────────┼──────────┼──────────────┼────────────┤
-│ IBM    │ NIL      │ 2025-03-12   │ US/Eastern │
-└────────┴──────────┴──────────────┴────────────┘
+┌────────┬──────────┬────────────────┬────────────┐
+│ SYMBOL │ CURRENCY │ LAST REFRESHED │ TIMEZONE   │
+├────────┼──────────┼────────────────┼────────────┤
+│ IBM    │ NIL      │ 2025-03-12     │ US/Eastern │
+└────────┴──────────┴────────────────┴────────────┘
 ┌────────────┬────────┬────────┬────────┬────────┬────────────┬──────────┬─────────────────┐
 │ DATE       │ OPEN   │ HIGH   │ LOW    │ CLOSE  │ ADJ. CLOSE │   VOLUME │ DIVIDEND AMOUNT │
 ├────────────┼────────┼────────┼────────┼────────┼────────────┼──────────┼─────────────────┤

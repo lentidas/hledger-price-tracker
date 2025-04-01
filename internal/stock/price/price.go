@@ -92,7 +92,7 @@ type TypedMetadataDaily struct {
 func (typed *TypedMetadataDaily) TypeBody(raw RawMetadataDaily) error {
 	lastRefreshed, err := time.Parse("2006-01-02", raw.LastRefreshed)
 	if err != nil {
-		return err
+		return fmt.Errorf("[stock.price.(*TypedMetadataDaily).TypeBody] error parsing last refreshed date: %w", err)
 	}
 
 	typed.Information = raw.Information
@@ -125,7 +125,6 @@ type TypedPrices struct {
 }
 
 func (typed *TypedPrices) TypeBody(raw RawPrices) error {
-	// TODO Maybe wrap these errors?
 	openPrice, err := strconv.ParseFloat(raw.Open, 64)
 	if err != nil {
 		return fmt.Errorf("[stock.price.(*TypedPrices).TypeBody] error parsing open price: %w", err)
@@ -219,9 +218,9 @@ func (typed *TypedPricesAdjusted) TypeBody(raw RawPricesAdjusted) error {
 }
 
 // buildURL creates the URL to make the HTTP request to the Alpha Vantage API.
-func buildURL(symbol string, format flags.OutputFormat, interval flags.Interval, adjusted bool) (string, error) {
+func buildURL(symbol string, format flags.OutputFormat, interval flags.Interval, adjusted bool, full bool) (string, error) {
 	if internal.ApiKey == "" {
-		return "", errors.New("[price.buildURL] api key is required")
+		return "", errors.New("[price.buildURL] API key is required")
 	}
 	if symbol == "" {
 		return "", errors.New("[price.buildURL] no search query provided")
@@ -265,7 +264,7 @@ func buildURL(symbol string, format flags.OutputFormat, interval flags.Interval,
 	url.WriteString(symbol)
 
 	// Print entire time series if daily, because user can then limit the interval with `begin` and `end`.
-	if interval == flags.IntervalDaily {
+	if interval == flags.IntervalDaily && full {
 		url.WriteString("&outputsize=full")
 	}
 	url.WriteString("&apikey=")
@@ -292,7 +291,7 @@ func createResponseObject(interval flags.Interval, adjusted bool) (Response, err
 		case flags.IntervalMonthly:
 			obj = &MonthlyAdjusted{}
 		default:
-			return obj, errors.New("[internal.stock.createResponseObject] invalid interval for adjusted prices")
+			return obj, errors.New("[stock.price.createResponseObject] invalid interval for adjusted prices")
 		}
 	} else {
 		switch interval {
@@ -303,7 +302,7 @@ func createResponseObject(interval flags.Interval, adjusted bool) (Response, err
 		case flags.IntervalMonthly:
 			obj = &Monthly{}
 		default:
-			return obj, errors.New("[internal.stock.createResponseObject] invalid interval")
+			return obj, errors.New("[stock.price.createResponseObject] invalid interval")
 		}
 	}
 
@@ -372,11 +371,11 @@ func generateOutputHledgerAdjusted(timeSeries map[time.Time]TypedPricesAdjusted,
 
 // generateMetadataTable generates a table with the metadata for a given stock symbol. It is used to display the
 // the information about the stock before the table with the stock prices.
-func generateMetadataTable(symbol string, currency string, lastRefresh time.Time, timeZone string) string {
+func generateMetadataTable(symbol string, currency string, lastRefreshed time.Time, timeZone string) string {
 	t := table.NewWriter()
 	t.SetStyle(table.StyleLight)
-	t.AppendHeader(table.Row{"Symbol", "Currency", "Last Refresh", "Timezone"})
-	t.AppendRow(table.Row{symbol, currency, lastRefresh.Format("2006-01-02"), timeZone})
+	t.AppendHeader(table.Row{"Symbol", "Currency", "Last Refreshed", "Timezone"})
+	t.AppendRow(table.Row{symbol, currency, lastRefreshed.Format("2006-01-02"), timeZone})
 	return t.Render() + "\n"
 }
 
@@ -448,15 +447,7 @@ func generateTimeSeriesTableLongAdjusted(timeSeries map[time.Time]TypedPricesAdj
 
 // Execute is the core function of the price package. It fetches the stock prices from the Alpha Vantage API for a given
 // stock symbol and returns it in the desired format.
-func Execute(symbol string, format flags.OutputFormat, interval flags.Interval, begin string, end string, adjusted bool) (string, error) {
-	// Verify function parameters and variables.
-	if internal.ApiKey == "" {
-		return "", errors.New("[stock.price.Execute] API key is required")
-	}
-	if symbol == "" {
-		return "", errors.New("[stock.price.Execute] no stock symbol provided")
-	}
-
+func Execute(symbol string, format flags.OutputFormat, interval flags.Interval, begin string, end string, adjusted bool, full bool) (string, error) {
 	var err error
 	var beginTime time.Time
 	var endTime time.Time = time.Now()
@@ -479,7 +470,7 @@ func Execute(symbol string, format flags.OutputFormat, interval flags.Interval, 
 		return "", errors.New("[stock.price.Execute] begin date is after end date")
 	}
 
-	url, err := buildURL(symbol, format, interval, adjusted)
+	url, err := buildURL(symbol, format, interval, adjusted, full)
 	if err != nil {
 		return "", err
 	}

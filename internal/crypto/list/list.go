@@ -19,8 +19,6 @@
 package list
 
 import (
-	"bytes"
-	"encoding/csv"
 	"errors"
 	"fmt"
 
@@ -32,12 +30,7 @@ import (
 
 const url = "https://www.alphavantage.co/digital_currency_list/"
 
-type Crypto struct {
-	Code string
-	Name string
-}
-
-type Cryptos []Crypto
+type Cryptos map[string]string
 
 func (obj *Cryptos) GenerateOutput(body []byte, format flags.OutputFormat) (string, error) {
 	switch format {
@@ -47,40 +40,40 @@ func (obj *Cryptos) GenerateOutput(body []byte, format flags.OutputFormat) (stri
 	case flags.OutputFormatCSV:
 		return string(body), nil
 	case flags.OutputFormatTable:
-		// Read CSV data.
-		csvReader := csv.NewReader(bytes.NewReader(body))
-		data, err := csvReader.ReadAll()
+		data, err := internal.ParseCurrenciesCSV(body)
 		if err != nil {
-			return "", fmt.Errorf("[(*Cryptos).GenerateOutput] failure to read CSV data: %w", err)
+			return "", err
 		}
-
-		// Parse CSV data into a slice of Crypto objects.
-		for i, line := range data {
-			if i > 0 { // Skip the header line.
-				var currency Crypto
-				for j, field := range line {
-					switch j {
-					case 0:
-						currency.Code = field
-					case 1:
-						currency.Name = field
-					}
-				}
-				*obj = append(*obj, currency)
-			}
-		}
+		*obj = data
 
 		// Create a table and send it to the output.
 		t := table.NewWriter()
 		t.SetStyle(table.StyleLight)
 		t.AppendHeader(table.Row{"Code", "Currency Name"})
-		for _, currency := range *obj {
-			t.AppendRow(table.Row{currency.Code, currency.Name})
+		for currencyCode, currencyName := range *obj {
+			t.AppendRow(table.Row{currencyCode, currencyName})
 		}
+		t.SortBy([]table.SortBy{{Name: "Code", Mode: table.Asc}})
 		return t.Render() + "\n", nil
 	default:
 		return "", errors.New("[(*Cryptos).GenerateOutput] invalid output format")
 	}
+}
+
+func CryptoExists(cryptoCode string) (bool, error) {
+	body, err := internal.HTTPRequest(url)
+	if err != nil {
+		return false, err
+	}
+
+	cryptos, err := internal.ParseCurrenciesCSV(body)
+	if err != nil {
+		return false, err
+	}
+
+	_, exists := cryptos[cryptoCode]
+
+	return exists, nil
 }
 
 func Execute(format flags.OutputFormat) (string, error) {

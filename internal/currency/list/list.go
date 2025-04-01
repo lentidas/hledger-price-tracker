@@ -19,8 +19,6 @@
 package list
 
 import (
-	"bytes"
-	"encoding/csv"
 	"errors"
 	"fmt"
 
@@ -32,12 +30,7 @@ import (
 
 const url = "https://www.alphavantage.co/physical_currency_list/"
 
-type Currency struct {
-	Code string
-	Name string
-}
-
-type Currencies []Currency
+type Currencies map[string]string
 
 func (obj *Currencies) GenerateOutput(body []byte, format flags.OutputFormat) (string, error) {
 	switch format {
@@ -47,40 +40,40 @@ func (obj *Currencies) GenerateOutput(body []byte, format flags.OutputFormat) (s
 	case flags.OutputFormatCSV:
 		return string(body), nil
 	case flags.OutputFormatTable:
-		// Read CSV data.
-		csvReader := csv.NewReader(bytes.NewReader(body))
-		data, err := csvReader.ReadAll()
+		data, err := internal.ParseCurrenciesCSV(body)
 		if err != nil {
-			return "", fmt.Errorf("[(*Currencies).GenerateOutput] failure to read CSV data: %w", err)
+			return "", err
 		}
-
-		// Parse CSV data into a slice of Currency objects.
-		for i, line := range data {
-			if i > 0 { // Skip the header line.
-				var currency Currency
-				for j, field := range line {
-					switch j {
-					case 0:
-						currency.Code = field
-					case 1:
-						currency.Name = field
-					}
-				}
-				*obj = append(*obj, currency)
-			}
-		}
+		*obj = data
 
 		// Create a table and send it to the output.
 		t := table.NewWriter()
 		t.SetStyle(table.StyleLight)
 		t.AppendHeader(table.Row{"Code", "Currency Name"})
-		for _, currency := range *obj {
-			t.AppendRow(table.Row{currency.Code, currency.Name})
+		for currencyCode, currencyName := range *obj {
+			t.AppendRow(table.Row{currencyCode, currencyName})
 		}
+		t.SortBy([]table.SortBy{{Name: "Code", Mode: table.Asc}})
 		return t.Render() + "\n", nil
 	default:
 		return "", errors.New("[internal.search.generateSearchOutput] invalid output format")
 	}
+}
+
+func CurrencyExists(currencyCode string) (bool, error) {
+	body, err := internal.HTTPRequest(url)
+	if err != nil {
+		return false, err
+	}
+
+	currencies, err := internal.ParseCurrenciesCSV(body)
+	if err != nil {
+		return false, err
+	}
+
+	_, exists := currencies[currencyCode]
+
+	return exists, nil
 }
 
 func Execute(format flags.OutputFormat) (string, error) {

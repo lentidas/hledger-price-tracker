@@ -28,9 +28,9 @@ import (
 func TestSearch(t *testing.T) {
 	internal.ApiKey = "demo"
 
-	t.Run("success", func(t *testing.T) {
-		// TODO Implement expected response.
-	})
+	// t.Run("success", func(t *testing.T) {
+	// 	// TODO Implement expected response.
+	// })
 
 	t.Run("no search query", func(t *testing.T) {
 		if _, err := Execute("", flags.OutputFormatJSON); err == nil {

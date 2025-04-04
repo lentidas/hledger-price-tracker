@@ -40,5 +40,6 @@ jobs:
         token: ${{ steps.app-token.outputs.token }}
         user_name: ${{ steps.git-user-info.outputs.username }}
         user_email: ${{ steps.git-user-info.outputs.email }}
-        tap: lentidas/tap
+        tap: lentidas/homebrew-tap
+        no_fork: true
         formula: hledger-price-tracker

@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.6](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.5...v0.1.6) (2025-04-04)
+
+
+### Miscellaneous Chores
+
+* **deps:** update goreleaser/goreleaser-action action [skip ci] ([#33](https://github.com/lentidas/hledger-price-tracker/issues/33)) ([0379476](https://github.com/lentidas/hledger-price-tracker/commit/037947633077803f9db4f7e19bbcf3f71ed9f333))
+
+
+### Continuous Integration
+
+* test a possible fix for the homebrew workflow ([1d5fe90](https://github.com/lentidas/hledger-price-tracker/commit/1d5fe909b2bedf61b0a57f8bcc517aed73489679))
+
 ## [0.1.5](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.4...v0.1.5) (2025-04-01)
 
 

@@ -61,10 +61,6 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "path to config file (default is $HOME/.hledger-price-tracker.yaml)")
-
-	// TODO Validate the currency flag against a list of valid currencies accepted by the Alpha Vantage API
-	//  https://www.alphavantage.co/physical_currency_list/
-	//  https://www.alphavantage.co/digital_currency_list/
 	rootCmd.PersistentFlags().StringVarP(&internal.DefaultCurrency, "currency", "c", "EUR", "default destination currency for exchange rates")
 	rootCmd.PersistentFlags().StringVarP(&internal.ApiKey, "api-key", "k", "", "API key to access the Alpha Vantage API")
 	rootCmd.PersistentFlags().BoolVar(&internal.DebugMode, "debug", false, "enable debug mode (disables a few API requests and prints more information)")

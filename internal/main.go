@@ -21,9 +21,11 @@ package internal
 import (
 	"bytes"
 	"encoding/csv"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 )
 
 const ApiBaseUrl string = "https://www.alphavantage.co/query?"
@@ -76,4 +78,32 @@ func ParseCurrenciesCSV(body []byte) (map[string]string, error) {
 	}
 
 	return currencies, nil
+}
+
+// ValidateDates checks if begin and end dates are valid then returns its parsed values
+// in the time.Time format.
+func ValidateDates(begin, end string) (time.Time, time.Time, error) {
+	var err error
+	var beginTime time.Time
+	var endTime time.Time = time.Now()
+	if begin != "" {
+		beginTime, err = time.Parse("2006-01-02", begin)
+		if err != nil {
+			return time.Now(), time.Now(), fmt.Errorf("[stock.price.Execute] failed to parse begin date: %w", err)
+		}
+		if beginTime.After(time.Now()) {
+			return time.Now(), time.Now(), errors.New("[stock.price.Execute] begin date is in the future")
+		}
+	}
+	if end != "" {
+		endTime, err = time.Parse("2006-01-02", end)
+		if err != nil {
+			return time.Now(), time.Now(), fmt.Errorf("[stock.price.Execute] failed to parse end date: %w", err)
+		}
+	}
+	if beginTime.After(endTime) {
+		return time.Now(), time.Now(), errors.New("[stock.price.Execute] begin date is after end date")
+	}
+
+	return beginTime, endTime, nil
 }

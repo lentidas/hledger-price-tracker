@@ -309,7 +309,7 @@ func createResponseObject(interval flags.Interval, adjusted bool) (Response, err
 	return obj, nil
 }
 
-// getDates returns the dates in the time series that are within the specified interval.
+// getDatesNormal returns the dates in the time series that are within the specified interval.
 func getDatesNormal(timeSeries map[time.Time]TypedPrices, begin time.Time, end time.Time) []time.Time {
 	var dates []time.Time
 	for date := range timeSeries {
@@ -369,7 +369,7 @@ func generateOutputHledgerAdjusted(timeSeries map[time.Time]TypedPricesAdjusted,
 	return out.String()
 }
 
-// generateMetadataTable generates a table with the metadata for a given stock symbol. It is used to display the
+// generateMetadataTable generates a table with the metadata for a given stock symbol. It is used to display
 // the information about the stock before the table with the stock prices.
 func generateMetadataTable(symbol string, currency string, lastRefreshed time.Time, timeZone string) string {
 	t := table.NewWriter()

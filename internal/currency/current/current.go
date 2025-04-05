@@ -170,6 +170,7 @@ func (obj *Current) GenerateOutput(body []byte, format flags.OutputFormat) (stri
 	}
 }
 
+// buildURL creates the URL to make the HTTP request to the Alpha Vantage API.
 func buildURL(from string, to string) (string, error) {
 	if internal.ApiKey == "" {
 		return "", errors.New("[currency/crypto.current.buildURL] API key is required")

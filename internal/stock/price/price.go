@@ -343,8 +343,8 @@ func getDatesAdjusted(timeSeries map[time.Time]TypedPricesAdjusted, begin time.T
 	return dates
 }
 
-// generateOutputHledger generates the output in hledger format for non-adjusted prices.
-func generateOutputHledger(timeSeries map[time.Time]TypedPrices, dates []time.Time, symbol string, currency string) string {
+// generateOutputHledgerNormal generates the output in hledger format for non-adjusted prices.
+func generateOutputHledgerNormal(timeSeries map[time.Time]TypedPrices, dates []time.Time, symbol string, currency string) string {
 	out := strings.Builder{}
 	for _, date := range dates {
 		out.WriteString(fmt.Sprintf("P %s \"%s\" %.2f %s\n",

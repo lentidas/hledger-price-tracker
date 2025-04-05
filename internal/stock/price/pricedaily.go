@@ -93,7 +93,7 @@ func (obj *Daily) GenerateOutput(body []byte, begin time.Time, end time.Time, fo
 		dates := getDatesNormal(obj.Typed.TimeSeries, begin, end)
 
 		if format == flags.OutputFormatHledger {
-			return generateOutputHledger(
+			return generateOutputHledgerNormal(
 					obj.Typed.TimeSeries,
 					dates,
 					obj.Typed.MetaData.Symbol,

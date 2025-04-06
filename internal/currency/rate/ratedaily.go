@@ -22,9 +22,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/lentidas/hledger-price-tracker/internal/flags"
 	"strings"
 	"time"
+
+	"github.com/lentidas/hledger-price-tracker/internal/flags"
 )
 
 const apiFunctionCurrencyRateDaily = "FX_DAILY"

@@ -21,14 +21,16 @@ package rate
 import (
 	"errors"
 	"fmt"
-	"github.com/jedib0t/go-pretty/v6/table"
-	"github.com/lentidas/hledger-price-tracker/internal"
-	currencyList "github.com/lentidas/hledger-price-tracker/internal/currency/list"
-	"github.com/lentidas/hledger-price-tracker/internal/flags"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/jedib0t/go-pretty/v6/table"
+
+	"github.com/lentidas/hledger-price-tracker/internal"
+	currencyList "github.com/lentidas/hledger-price-tracker/internal/currency/list"
+	"github.com/lentidas/hledger-price-tracker/internal/flags"
 )
 
 // TODO Add documentation to each of the functions

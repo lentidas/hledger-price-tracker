@@ -20,12 +20,9 @@ package rate
 
 import (
 	"encoding/json"
-	"strings"
-
-	// "encoding/json"
 	"errors"
 	"fmt"
-	// "strings"
+	"strings"
 	"time"
 
 	"github.com/lentidas/hledger-price-tracker/internal/flags"

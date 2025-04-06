@@ -89,20 +89,20 @@ func ValidateDates(begin, end string) (time.Time, time.Time, error) {
 	if begin != "" {
 		beginTime, err = time.Parse("2006-01-02", begin)
 		if err != nil {
-			return time.Now(), time.Now(), fmt.Errorf("[stock.price.Execute] failed to parse begin date: %w", err)
+			return time.Now(), time.Now(), fmt.Errorf("[internal.ValidateDates] failed to parse begin date: %w", err)
 		}
 		if beginTime.After(time.Now()) {
-			return time.Now(), time.Now(), errors.New("[stock.price.Execute] begin date is in the future")
+			return time.Now(), time.Now(), errors.New("[internal.ValidateDates] begin date is in the future")
 		}
 	}
 	if end != "" {
 		endTime, err = time.Parse("2006-01-02", end)
 		if err != nil {
-			return time.Now(), time.Now(), fmt.Errorf("[stock.price.Execute] failed to parse end date: %w", err)
+			return time.Now(), time.Now(), fmt.Errorf("[internal.ValidateDates] failed to parse end date: %w", err)
 		}
 	}
 	if beginTime.After(endTime) {
-		return time.Now(), time.Now(), errors.New("[stock.price.Execute] begin date is after end date")
+		return time.Now(), time.Now(), errors.New("[internal.ValidateDates] begin date is after end date")
 	}
 
 	return beginTime, endTime, nil

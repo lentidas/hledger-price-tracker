@@ -147,7 +147,7 @@ func (typed *TypedPrices) TypeBody(raw RawPrices) error {
 
 func buildURL(from string, to string, format flags.OutputFormat, interval flags.Interval, full bool) (string, error) {
 	if internal.ApiKey == "" {
-		return "", errors.New("[price.buildURL] API key is required")
+		return "", errors.New("[currency.rate.buildURL] API key is required")
 	}
 
 	fromBoolCurrency, err := currencyList.CurrencyExists(from)
@@ -172,7 +172,7 @@ func buildURL(from string, to string, format flags.OutputFormat, interval flags.
 	case flags.OutputFormatHledger, flags.OutputFormatTable, flags.OutputFormatTableLong, flags.OutputFormatJSON, flags.OutputFormatCSV:
 		// Do nothing.
 	default:
-		return "", errors.New("[price.buildURL] invalid output format")
+		return "", errors.New("[currency.rate.buildURL] invalid output format")
 	}
 
 	url := strings.Builder{}

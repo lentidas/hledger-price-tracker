@@ -142,7 +142,7 @@ The `hledger` format always uses the closing price of the day. The other formats
 The following example shows the exchange rates from EUR to USD stock in the weekly interval for the first months of 2025, specified using the `--begin` and `--end` flags.
 
 ```shell
-helder-price-tracker currency rate EUR USD --api-key demo --format table --begin 2025-01-01 --end 2025-03-31
+hledger-price-tracker currency rate EUR USD --api-key demo --format table --begin 2025-01-01 --end 2025-03-31
 ```
 ```
 ┌──────┬──────────┬─────────────────────┐

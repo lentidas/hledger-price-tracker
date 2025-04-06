@@ -61,9 +61,6 @@ func TestPrice(t *testing.T) {
 	})
 }
 
-// FIXME Fix the tests to use the new functions
-// FIXME Use current_test.go as an example because we should use a if else instead of consecutive if statements.
-
 func TestPriceURLBuilder(t *testing.T) {
 	internal.ApiKey = "demo"
 
@@ -111,6 +108,17 @@ func TestPriceURLBuilder(t *testing.T) {
 		}
 	})
 
+	t.Run("weekly ignore full", func(t *testing.T) {
+		expected := "https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol=IBM&apikey=demo"
+
+		url, err := buildURL("IBM", flags.OutputFormatHledger, flags.IntervalWeekly, false, false)
+		if err != nil {
+			t.Errorf("expected nil, got %v", err)
+		} else if url != expected {
+			t.Errorf("expected %s, got %s", expected, url)
+		}
+	})
+
 	t.Run("monthly", func(t *testing.T) {
 		expected := "https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol=IBM&apikey=demo"
 
@@ -126,6 +134,17 @@ func TestPriceURLBuilder(t *testing.T) {
 		expected := "https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY_ADJUSTED&symbol=IBM&apikey=demo"
 
 		url, err := buildURL("IBM", flags.OutputFormatHledger, flags.IntervalMonthly, true, false)
+		if err != nil {
+			t.Errorf("expected nil, got %v", err)
+		} else if url != expected {
+			t.Errorf("expected %s, got %s", expected, url)
+		}
+	})
+
+	t.Run("monthly ignore full", func(t *testing.T) {
+		expected := "https://www.alphavantage.co/query?function=TIME_SERIES_MONTHLY&symbol=IBM&apikey=demo"
+
+		url, err := buildURL("IBM", flags.OutputFormatHledger, flags.IntervalMonthly, false, false)
 		if err != nil {
 			t.Errorf("expected nil, got %v", err)
 		} else if url != expected {

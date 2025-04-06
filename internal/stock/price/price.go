@@ -56,7 +56,7 @@ type TypedMetadata struct {
 func (typed *TypedMetadata) TypeBody(raw RawMetadata) error {
 	lastRefreshed, err := time.Parse("2006-01-02", raw.LastRefreshed)
 	if err != nil {
-		return err
+		return fmt.Errorf("[stock.price.(*TypedMetadata).TypeBody] error parsing last refreshed date: %w", err)
 	}
 
 	typed.Information = raw.Information
@@ -309,7 +309,7 @@ func createResponseObject(interval flags.Interval, adjusted bool) (Response, err
 	return obj, nil
 }
 
-// getDates returns the dates in the time series that are within the specified interval.
+// getDatesNormal returns the dates in the time series that are within the specified interval.
 func getDatesNormal(timeSeries map[time.Time]TypedPrices, begin time.Time, end time.Time) []time.Time {
 	var dates []time.Time
 	for date := range timeSeries {
@@ -343,8 +343,8 @@ func getDatesAdjusted(timeSeries map[time.Time]TypedPricesAdjusted, begin time.T
 	return dates
 }
 
-// generateOutputHledger generates the output in hledger format for non-adjusted prices.
-func generateOutputHledger(timeSeries map[time.Time]TypedPrices, dates []time.Time, symbol string, currency string) string {
+// generateOutputHledgerNormal generates the output in hledger format for non-adjusted prices.
+func generateOutputHledgerNormal(timeSeries map[time.Time]TypedPrices, dates []time.Time, symbol string, currency string) string {
 	out := strings.Builder{}
 	for _, date := range dates {
 		out.WriteString(fmt.Sprintf("P %s \"%s\" %.2f %s\n",
@@ -369,7 +369,7 @@ func generateOutputHledgerAdjusted(timeSeries map[time.Time]TypedPricesAdjusted,
 	return out.String()
 }
 
-// generateMetadataTable generates a table with the metadata for a given stock symbol. It is used to display the
+// generateMetadataTable generates a table with the metadata for a given stock symbol. It is used to display
 // the information about the stock before the table with the stock prices.
 func generateMetadataTable(symbol string, currency string, lastRefreshed time.Time, timeZone string) string {
 	t := table.NewWriter()
@@ -448,26 +448,9 @@ func generateTimeSeriesTableLongAdjusted(timeSeries map[time.Time]TypedPricesAdj
 // Execute is the core function of the price package. It fetches the stock prices from the Alpha Vantage API for a given
 // stock symbol and returns it in the desired format.
 func Execute(symbol string, format flags.OutputFormat, interval flags.Interval, begin string, end string, adjusted bool, full bool) (string, error) {
-	var err error
-	var beginTime time.Time
-	var endTime time.Time = time.Now()
-	if begin != "" {
-		beginTime, err = time.Parse("2006-01-02", begin)
-		if err != nil {
-			return "", fmt.Errorf("[stock.price.Execute] failed to parse begin date: %w", err)
-		}
-		if beginTime.After(time.Now()) {
-			return "", errors.New("[stock.price.Execute] begin date is in the future")
-		}
-	}
-	if end != "" {
-		endTime, err = time.Parse("2006-01-02", end)
-		if err != nil {
-			return "", fmt.Errorf("[stock.price.Execute] failed to parse end date: %w", err)
-		}
-	}
-	if beginTime.After(endTime) {
-		return "", errors.New("[stock.price.Execute] begin date is after end date")
+	beginTime, endTime, err := internal.ValidateDates(begin, end)
+	if err != nil {
+		return "", err
 	}
 
 	url, err := buildURL(symbol, format, interval, adjusted, full)

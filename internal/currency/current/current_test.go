@@ -28,9 +28,17 @@ import (
 func TestCurrent(t *testing.T) {
 	internal.ApiKey = "demo"
 
-	// t.Run("success", func(t *testing.T) {
-	// 	// TODO Implement expected response.
-	// })
+	t.Run("success from USD to JPY", func(t *testing.T) {
+		if _, err := Execute("USD", "JPY", flags.OutputFormatHledger); err != nil {
+			t.Errorf("expected nil, got %v", err)
+		}
+	})
+
+	t.Run("success from BTC to EUR", func(t *testing.T) {
+		if _, err := Execute("BTC", "EUR", flags.OutputFormatHledger); err != nil {
+			t.Errorf("expected nil, got %v", err)
+		}
+	})
 
 	t.Run("no origin currency", func(t *testing.T) {
 		if _, err := Execute("", "JPY", flags.OutputFormatHledger); err == nil {

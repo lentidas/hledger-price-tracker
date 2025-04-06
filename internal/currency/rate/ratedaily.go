@@ -16,7 +16,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package price
+package rate
 
 import (
 	"encoding/json"
@@ -28,13 +28,11 @@ import (
 	"github.com/lentidas/hledger-price-tracker/internal/flags"
 )
 
-const apiFunctionTimeSeriesDaily = "TIME_SERIES_DAILY"
-
-// TODO Comment functions and such.
+const apiFunctionCurrencyRateDaily = "FX_DAILY"
 
 type RawDaily struct {
 	MetaData   RawMetadataDaily     `json:"Meta Data"`
-	TimeSeries map[string]RawPrices `json:"Time Series (Daily)"`
+	TimeSeries map[string]RawPrices `json:"Time Series FX (Daily)"`
 }
 
 type TypedDaily struct {
@@ -90,23 +88,22 @@ func (obj *Daily) GenerateOutput(body []byte, begin time.Time, end time.Time, fo
 			return "", fmt.Errorf("[(*Daily).GenerateOutput] error casting response attributes: %w", err)
 		}
 
-		dates := getDatesNormal(obj.Typed.TimeSeries, begin, end)
+		dates := getDates(obj.Typed.TimeSeries, begin, end)
 
 		if format == flags.OutputFormatHledger {
-			return generateOutputHledgerNormal(
+			return generateOutputHledger(
 					obj.Typed.TimeSeries,
 					dates,
-					obj.Typed.MetaData.Symbol,
-					obj.Typed.MetaData.Currency),
+					obj.Typed.MetaData.FromSymbol,
+					obj.Typed.MetaData.ToSymbol),
 				nil
 		} else {
 			out := strings.Builder{}
 			out.WriteString(generateMetadataTable(
-				obj.Typed.MetaData.Symbol,
-				obj.Typed.MetaData.Currency,
-				obj.Typed.MetaData.LastRefreshed,
-				obj.Typed.MetaData.TimeZone))
-			out.WriteString(generateTimeSeriesTableShort(
+				obj.Typed.MetaData.FromSymbol,
+				obj.Typed.MetaData.ToSymbol,
+				obj.Typed.MetaData.LastRefreshed))
+			out.WriteString(generateTimeSeriesTable(
 				obj.Typed.TimeSeries,
 				dates))
 			return out.String(), nil

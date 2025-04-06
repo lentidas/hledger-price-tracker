@@ -65,6 +65,6 @@ func init() {
 	// Add this subcommand to the `currency` command palette.
 	PaletteCmd.AddCommand(currentCmd)
 
-	// Add flags to the `list` subcommand.
+	// Add flags to the `current` subcommand.
 	currentCmd.Flags().VarP(&formatCurrent, "format", "f", "format of the output (possible values are \"hledger\", \"json\", \"table\", \"table-long\")")
 }

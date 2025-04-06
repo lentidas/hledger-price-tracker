@@ -19,8 +19,16 @@ CLI program to generate market price records for [hledger](https://hledger.org/)
 - [Table of Contents](#table-of-contents)
 - [Configuration](#configuration)
 - [Usage](#usage)
-  - [`stock search`](#stock-search)
-  - [`stock price`](#stock-price)
+  - [`currency`](#currency)
+    - [`currency list`](#currency-list)
+    - [`currency current`](#currency-current)
+    - [`currency rate`](#currency-rate)
+  - [`crypto`](#crypto)
+    - [`crypto list`](#crypto-list)
+    - [`crypto current`](#crypto-current)
+  - [`stock`](#stock)
+    - [`stock search`](#stock-search)
+    - [`stock price`](#stock-price)
 
 ## Configuration
 
@@ -46,7 +54,191 @@ default-currency: EUR
 
 ## Usage
 
-### `stock search`
+### `currency`
+
+#### `currency list`
+
+This command lists all the physical currencies available on the Alpha Vantage API. It was implemented to allow the user to check what is the 3-letter code for the currency they want to use, since this code is what the API expects.
+
+```shell
+hledger-price-tracker currency list
+```
+```
+┌──────┬─────────────────────────────────────┐
+│ CODE │ CURRENCY NAME                       │
+├──────┼─────────────────────────────────────┤
+│ AED  │ United Arab Emirates Dirham         │
+│ YER  │ Yemeni Rial                         │
+│ ...  │ ...                                 │
+│ ZMW  │ Zambian Kwacha                      │
+│ ZWL  │ Zimbabwean Dollar                   │
+└──────┴─────────────────────────────────────┘
+```
+
+> [!NOTE]
+> Actually, this command does not talk to the API directly, it simply parses [this CSV file](https://www.alphavantage.co/physical_currency_list/) from Alpha Vantage's documentation.
+
+> [!TIP]
+> You can use the `--format` or `-f` flag to get the same CSV output. *Other formats are not available.*
+
+#### `currency current`
+
+This command is used to get the current exchange rate between two currencies.
+
+It expects at least one argument, which is the currency for which you want to get the price to.
+
+The second argument is the currency you want to convert to. It defaults to `EUR` or the currency given to the `--currency` flag (the flag is always overridden by the second argument).
+
+> [!NOTE]
+> The commands `currency current` and `crypto current` are interchangeable, as there is a single API endpoint for getting the current exchange rate between two currencies, either physical or digital ones.
+
+```shell
+hledger-price-tracker currency current USD JPY --api-key demo
+```
+```
+P 2025-04-05 "USD" 146.94 "JPY"
+```
+
+You can specify a different output format using the `--format` or `-f` flag. The available formats are `hledger` (default), `table`, `table-long` (table with more information), and `json`.
+The `json` output is nothing more than the raw body of the response from the Alpha Vantage API.
+
+```shell
+hledger-price-tracker currency current USD JPY --api-key demo --format table
+```
+```
+┌─────┬─────────┬─────────────────────┐
+│ USD │     JPY │ LAST REFRESHED      │
+├─────┼─────────┼─────────────────────┤
+│ 1   │ 146.935 │ 2025-04-05 18:50:34 │
+└─────┴─────────┴─────────────────────┘
+```
+
+#### `currency rate`
+
+This command gets the historical exchange rates between two physical currencies, either daily, weekly, or monthly. The default interval is weekly and the default output is given in hledger syntax.
+
+The following command gets the weekly exchange rates from EUR to USD.
+
+```shell
+hledger-price-tracker currency rate EUR USD --api-key demo
+```
+```
+P 2015-04-12 "EUR" 1.06 "USD"
+P 2015-04-19 "EUR" 1.08 "USD"
+P 2015-04-26 "EUR" 1.09 "USD"
+
+...
+
+P 2025-03-16 "EUR" 1.09 "USD"
+P 2025-03-23 "EUR" 1.08 "USD"
+P 2025-03-30 "EUR" 1.08 "USD"
+P 2025-04-04 "EUR" 1.10 "USD"
+```
+
+There is also the `--format` or `-f` flag to specify a different output format. The available formats are `hledger` (default), `table`, `table-long`, `json`, and `csv`.
+
+The `hledger` format always uses the closing price of the day. The other formats show more information.
+
+The following example shows the exchange rates from EUR to USD stock in the weekly interval for the first months of 2025, specified using the `--begin` and `--end` flags.
+
+```shell
+hledger-price-tracker currency rate EUR USD --api-key demo --format table --begin 2025-01-01 --end 2025-03-31
+```
+```
+┌──────┬──────────┬─────────────────────┐
+│ FROM │ CURRENCY │ LAST REFRESHED      │
+├──────┼──────────┼─────────────────────┤
+│ EUR  │ USD      │ 2025-04-04 21:25:00 │
+└──────┴──────────┴─────────────────────┘
+┌────────────┬──────┬──────┬──────┬───────┐
+│ DATE       │ OPEN │ HIGH │ LOW  │ CLOSE │
+├────────────┼──────┼──────┼──────┼───────┤
+│ 2025-01-05 │ 1.04 │ 1.04 │ 1.02 │ 1.03  │
+│ 2025-01-12 │ 1.04 │ 1.04 │ 1.02 │ 1.02  │
+│ 2025-01-19 │ 1.03 │ 1.04 │ 1.02 │ 1.03  │
+│ 2025-01-26 │ 1.04 │ 1.05 │ 1.03 │ 1.05  │
+│ 2025-02-02 │ 1.04 │ 1.05 │ 1.02 │ 1.02  │
+│ 2025-02-09 │ 1.03 │ 1.04 │ 1.03 │ 1.03  │
+│ 2025-02-16 │ 1.03 │ 1.05 │ 1.03 │ 1.05  │
+│ 2025-02-23 │ 1.05 │ 1.05 │ 1.04 │ 1.05  │
+│ 2025-03-02 │ 1.05 │ 1.05 │ 1.04 │ 1.04  │
+│ 2025-03-09 │ 1.05 │ 1.09 │ 1.05 │ 1.09  │
+│ 2025-03-16 │ 1.08 │ 1.09 │ 1.08 │ 1.09  │
+│ 2025-03-23 │ 1.09 │ 1.10 │ 1.08 │ 1.08  │
+│ 2025-03-30 │ 1.08 │ 1.08 │ 1.07 │ 1.08  │
+└────────────┴──────┴──────┴──────┴───────┘
+```
+
+### `crypto`
+
+#### `crypto list`
+
+This command lists all the digital currencies available on the Alpha Vantage API. It was implemented as a way to check what is the 3-letter code for the currency the user wants to use, since this code is what the API expects.
+
+```shell
+hledger-price-tracker crypto list
+```
+```
+┌───────────┬──────────────────────────────────┐
+│ CODE      │ CURRENCY NAME                    │
+├───────────┼──────────────────────────────────┤
+│ 1ST       │ FirstBlood                       │
+│ 2GIVE     │ GiveCoin                         │
+│ ...       │ ...                              │
+│ ZLA       │ Zilla                            │
+│ ZRX       │ 0x                               │
+└───────────┴──────────────────────────────────┘
+```
+
+> [!NOTE]
+> Actually, this command does not talk to the API directly, it simply parses [this CSV file](https://www.alphavantage.co/digital_currency_list/) from Alpha Vantage's documentation.
+
+> [!TIP]
+> You can use the `--format` or `-f` flag to get the same CSV output. *Other formats are not available.*
+
+#### `crypto current`
+
+This command is used to get the current exchange rate between the specified cryptocurrency and currency.
+
+It expects at least one argument, which is the cryptocurrency for which you want to get the price to.
+
+The second argument is the currency you want to convert to, for example, USD or EUR. It defaults to `EUR` or the currency given to the `--currency` flag (the flag is always overridden by the second argument).
+
+> [!NOTE]
+> The commands `crypto current` and `currency current` are interchangeable, as there is a single API endpoint for getting the current exchange rate between two currencies, either physical or digital ones.
+
+```shell
+hledger-price-tracker crypto current BTC --api-key demo
+```
+```
+P 2025-04-05 "BTC" 75670.94 "EUR"
+```
+
+You can specify a different output format using the `--format` or `-f` flag. The available formats are `hledger` (default), `table`, `table-long` (table with more information), and `json`.
+The `json` output is nothing more than the raw body of the response from the Alpha Vantage API.
+
+```shell
+hledger-price-tracker crypto current BTC --api-key demo --format table
+```
+```
+┌─────┬──────────┬─────────────────────┐
+│ BTC │      EUR │ LAST REFRESHED      │
+├─────┼──────────┼─────────────────────┤
+│ 1   │ 75682.92 │ 2025-04-05 18:44:29 │
+└─────┴──────────┴─────────────────────┘
+```
+
+<!--
+
+#### `crypto rate`
+
+TODO
+
+-->
+
+### `stock`
+
+#### `stock search`
 
 This command allows you to search for a stock symbol with a given query. The query can be a part of the company name or the stock symbol itself.
 
@@ -163,7 +355,7 @@ BAAAAX,Building America Strategy Port CDA USD Ser 21/1Q MNT CASH,Mutual Fund,Uni
 BAAAFX,Building America Strgy Portf CDA USD Ser 2022/2Q MNT CASH,Mutual Fund,United States,09:30,16:00,UTC-04,USD,0.5000
 ```
 
-### `stock price`
+#### `stock price`
 
 This command allows you to get the price of a stock symbol, either daily, weekly, or monthly. The default interval is weekly and the default output is given in hledger syntax.
 
@@ -225,16 +417,16 @@ P 2025-03-12 "IBM" 249.63 NIL
 > Also note how the stock symbol is displayed between double quotes. This is to avoid any issues with the hledger syntax, because some stock symbols contain special characters or numbers (p.e. `IBMB34.SAO` for IBM traded in São Paulo's exchange).
 
 > [!IMPORTANT]
-> The `default-currency` option has no effect on the output of the `price` subcommand, because the currency is defined by the stock symbol itself. For example, `IBM` is traded in USD, and `IBM.FRK` is traded in EUR, despite being the same publicly-traded company.
+> The `--currency` flag has no effect on the output of the `stock price` subcommand, because the currency is defined by the stock symbol itself. For example, `IBM` is traded in USD, and `IBM.FRK` is traded in EUR, despite being the same publicly-traded company.
 
 There is also the `--format` or `-f` flag to specify a different output format. The available formats are `hledger` (default), `table`, `table-long`, `json`, and `csv`.
 
 The `hledger` format always uses the closing price of the stock. The other formats show more information.
 
-The following example shows the price of IBM stock in the weekly interval for the first quarter of 2025, specified using the `--begin` and `--end` flags.
+The following example shows the price of IBM stock in the weekly interval for the first months of 2025, specified using the `--begin` and `--end` flags.
 
 ```shell
-hledger-price-tracker stock price IBM -k demo --format table --begin 2025-01-01 --end 2025-03-21
+hledger-price-tracker stock price IBM --api-key demo --format table --begin 2025-01-01 --end 2025-03-21
 ```
 ```
 ┌────────┬──────────┬────────────────┬────────────┐
@@ -265,7 +457,7 @@ hledger-price-tracker stock price IBM -k demo --format table --begin 2025-01-01 
 Alpha Vantage also provides the option to get an adjusted closing price, along with the given dividends. You can use the `--adjusted` or `-a` flag to get this information.
 
 ```shell
-hledger-price-tracker stock price IBM -k demo --format table-long --begin 2024-01-01 --end 2024-12-31 --adjusted
+hledger-price-tracker stock price IBM --api-key demo --format table-long --begin 2024-01-01 --end 2024-12-31 --adjusted
 ```
 ```
 ┌────────┬──────────┬────────────────┬────────────┐

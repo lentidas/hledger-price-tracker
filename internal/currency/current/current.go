@@ -131,45 +131,44 @@ func (obj *Current) GenerateOutput(body []byte, format flags.OutputFormat) (stri
 				obj.Typed.ToCurrencyCode)
 			return output, nil
 		} else {
-			tMetadata := table.NewWriter()
-			tMetadata.SetStyle(table.StyleLight)
-			tMetadata.AppendHeader(table.Row{"From", "To", "Last Refreshed"})
-			tMetadata.AppendRow(table.Row{
-				fmt.Sprintf("%s (%s)", obj.Typed.FromCurrencyName, obj.Typed.FromCurrencyCode),
-				fmt.Sprintf("%s (%s)", obj.Typed.ToCurrencyName, obj.Typed.ToCurrencyCode),
-				obj.Typed.LastRefreshed.Format("2006-01-02 15:04:05"),
-			})
-
-			tData := table.NewWriter()
-			tData.SetStyle(table.StyleLight)
+			t := table.NewWriter()
+			t.SetStyle(table.StyleLight)
 			if format == flags.OutputFormatTable {
-				tData.AppendHeader(table.Row{
+				t.AppendHeader(table.Row{
 					obj.Typed.FromCurrencyCode,
 					obj.Typed.ToCurrencyCode,
+					"Last Refreshed",
 				})
-				tData.AppendRow(table.Row{"1", obj.Typed.ExchangeRate})
+				t.AppendRow(table.Row{
+					"1",
+					obj.Typed.ExchangeRate,
+					obj.Typed.LastRefreshed.Format("2006-01-02 15:04:05"),
+				})
 			} else {
-				tData.AppendHeader(table.Row{
+				t.AppendHeader(table.Row{
 					obj.Typed.FromCurrencyCode,
 					obj.Typed.ToCurrencyCode,
 					"Bid Price",
 					"Ask Price",
+					"Last Refreshed",
 				})
-				tData.AppendRow(table.Row{
+				t.AppendRow(table.Row{
 					"1",
 					obj.Typed.ExchangeRate,
 					obj.Typed.BidPrice,
 					obj.Typed.AskPrice,
+					obj.Typed.LastRefreshed.Format("2006-01-02 15:04:05"),
 				})
 			}
 
-			return tMetadata.Render() + "\n" + tData.Render() + "\n", nil
+			return t.Render() + "\n", nil
 		}
 	default:
 		return "", errors.New("[(*Current).GenerateOutput] invalid output format")
 	}
 }
 
+// buildURL creates the URL to make the HTTP request to the Alpha Vantage API.
 func buildURL(from string, to string) (string, error) {
 	if internal.ApiKey == "" {
 		return "", errors.New("[currency/crypto.current.buildURL] API key is required")

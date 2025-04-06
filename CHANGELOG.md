@@ -1,5 +1,51 @@
 # Changelog
 
+## [0.1.6](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.5...v0.1.6) (2025-04-06)
+
+
+### Features
+
+* create reusable function to validate dates ([c2afe90](https://github.com/lentidas/hledger-price-tracker/commit/c2afe90b8a18b4dc77ccd0e7e373524ea92fd6e2))
+* implement physical currency historical exchange rates ([dec5736](https://github.com/lentidas/hledger-price-tracker/commit/dec5736e770b8b33d562f9e661b139992964e572))
+* simplify table output for current exchange rate ([5b3a52a](https://github.com/lentidas/hledger-price-tracker/commit/5b3a52a9b6876c67a55f086de87bcd74f2edb13e))
+
+
+### Bug Fixes
+
+* correct the last refresh parsing format ([fd33f71](https://github.com/lentidas/hledger-price-tracker/commit/fd33f71507de2f5894aa12026b9e27d132f08652))
+* fix error messages ([470616f](https://github.com/lentidas/hledger-price-tracker/commit/470616f9a311ae32498a7e35d8309deae100b564))
+
+
+### Documentation
+
+* add missing documentation for already implemented commands ([15111b7](https://github.com/lentidas/hledger-price-tracker/commit/15111b725d869a700bbabfc1b7f7dc6e79f7649f))
+* fix typo detected by Copilot review ([3fce889](https://github.com/lentidas/hledger-price-tracker/commit/3fce889a85d8a5e5ca76b860c579f6d5537e5962))
+* improve a few comments and help() output ([a7fc76b](https://github.com/lentidas/hledger-price-tracker/commit/a7fc76b6bd428af56d3f03e7eda7b733a187cd63))
+* remove old TODO ([05756a5](https://github.com/lentidas/hledger-price-tracker/commit/05756a557b82c6d2f237c65cf0bfee5a470c7cca))
+
+
+### Miscellaneous Chores
+
+* **deps:** update goreleaser/goreleaser-action action [skip ci] ([#33](https://github.com/lentidas/hledger-price-tracker/issues/33)) ([0379476](https://github.com/lentidas/hledger-price-tracker/commit/037947633077803f9db4f7e19bbcf3f71ed9f333))
+* merge pull request [#37](https://github.com/lentidas/hledger-price-tracker/issues/37) from lentidas/feat/currency-rate-command ([077459f](https://github.com/lentidas/hledger-price-tracker/commit/077459fc93c478fd2b0a78640c78691b5c45890a))
+
+
+### Code Refactoring
+
+* cleanup imports ([e6f3a55](https://github.com/lentidas/hledger-price-tracker/commit/e6f3a55d4bb90f54521758d8d8fc2b0663d61481))
+* rename function for consistency ([18617bd](https://github.com/lentidas/hledger-price-tracker/commit/18617bd89da22e015428013943c1367b08264ae4))
+
+
+### Tests
+
+* create tests for list modules in crypto and currency ([2a8b158](https://github.com/lentidas/hledger-price-tracker/commit/2a8b158e39bd57f880c5b8d3400a108c22289cee))
+* further improve testing suite ([f61c344](https://github.com/lentidas/hledger-price-tracker/commit/f61c344884b088466ba1aa0042834549a98cb6e1))
+
+
+### Continuous Integration
+
+* test a possible fix for the homebrew workflow ([1d5fe90](https://github.com/lentidas/hledger-price-tracker/commit/1d5fe909b2bedf61b0a57f8bcc517aed73489679))
+
 ## [0.1.5](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.4...v0.1.5) (2025-04-01)
 
 

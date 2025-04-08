@@ -277,7 +277,7 @@ func generateOutputHledger(timeSeries map[time.Time]TypedPrices, dates []time.Ti
 func generateMetadataTable(from string, to string, lastRefreshed time.Time) string {
 	t := table.NewWriter()
 	t.SetStyle(table.StyleLight)
-	t.AppendHeader(table.Row{"From", "Currency", "Last Refreshed"})
+	t.AppendHeader(table.Row{"From", "To", "Last Refreshed"})
 	t.AppendRow(table.Row{from, to, lastRefreshed.Format("2006-01-02 15:04:05")})
 	return t.Render() + "\n"
 }

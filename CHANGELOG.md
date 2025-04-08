@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.7](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.6...v0.1.7) (2025-04-08)
+
+
+### Bug Fixes
+
+* fix error when parsing the last refreshed time ([41b61a7](https://github.com/lentidas/hledger-price-tracker/commit/41b61a787b9835774e3588b1c4f263a2a71fead2))
+
 ## [0.1.6](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.5...v0.1.6) (2025-04-06)
 
 

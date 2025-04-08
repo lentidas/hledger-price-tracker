@@ -57,9 +57,17 @@ type TypedMetadata struct {
 }
 
 func (typed *TypedMetadata) TypeBody(raw RawMetadata) error {
-	lastRefreshed, err := time.Parse("2006-01-02", raw.LastRefreshed)
+	var lastRefreshed time.Time
+	var err error
+
+	// Try parsing with date and time format first.
+	lastRefreshed, err = time.Parse("2006-01-02 15:04:05", raw.LastRefreshed)
 	if err != nil {
-		return fmt.Errorf("[currency.rate.(*TypedMetadata).TypeBody] error parsing last refreshed date: %w", err)
+		// If that fails, try just the date format.
+		lastRefreshed, err = time.Parse("2006-01-02", raw.LastRefreshed)
+		if err != nil {
+			return fmt.Errorf("[currency.rate.(*TypedMetadataDaily).TypeBody] error parsing last refreshed time: %w", err)
+		}
 	}
 
 	typed.Information = raw.Information
@@ -90,9 +98,17 @@ type TypedMetadataDaily struct {
 }
 
 func (typed *TypedMetadataDaily) TypeBody(raw RawMetadataDaily) error {
-	lastRefreshed, err := time.Parse("2006-01-02", raw.LastRefreshed)
+	var lastRefreshed time.Time
+	var err error
+
+	// Try parsing with date and time format first.
+	lastRefreshed, err = time.Parse("2006-01-02 15:04:05", raw.LastRefreshed)
 	if err != nil {
-		return fmt.Errorf("[currency.rate.(*TypedMetadataDaily).TypeBody] error parsing last refreshed date: %w", err)
+		// If that fails, try just the date format.
+		lastRefreshed, err = time.Parse("2006-01-02", raw.LastRefreshed)
+		if err != nil {
+			return fmt.Errorf("[currency.rate.(*TypedMetadataDaily).TypeBody] error parsing last refreshed time: %w", err)
+		}
 	}
 
 	typed.Information = raw.Information

@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.1.8](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.7...v0.1.8) (2025-05-05)
+
+
+### Bug Fixes
+
+* fix table output header ([dc30bc2](https://github.com/lentidas/hledger-price-tracker/commit/dc30bc2f3a8872c05f36912370b4eba12d4e2c02))
+
+
+### Documentation
+
+* add installation and contribution section ([b9f1682](https://github.com/lentidas/hledger-price-tracker/commit/b9f1682775c0e872fec58d98482ce5e35d372d48))
+
+
+### Code Refactoring
+
+* fix some help messages and properly rename objects ([3d54dd7](https://github.com/lentidas/hledger-price-tracker/commit/3d54dd7b617a026d92f98a676c323376ed6e86a5))
+
 ## [0.1.7](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.6...v0.1.7) (2025-04-08)
 
 

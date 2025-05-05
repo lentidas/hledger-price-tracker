@@ -38,7 +38,7 @@ var cfgFile string
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "hledger-price-tracker",
-	Short: "A CLI tool to get market prices for commodities",
+	Short: "CLI tool to get market prices for commodities",
 	Long: `
 hledger-price-tracker
 
@@ -60,7 +60,7 @@ func init() {
 	// Initialize configuration with Viper.
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "path to config file (default is $HOME/.hledger-price-tracker.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "path to config file (default is $HOME/.config/hledger-price-tracker/config)")
 	rootCmd.PersistentFlags().StringVarP(&internal.DefaultCurrency, "currency", "c", "EUR", "default destination currency for exchange rates")
 	rootCmd.PersistentFlags().StringVarP(&internal.ApiKey, "api-key", "k", "", "API key to access the Alpha Vantage API")
 	rootCmd.PersistentFlags().BoolVar(&internal.DebugMode, "debug", false, "enable debug mode (disables a few API requests and prints more information)")
@@ -104,7 +104,10 @@ func initConfig() {
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 
 	// Bind certain flags to environment variables.
-	envFlags := []string{"api-key"}
+	envFlags := []string{
+		// Add the flags you want to bind to environment variables here.
+		"api-key",
+	}
 	for _, flag := range envFlags {
 		if err := viper.BindEnv(flag); err != nil {
 			// Ignore the error, because Cobra only returns an error if the flag is not previously created.

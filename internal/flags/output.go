@@ -60,12 +60,12 @@ func (o *OutputFormat) Type() string {
 	return "string"
 }
 
-func OutputSearchCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
+func OutputFormatCompletion(cmd *cobra.Command, args []string, toComplete string) ([]string, cobra.ShellCompDirective) {
 	return []string{
-		"hledger\toutput the search results as hledger records format",
-		"json\toutput the search results in JSON format",
-		"csv\toutput the search results in CSV format",
-		"table\toutput the search results in a table format",
-		"table-long\toutput the search results in a table format (long version)",
+		"hledger\toutput the results as hledger records format",
+		"json\toutput the results in JSON format",
+		"csv\toutput the results in CSV format",
+		"table\toutput the results in a table format",
+		"table-long\toutput the results in a table format (long version)",
 	}, cobra.ShellCompDirectiveDefault
 }

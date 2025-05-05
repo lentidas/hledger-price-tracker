@@ -17,6 +17,7 @@ CLI program to generate market price records for [hledger](https://hledger.org/)
 ## Table of Contents
 
 - [Table of Contents](#table-of-contents)
+- [Installation](#installation)
 - [Configuration](#configuration)
 - [Usage](#usage)
   - [`currency`](#currency)
@@ -29,6 +30,27 @@ CLI program to generate market price records for [hledger](https://hledger.org/)
   - [`stock`](#stock)
     - [`stock search`](#stock-search)
     - [`stock price`](#stock-price)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Installation
+
+This CLI program is available to install using [Homebrew](https://brew.sh/) on macOS and Linux. You can install it using the following command:
+
+```shell
+brew tap lentidas/tap
+brew install hledger-price-tracker
+```
+
+<!-- TODO For now, the Linux installation with brew is not working... -->
+
+You can also install it manually by downloading the latest release from the [releases page](https://github.com/lentidas/hledger-price-tracker/releases) and extracting it to a directory in your `PATH`. For example, for Linux x86, you can extract it to `/usr/local/bin`:
+
+```shell
+curl -L https://github.com/lentidas/hledger-price-tracker/releases/latest/download/hledger-price-tracker_Linux_arm64.tar.gz | tar xz -C /tmp
+sudo mv /tmp/hledger-price-tracker /usr/local/bin
+chmod +x /usr/local/bin/hledger-price-tracker
+```
 
 ## Configuration
 
@@ -523,4 +545,36 @@ hledger-price-tracker stock price IBM --api-key demo --format table-long --begin
 └────────────┴────────┴────────┴────────┴────────┴────────────┴──────────┴─────────────────┘
 ```
 
-<!-- TODO Add information on how to contribute to the project, namely how to initialize the repository locally, initialize Go, etc. -->
+## Contributing
+
+As I said above, this is my first Go project, so I would love to get some feedback on the code and the project in general. If you have any suggestions or improvements, please open an issue and let me know.
+
+Contributions are also welcome! Below are some steps to get started:
+
+1. Create a fork of the repository and clone it locally.
+
+2. Go to your local repository and initialize the Go project (or use your preferred IDE):
+  
+    ```shell
+    go mod tidy
+    ```
+
+3. Run the existing tests to verify everything is working as expected:
+
+    ```shell
+    go test ./...
+    ```
+
+4. Execute the program a first time to check if everything is working as expected:
+
+    ```shell
+    go run main.go --help
+    ```
+
+5. Make your changes and submit a pull request.
+
+[!TIP] Make sure you have Go installed (see Go installation guide).
+
+## License
+
+This project is licensed under the GNU General Public License v3.0. See the [LICENSE](./LICENSE.txt) file for details.

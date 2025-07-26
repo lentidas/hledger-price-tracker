@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.9](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.8...v0.1.9) (2025-07-26)
+
+
+### Miscellaneous Chores
+
+* **deps:** update actions/setup-go action [skip ci] ([#40](https://github.com/lentidas/hledger-price-tracker/issues/40)) ([ab4ffc8](https://github.com/lentidas/hledger-price-tracker/commit/ab4ffc8287373a6c50ab1682e34c58a3e4416c51))
+* **deps:** update dawidd6/action-homebrew-bump-formula action [skip ci] ([#41](https://github.com/lentidas/hledger-price-tracker/issues/41)) ([7034841](https://github.com/lentidas/hledger-price-tracker/commit/703484102ee0ce85d984b747036f4d4e74bf49f2))
+* **deps:** update module github.com/spf13/pflag to v1.0.7 ([#42](https://github.com/lentidas/hledger-price-tracker/issues/42)) ([170bbda](https://github.com/lentidas/hledger-price-tracker/commit/170bbda6ceed491b24916533a88add6d92ae39e4))
+
 ## [0.1.8](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.7...v0.1.8) (2025-05-05)
 
 

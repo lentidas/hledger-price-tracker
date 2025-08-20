@@ -85,7 +85,7 @@ func initConfig() {
 		home, err := os.UserHomeDir()
 		cobra.CheckErr(err)
 
-		// Search config in home directory with name ".hledger-price-tracker" (without extension).
+		// Search config in home directory with name "hledger-price-tracker" (without extension).
 		viper.AddConfigPath(home + "/.config/hledger-price-tracker")
 		viper.SetConfigType("yaml")
 		viper.SetConfigName("config")
@@ -100,7 +100,6 @@ func initConfig() {
 	viper.SetEnvPrefix("HPT") // HPT for hledger-price-tracker
 
 	// Environment variables can't have dashes in them, so bind them to their equivalent keys with underscores,
-	// e.g. --api-key to HPT_API_KEY.
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 
 	// Bind certain flags to environment variables.

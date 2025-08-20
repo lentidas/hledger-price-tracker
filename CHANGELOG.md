@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.1.10](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.9...v0.1.10) (2025-08-20)
+
+
+### Documentation
+
+* correct comment ([62df52b](https://github.com/lentidas/hledger-price-tracker/commit/62df52b7a4b2ca79c3513a3fdd07bf50cdf3f0be))
+
+
+### Miscellaneous Chores
+
+* **deps:** update actions/checkout action [skip ci] ([#46](https://github.com/lentidas/hledger-price-tracker/issues/46)) ([ceb237a](https://github.com/lentidas/hledger-price-tracker/commit/ceb237a68a1bf1234917af929378be9fb13ae7f1))
+* **deps:** update goreleaser/goreleaser-action action [skip ci] ([#47](https://github.com/lentidas/hledger-price-tracker/issues/47)) ([513ddfa](https://github.com/lentidas/hledger-price-tracker/commit/513ddfa834a0c0704fc4bfb5f686af359a9e13b4))
+* **deps:** update module github.com/jedib0t/go-pretty/v6 to v6.6.8 ([#44](https://github.com/lentidas/hledger-price-tracker/issues/44)) ([72f8b2b](https://github.com/lentidas/hledger-price-tracker/commit/72f8b2bef49753c735d038ad7e221c54862e5f7b))
+* run `go mod tidy` ([2dde357](https://github.com/lentidas/hledger-price-tracker/commit/2dde35793a49e2573e1d9d5ad17a16ace1cf12b6))
+
 ## [0.1.9](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.8...v0.1.9) (2025-07-26)
 
 

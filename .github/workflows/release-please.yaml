@@ -22,7 +22,7 @@ jobs:
         owner: ${{ github.repository_owner }}
 
     - name: Run Release Please
-      uses: googleapis/release-please-action@v4.2.0
+      uses: googleapis/release-please-action@v4.3.0
       id: release-please
       with:
         token: ${{ steps.app-token.outputs.token }}

@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.11](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.10...v0.1.11) (2025-08-21)
+
+
+### Miscellaneous Chores
+
+* **deps:** update Go version and dependencies ([9198358](https://github.com/lentidas/hledger-price-tracker/commit/91983584c61a4cabf538aba719b754631044a0c6))
+* **deps:** update googleapis/release-please-action action [skip ci] ([#49](https://github.com/lentidas/hledger-price-tracker/issues/49)) ([a63db50](https://github.com/lentidas/hledger-price-tracker/commit/a63db505ce1ab9be467b26d7c9840f6643c3ad2c))
+
 ## [0.1.10](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.9...v0.1.10) (2025-08-20)
 
 

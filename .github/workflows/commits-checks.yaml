@@ -19,6 +19,6 @@ jobs:
         owner: ${{ github.repository_owner }}
 
     - name: Check commit messages
-      uses: opensource-nepal/commitlint@v1.3.0
+      uses: opensource-nepal/commitlint@v1.3.1
       with:
         token: ${{ steps.app-token.outputs.token }}

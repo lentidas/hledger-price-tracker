@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.1.12](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.11...v0.1.12) (2025-09-08)
+
+
+### Miscellaneous Chores
+
+* **deps:** update actions/setup-go action [skip ci] ([#54](https://github.com/lentidas/hledger-price-tracker/issues/54)) ([5ba474a](https://github.com/lentidas/hledger-price-tracker/commit/5ba474a9c4e4ae0543df30e786345c5efd95cef3))
+* **deps:** update module github.com/spf13/cobra to v1.10.1 ([#53](https://github.com/lentidas/hledger-price-tracker/issues/53)) ([1eb55b8](https://github.com/lentidas/hledger-price-tracker/commit/1eb55b88fa7ed0cc2e8aedcc4760cdaa408b3fe8))
+* **deps:** update module github.com/spf13/pflag to v1.0.10 ([#52](https://github.com/lentidas/hledger-price-tracker/issues/52)) ([f72d6da](https://github.com/lentidas/hledger-price-tracker/commit/f72d6da451388cd2332e4f05562a029fd3695416))
+* **deps:** update opensource-nepal/commitlint action [skip ci] ([#51](https://github.com/lentidas/hledger-price-tracker/issues/51)) ([5b48973](https://github.com/lentidas/hledger-price-tracker/commit/5b489733e1a762efe0b8fd26b64afcd9225d7ea6))
+
 ## [0.1.11](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.10...v0.1.11) (2025-08-21)
 
 

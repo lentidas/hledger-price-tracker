@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.13](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.12...v0.1.13) (2025-09-09)
+
+
+### Miscellaneous Chores
+
+* **deps:** update module github.com/spf13/viper to v1.21.0 ([#56](https://github.com/lentidas/hledger-price-tracker/issues/56)) ([4d9ba2c](https://github.com/lentidas/hledger-price-tracker/commit/4d9ba2c3fd24c4f98a9aaf8583831cde4798351d))
+
 ## [0.1.12](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.11...v0.1.12) (2025-09-08)
 
 

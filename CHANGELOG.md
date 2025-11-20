@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.14](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.13...v0.1.14) (2025-11-19)
+
+
+### Miscellaneous Chores
+
+* **deps:** update module github.com/jedib0t/go-pretty/v6 to v6.7.0 ([#59](https://github.com/lentidas/hledger-price-tracker/issues/59)) ([5dc0b09](https://github.com/lentidas/hledger-price-tracker/commit/5dc0b09f2bdf346008a898e84c50bb6b216770c6))
+* **deps:** update module github.com/jedib0t/go-pretty/v6 to v6.7.3 ([#61](https://github.com/lentidas/hledger-price-tracker/issues/61)) ([810af9c](https://github.com/lentidas/hledger-price-tracker/commit/810af9ca3c89bdf68dbdb453a44263786f81bd7c))
+
 ## [0.1.13](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.12...v0.1.13) (2025-09-09)
 
 

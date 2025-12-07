@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.15](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.14...v0.1.15) (2025-12-07)
+
+
+### Miscellaneous Chores
+
+* **deps:** update actions/checkout action [skip ci] ([#62](https://github.com/lentidas/hledger-price-tracker/issues/62)) ([70ae1ae](https://github.com/lentidas/hledger-price-tracker/commit/70ae1ae0178bc51b4cf9aabe6c72ff5bd1f02c41))
+* **deps:** update actions/checkout action [skip ci] ([#65](https://github.com/lentidas/hledger-price-tracker/issues/65)) ([cf59ca9](https://github.com/lentidas/hledger-price-tracker/commit/cf59ca933a77797a6e7fc07f6f31b4e393eaba05))
+* **deps:** update actions/setup-go action [skip ci] ([#63](https://github.com/lentidas/hledger-price-tracker/issues/63)) ([4245caa](https://github.com/lentidas/hledger-price-tracker/commit/4245caaeb3f03348aaa7154f91aeed74d680f4ec))
+* **deps:** update googleapis/release-please-action action [skip ci] ([#58](https://github.com/lentidas/hledger-price-tracker/issues/58)) ([b1f0db8](https://github.com/lentidas/hledger-price-tracker/commit/b1f0db8ac26d5056b6f22b60b60754c347a006c6))
+* **deps:** update module github.com/jedib0t/go-pretty/v6 to v6.7.5 ([#64](https://github.com/lentidas/hledger-price-tracker/issues/64)) ([a249b42](https://github.com/lentidas/hledger-price-tracker/commit/a249b42a2c1f3bbd52671bf2a5a873c5fd6bf178))
+* **deps:** update module github.com/spf13/cobra to v1.10.2 ([#68](https://github.com/lentidas/hledger-price-tracker/issues/68)) ([e9aa211](https://github.com/lentidas/hledger-price-tracker/commit/e9aa211f357829dc3a28436c97682606bec9671f))
+
 ## [0.1.14](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.13...v0.1.14) (2025-11-19)
 
 

@@ -12,11 +12,13 @@ jobs:
     steps:
     - name: Generate authentication token from GitHub App
       id: app-token
-      uses: actions/create-github-app-token@v1.11.7
+      uses: actions/create-github-app-token@v2.2.1
       with:
         app-id: ${{ secrets.REPOSITORY_BOT_APP_ID }}
         private-key: ${{ secrets.REPOSITORY_BOT_PRIVATE_KEY }}
         owner: ${{ github.repository_owner }}
+        permission-contents: read
+        permission-pull-requests: read
 
     - name: Check commit messages
       uses: opensource-nepal/commitlint@v1.3.1

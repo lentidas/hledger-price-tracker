@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.1.16](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.15...v0.1.16) (2025-12-11)
+
+
+### Miscellaneous Chores
+
+* **deps:** update module github.com/jedib0t/go-pretty/v6 to v6.7.7 ([#71](https://github.com/lentidas/hledger-price-tracker/issues/71)) ([8d950fd](https://github.com/lentidas/hledger-price-tracker/commit/8d950fd99352acaa665db8960c0c4098f79bb3d6))
+
+
+### Continuous Integration
+
+* delete homebrew workflow ([469b1d1](https://github.com/lentidas/hledger-price-tracker/commit/469b1d188806ff2c35d239159c2953600ca59d80))
+* **token:** set stricter and explicit permissions ([d660f26](https://github.com/lentidas/hledger-price-tracker/commit/d660f260c708a0a9df7d1fa52e3967cd526d1b9b))
+
 ## [0.1.15](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.14...v0.1.15) (2025-12-07)
 
 

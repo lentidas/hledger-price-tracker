@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.1.16](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.15...v0.1.16) (2025-12-22)
+
+
+### Miscellaneous Chores
+
+* **deps:** update Go version and dependencies ([4ea8ca9](https://github.com/lentidas/hledger-price-tracker/commit/4ea8ca9bf0e54b1e58ff23fd2cb96b51afe00417))
+* **deps:** update module github.com/jedib0t/go-pretty/v6 to v6.7.7 ([#71](https://github.com/lentidas/hledger-price-tracker/issues/71)) ([8d950fd](https://github.com/lentidas/hledger-price-tracker/commit/8d950fd99352acaa665db8960c0c4098f79bb3d6))
+* **deps:** update robherley/go-test-action action [skip ci] ([#72](https://github.com/lentidas/hledger-price-tracker/issues/72)) ([8d8e67f](https://github.com/lentidas/hledger-price-tracker/commit/8d8e67f7c9163be9d85a6c2c357f42c74cc04b1b))
+* update .idea files ([3771fb3](https://github.com/lentidas/hledger-price-tracker/commit/3771fb371b5dd38b09e08ca8e82d38a2dbf219f3))
+
+
+### Continuous Integration
+
+* add token to use GitHub CLI ([d06c9f8](https://github.com/lentidas/hledger-price-tracker/commit/d06c9f8544a3e0940bbab167e658f96d851051ff))
+* add workflow to trigger version bump on Homebrew tap ([b082a4f](https://github.com/lentidas/hledger-price-tracker/commit/b082a4fc12cb9b6ae8b853827efde481e0fd420d))
+* delete homebrew workflow ([469b1d1](https://github.com/lentidas/hledger-price-tracker/commit/469b1d188806ff2c35d239159c2953600ca59d80))
+* **token:** set stricter and explicit permissions ([d660f26](https://github.com/lentidas/hledger-price-tracker/commit/d660f260c708a0a9df7d1fa52e3967cd526d1b9b))
+
 ## [0.1.15](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.14...v0.1.15) (2025-12-07)
 
 

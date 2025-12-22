@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.17](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.16...v0.1.17) (2025-12-22)
+
+
+### Continuous Integration
+
+* fix issue with client-payload ([bfa111a](https://github.com/lentidas/hledger-price-tracker/commit/bfa111a52c110a1ed9408fb3d47e798942b1193c))
+
 ## [0.1.16](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.15...v0.1.16) (2025-12-22)
 
 

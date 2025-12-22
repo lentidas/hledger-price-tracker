@@ -28,8 +28,9 @@ jobs:
         GH_TOKEN: ${{ steps.app_token.outputs.token }}
       run: |
         # Get the tag name of the latest release.
-        VERSION=$(gh release view --repo "${{ github.event.workflow_run.repository.full_name }}" --json tagName -q .tagName)
-        echo "tag=${VERSION}" >> $GITHUB_OUTPUT
+        TAG=$(gh release view --repo "${{ github.event.workflow_run.repository.full_name }}" --json tagName -q .tagName)
+        echo "tag=${TAG}" >> $GITHUB_OUTPUT
+        echo "version=${TAG#v}" >> $GITHUB_OUTPUT
 
     - name: Check if the latest release has published assets
       id: check_assets
@@ -57,8 +58,4 @@ jobs:
         token: ${{ steps.app_token.outputs.token }}
         repository: lentidas/homebrew-tap
         event-type: bump-formula-version
-        client-payload: |
-          {
-            package_name: "${{ steps.get_package_name.outputs.package_name }}",
-            version: "${{ steps.get_version.outputs.tag }}"
-          }
+        client-payload: '{"package_name": "${{ steps.get_package_name.outputs.package_name }}", "version": "${{ steps.get_version.outputs.version }}"}'

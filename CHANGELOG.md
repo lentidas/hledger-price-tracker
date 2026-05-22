@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.19](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.18...v0.1.19) (2026-05-22)
+
+
+### Code Refactoring
+
+* remove quotes from other simple currency outputs ([799e92e](https://github.com/lentidas/hledger-price-tracker/commit/799e92e6b9be38b9b763bab06006e746d1a65a06))
+
 ## [0.1.18](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.17...v0.1.18) (2026-05-22)
 
 

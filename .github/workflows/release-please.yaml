@@ -25,7 +25,7 @@ jobs:
         permission-pull-requests: write
 
     - name: Run Release Please
-      uses: googleapis/release-please-action@v4.4.0
+      uses: googleapis/release-please-action@v5.0.0
       id: release-please
       with:
         token: ${{ steps.app-token.outputs.token }}

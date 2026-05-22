@@ -264,6 +264,11 @@ func buildURL(symbol string, format flags.OutputFormat, interval flags.Interval,
 	url.WriteString(symbol)
 
 	// Print entire time series if daily, because user can then limit the interval with `begin` and `end`.
+	// FIXME: Recently, the API started to lockdown the full time series for free users, so this needs to be fixed.
+	//        curl https://www.alphavantage.co/query\?function\=TIME_SERIES_DAILY\&symbol\=APC.DEX\&outputsize\=full\&apikey\=UEQOXT9AI77MLIXO
+	//				{
+	//						"Information": "Thank you for using Alpha Vantage! The outputsize=full parameter value is a premium feature for the TIME_SERIES_DAILY endpoint. You may subscribe to any of the premium plans at https://www.alphavantage.co/premium/ to instantly unlock all premium features"
+	//				}%
 	if interval == flags.IntervalDaily && full {
 		url.WriteString("&outputsize=full")
 	}

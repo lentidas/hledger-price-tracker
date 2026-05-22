@@ -1,5 +1,44 @@
 # Changelog
 
+## [0.1.18](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.17...v0.1.18) (2026-05-22)
+
+
+### Bug Fixes
+
+* add rate-limit detection and clearer error messages ([3a0d742](https://github.com/lentidas/hledger-price-tracker/commit/3a0d742f93034e1dfc11f3fe6a001f1a44c8c9f8))
+
+
+### Documentation
+
+* add a FIXME to fix full error ([fc3c5ba](https://github.com/lentidas/hledger-price-tracker/commit/fc3c5ba4e7f8f041f7bb9279cb74e42197c93a16))
+
+
+### Miscellaneous Chores
+
+* **deps:** update actions/checkout action [skip ci] ([#78](https://github.com/lentidas/hledger-price-tracker/issues/78)) ([67487fb](https://github.com/lentidas/hledger-price-tracker/commit/67487fb672062cb4f4df78070cc6c7210e54a107))
+* **deps:** update actions/create-github-app-token action [skip ci] ([#82](https://github.com/lentidas/hledger-price-tracker/issues/82)) ([e743ae5](https://github.com/lentidas/hledger-price-tracker/commit/e743ae534e400739125905601a02f6310eb7a1f6))
+* **deps:** update actions/create-github-app-token action [skip ci] ([#89](https://github.com/lentidas/hledger-price-tracker/issues/89)) ([2b61e14](https://github.com/lentidas/hledger-price-tracker/commit/2b61e148e84278ae25adde9029c7838bdab80b9d))
+* **deps:** update actions/setup-go action [skip ci] ([#77](https://github.com/lentidas/hledger-price-tracker/issues/77)) ([7abd35b](https://github.com/lentidas/hledger-price-tracker/commit/7abd35bd4a47c4c97a399f8fe652825e5078e0a5))
+* **deps:** update actions/setup-go action [skip ci] ([#80](https://github.com/lentidas/hledger-price-tracker/issues/80)) ([e061398](https://github.com/lentidas/hledger-price-tracker/commit/e061398999f2de12ee34604f7f76a3aa8083cb54))
+* **deps:** update actions/setup-go action [skip ci] ([#83](https://github.com/lentidas/hledger-price-tracker/issues/83)) ([cbf91aa](https://github.com/lentidas/hledger-price-tracker/commit/cbf91aa47d74044c8a264d8030e9d90b9b84ca5e))
+* **deps:** update Go version and dependencies ([3cb40a1](https://github.com/lentidas/hledger-price-tracker/commit/3cb40a11152e88cb7dde5e3e824fcbc7ea0e02ee))
+* **deps:** update googleapis/release-please-action action [skip ci] ([#88](https://github.com/lentidas/hledger-price-tracker/issues/88)) ([450b1f5](https://github.com/lentidas/hledger-price-tracker/commit/450b1f508f534ff381cd41a6688ec2ba609f01d7))
+* **deps:** update goreleaser/goreleaser-action action [skip ci] ([#79](https://github.com/lentidas/hledger-price-tracker/issues/79)) ([4cdeefc](https://github.com/lentidas/hledger-price-tracker/commit/4cdeefc3769ebf344c5e4861763f44c92510c3a3))
+* **deps:** update goreleaser/goreleaser-action action [skip ci] ([#86](https://github.com/lentidas/hledger-price-tracker/issues/86)) ([1adc418](https://github.com/lentidas/hledger-price-tracker/commit/1adc4189f231fd077af09d9f99979cc791076a1a))
+* **deps:** update module github.com/jedib0t/go-pretty/v6 to v6.7.8 ([#74](https://github.com/lentidas/hledger-price-tracker/issues/74)) ([a9c2b49](https://github.com/lentidas/hledger-price-tracker/commit/a9c2b49674b7f5d9a2ded8128cbdf97a20796dc6))
+* **deps:** update robherley/go-test-action action [skip ci] ([#87](https://github.com/lentidas/hledger-price-tracker/issues/87)) ([3d9032f](https://github.com/lentidas/hledger-price-tracker/commit/3d9032fba0af2fa743b849d73caacadd323086cf))
+* upgrade dependencies and add Mise ([51cb7a4](https://github.com/lentidas/hledger-price-tracker/commit/51cb7a4f72e107bb486588b0959375824f36c60c))
+
+
+### Code Refactoring
+
+* remove quotes from simple currency outputs ([28a846f](https://github.com/lentidas/hledger-price-tracker/commit/28a846f44d49ff962ba730d4ebc1ed922e87317a))
+
+
+### Tests
+
+* add sleep time to tests that query the demo endpoints ([6405e34](https://github.com/lentidas/hledger-price-tracker/commit/6405e3445203d9ffe1233e57af0999ea66c99f75))
+
 ## [0.1.17](https://github.com/lentidas/hledger-price-tracker/compare/v0.1.16...v0.1.17) (2025-12-22)
 
 

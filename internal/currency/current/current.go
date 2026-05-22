@@ -124,7 +124,7 @@ func (obj *Current) GenerateOutput(body []byte, format flags.OutputFormat) (stri
 		}
 
 		if format == flags.OutputFormatHledger {
-			output := fmt.Sprintf("P %s \"%s\" %.2f \"%s\"\n",
+			output := fmt.Sprintf("P %s %s %.2f %s\n",
 				obj.Typed.LastRefreshed.Format("2006-01-02"),
 				obj.Typed.FromCurrencyCode,
 				obj.Typed.ExchangeRate,

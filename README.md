@@ -118,7 +118,7 @@ The second argument is the currency you want to convert to. It defaults to `EUR`
 hledger-price-tracker currency current USD JPY --api-key demo
 ```
 ```
-P 2025-04-05 "USD" 146.94 "JPY"
+P 2025-04-05 USD 146.94 JPY
 ```
 
 You can specify a different output format using the `--format` or `-f` flag. The available formats are `hledger` (default), `table`, `table-long` (table with more information), and `json`.
@@ -145,16 +145,16 @@ The following command gets the weekly exchange rates from EUR to USD.
 hledger-price-tracker currency rate EUR USD --api-key demo
 ```
 ```
-P 2015-04-12 "EUR" 1.06 "USD"
-P 2015-04-19 "EUR" 1.08 "USD"
-P 2015-04-26 "EUR" 1.09 "USD"
+P 2015-04-12 EUR 1.06 USD
+P 2015-04-19 EUR 1.08 USD
+P 2015-04-26 EUR 1.09 USD
 
 ...
 
-P 2025-03-16 "EUR" 1.09 "USD"
-P 2025-03-23 "EUR" 1.08 "USD"
-P 2025-03-30 "EUR" 1.08 "USD"
-P 2025-04-04 "EUR" 1.10 "USD"
+P 2025-03-16 EUR 1.09 USD
+P 2025-03-23 EUR 1.08 USD
+P 2025-03-30 EUR 1.08 USD
+P 2025-04-04 EUR 1.10 USD
 ```
 
 There is also the `--format` or `-f` flag to specify a different output format. The available formats are `hledger` (default), `table`, `table-long`, `json`, and `csv`.
@@ -233,7 +233,7 @@ The second argument is the currency you want to convert to, for example, USD or 
 hledger-price-tracker crypto current BTC --api-key demo
 ```
 ```
-P 2025-04-05 "BTC" 75670.94 "EUR"
+P 2025-04-05 BTC 75670.94 EUR
 ```
 
 You can specify a different output format using the `--format` or `-f` flag. The available formats are `hledger` (default), `table`, `table-long` (table with more information), and `json`.

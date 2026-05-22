@@ -20,6 +20,7 @@ package current
 
 import (
 	"testing"
+	"time"
 
 	"github.com/lentidas/hledger-price-tracker/internal"
 	"github.com/lentidas/hledger-price-tracker/internal/flags"
@@ -27,17 +28,20 @@ import (
 
 func TestCurrent(t *testing.T) {
 	internal.ApiKey = "demo"
+	sleepTime := time.Duration(500) * time.Millisecond
 
 	t.Run("success from USD to JPY", func(t *testing.T) {
 		if _, err := Execute("USD", "JPY", flags.OutputFormatHledger); err != nil {
 			t.Errorf("expected nil, got %v", err)
 		}
+		time.Sleep(sleepTime)
 	})
 
 	t.Run("success from BTC to EUR", func(t *testing.T) {
 		if _, err := Execute("BTC", "EUR", flags.OutputFormatHledger); err != nil {
 			t.Errorf("expected nil, got %v", err)
 		}
+		time.Sleep(sleepTime)
 	})
 
 	t.Run("no origin currency", func(t *testing.T) {

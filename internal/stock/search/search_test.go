@@ -20,6 +20,7 @@ package search
 
 import (
 	"testing"
+	"time"
 
 	"github.com/lentidas/hledger-price-tracker/internal"
 	"github.com/lentidas/hledger-price-tracker/internal/flags"
@@ -32,6 +33,8 @@ func TestSearch(t *testing.T) {
 		if _, err := Execute("tesco", flags.OutputFormatJSON); err != nil {
 			t.Errorf("expected nil, got %v", err)
 		}
+		// Sleep to avoid hitting the Alpha Vantage per-second rate limit across the test suite.
+		time.Sleep(time.Duration(500) * time.Millisecond)
 	})
 
 	t.Run("no search query", func(t *testing.T) {

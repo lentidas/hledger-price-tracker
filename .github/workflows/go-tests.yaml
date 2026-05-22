@@ -28,6 +28,7 @@ jobs:
     - name: Run Go tests
       uses: robherley/go-test-action@v1.0.1
       with:
+        testArguments: -p 1 ./...
         omit: |
           pie
           untested

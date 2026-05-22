@@ -20,6 +20,7 @@ package rate
 
 import (
 	"testing"
+	"time"
 
 	"github.com/lentidas/hledger-price-tracker/internal"
 	"github.com/lentidas/hledger-price-tracker/internal/flags"
@@ -27,29 +28,34 @@ import (
 
 func TestRate(t *testing.T) {
 	internal.ApiKey = "demo"
+	sleepTime := time.Duration(500) * time.Millisecond
 
 	t.Run("success from EUR to USD daily", func(t *testing.T) {
 		if _, err := Execute("EUR", "USD", flags.OutputFormatHledger, flags.IntervalDaily, "", "", false); err != nil {
 			t.Errorf("expected nil, got %v", err)
 		}
+		time.Sleep(sleepTime)
 	})
 
 	t.Run("success from EUR to USD daily full", func(t *testing.T) {
 		if _, err := Execute("EUR", "USD", flags.OutputFormatHledger, flags.IntervalDaily, "", "", true); err != nil {
 			t.Errorf("expected nil, got %v", err)
 		}
+		time.Sleep(sleepTime)
 	})
 
 	t.Run("success from EUR to USD weekly", func(t *testing.T) {
 		if _, err := Execute("EUR", "USD", flags.OutputFormatHledger, flags.IntervalWeekly, "", "", false); err != nil {
 			t.Errorf("expected nil, got %v", err)
 		}
+		time.Sleep(sleepTime)
 	})
 
 	t.Run("success from EUR to USD monthly", func(t *testing.T) {
 		if _, err := Execute("EUR", "USD", flags.OutputFormatHledger, flags.IntervalMonthly, "", "", false); err != nil {
 			t.Errorf("expected nil, got %v", err)
 		}
+		time.Sleep(sleepTime)
 	})
 
 	t.Run("no origin currency", func(t *testing.T) {

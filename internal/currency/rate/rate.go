@@ -265,7 +265,7 @@ func getDates(timeSeries map[time.Time]TypedPrices, begin time.Time, end time.Ti
 func generateOutputHledger(timeSeries map[time.Time]TypedPrices, dates []time.Time, from string, to string) string {
 	out := strings.Builder{}
 	for _, date := range dates {
-		out.WriteString(fmt.Sprintf("P %s \"%s\" %.2f \"%s\"\n",
+		out.WriteString(fmt.Sprintf("P %s %s %.2f %s\n",
 			date.Format("2006-01-02"),
 			from,
 			timeSeries[date].Close,

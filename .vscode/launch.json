@@ -1,0 +1,90 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch (no args)",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}",
+      "env": {},
+      "args": []
+    },
+    {
+      "name": "currency list",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}",
+      "env": {},
+      "args": [
+        "currency",
+        "list",
+        "-k",
+        "demo"
+      ]
+    },
+    {
+      "name": "currency rate",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}",
+      "env": {
+        "HPT_API_KEY": ""
+      },
+      "args": [
+        "currency",
+        "rate",
+        "USD",
+        "EUR",
+        "-b",
+        "2025-09-20",
+        "-f",
+        "hledger"
+      ]
+    },
+    {
+      "name": "stock price",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}",
+      "env": {
+        "HPT_API_KEY": ""
+      },
+      "args": [
+        "stock",
+        "price",
+        "AMZ.DEX",
+        "-b",
+        "2025-11-15",
+        "-f",
+        "hledger"
+      ]
+    },
+    {
+      "name": "stock search",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}",
+      "env": {},
+      "args": [
+        "stock",
+        "search",
+        "tesco",
+        "-k",
+        "demo"
+      ]
+    },
+    {
+      "name": "Debug Tests",
+      "type": "go",
+      "request": "launch",
+      "mode": "test",
+      "program": "${workspaceFolder}/internal",
+      "args": []
+    }
+  ]
+}

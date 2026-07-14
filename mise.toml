@@ -1,5 +1,5 @@
 [tools]
-go = "1.26.3"
+go = "1.26.5"
 
 [tasks.go-test]
 run = "go test -v -cover ./..."

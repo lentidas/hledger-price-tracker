@@ -3,7 +3,7 @@ module github.com/lentidas/hledger-price-tracker
 go 1.26.3
 
 require (
-	github.com/jedib0t/go-pretty/v6 v6.7.10
+	github.com/jedib0t/go-pretty/v6 v6.8.3
 	github.com/spf13/cobra v1.10.2
 	github.com/spf13/pflag v1.0.10
 	github.com/spf13/viper v1.21.0
